@@ -1,3 +1,4 @@
+import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -10,13 +11,15 @@ const String AUTHORIZATION = "authorization";
 const String DEFAULT_LANGUAGE = "language";
 
 class DioFactory {
+  final AppPrefrences _appPrefrences;
+  DioFactory(this._appPrefrences);
   Future<Dio> getDio() async {
     Dio dio = Dio();
+    String language = await _appPrefrences.getAppLanguage();
     Map<String, String> headers = {
       CONTENT_TYPE: APPLICATION_JSON,
       ACCEPT: APPLICATION_JSON,
-      DEFAULT_LANGUAGE:
-          Constants.defaultLanguage, //TODO get lang from app prefrences
+      DEFAULT_LANGUAGE: language, //TODO get lang from app prefrences
       AUTHORIZATION: Constants.token,
     };
 

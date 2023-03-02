@@ -9,7 +9,6 @@ import 'package:audima/domain/model/models.dart';
 import 'package:audima/data/network/requests.dart';
 
 import 'package:audima/data/network/failure.dart';
-import 'package:dio/dio.dart';
 
 import '../../domain/repository/repository.dart';
 
