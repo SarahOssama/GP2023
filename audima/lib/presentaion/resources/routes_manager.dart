@@ -1,3 +1,4 @@
+import 'package:audima/presentaion/login/view/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -21,8 +22,19 @@ class RoutesManager {
     routes: <GoRoute>[
       GoRoute(
         path: '/',
-        builder: (BuildContext context, GoRouterState state) => HomeView(),
+        builder: (BuildContext context, GoRouterState state) => LoginView(),
         routes: <GoRoute>[
+          GoRoute(
+            path: 'login',
+            pageBuilder: (context, state) => CustomTransitionPage<void>(
+              key: state.pageKey,
+              child: LoginView(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          ),
           GoRoute(
             path: 'home',
             pageBuilder: (context, state) => CustomTransitionPage<void>(

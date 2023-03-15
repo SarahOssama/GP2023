@@ -485,14 +485,44 @@ class ResponsiveTextStyles {
     );
   }
 
+  static TextStyle loginInfoTextStyle(context) {
+    return GoogleFonts.sora(
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 30.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 27.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+            const Condition.smallerThan(name: TABLET, value: 20.0),
+          ],
+        ).value,
+        color: Colors.white,
+        fontWeight: FontWeight.bold);
+  }
+
+  static TextStyle brandPersonalityTextStyle(context) {
+    return GoogleFonts.sora(
+        shadows: <Shadow>[
+          const Shadow(
+            blurRadius: 2,
+            color: Colors.black,
+          ),
+        ],
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 20.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 27.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+            const Condition.smallerThan(name: TABLET, value: 20.0),
+          ],
+        ).value,
+        color: Colors.white,
+        fontWeight: FontWeight.bold);
+  }
+
   static TextStyle businessDetailMainTextStyle(context) {
     return GoogleFonts.sora(
-        // shadows: <Shadow>[
-        //   const Shadow(
-        //     blurRadius: 2,
-        //     color: Colors.black,
-        //   ),
-        // ],
         fontSize: ResponsiveValue(
           context,
           defaultValue: 30.0,

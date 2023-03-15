@@ -1,19 +1,48 @@
 //business info models
+import 'package:flutter/material.dart';
 
-class BusinessInfoObject {
-  String question;
+//company name models
+class CompanyNameQuestionObject {
   String hint;
-  String answer;
-  BusinessInfoObject(this.question, this.hint, this.answer);
+  CompanyNameQuestionObject(this.hint);
 }
 
-class BusinessInfoViewObject {
-  BusinessInfoObject businessInfoObject;
-  int numOfSlides;
-  int currentIndex;
-  BusinessInfoViewObject(
-      this.businessInfoObject, this.numOfSlides, this.currentIndex);
+class CompanyNameQuestionViewObject {
+  CompanyNameQuestionObject companyNameQuestionObject;
+  String question;
+  CompanyNameQuestionViewObject(this.companyNameQuestionObject, this.question);
 }
+
+//brand perosnality models
+class BrandPersonalityQuestionObject {
+  String brandpersonality;
+  String imgUrl;
+  bool isSelected;
+  bool isHovered;
+  int index;
+  Color color;
+  BrandPersonalityQuestionObject(this.brandpersonality, this.imgUrl,
+      this.isSelected, this.isHovered, this.index, this.color);
+}
+
+class BrandPersonalityQuestionViewObject {
+  List<BrandPersonalityQuestionObject> brandPersonalityList;
+  String question;
+  BrandPersonalityQuestionViewObject(this.brandPersonalityList, this.question);
+}
+
+//company industry type
+class CompanyIndustryTypeQuestionObject {
+  String industrytype;
+  String imgUrl;
+  bool isSelected;
+  bool isHovered;
+  int index;
+  Color color;
+  CompanyIndustryTypeQuestionObject(this.industrytype, this.imgUrl,
+      this.isSelected, this.isHovered, this.index, this.color);
+}
+
 //login models
 
 class Customer {
@@ -33,7 +62,7 @@ class Contacts {
 //above in premitave models like customers and contacts every single datatype must be non nullable
 //but down in Authentication this model is non premative as it contains objects inside it so it should be nullable
 class Authentication {
-  Contacts? customer;
-  Customer? contacts;
+  Customer? customer;
+  Contacts? contacts;
   Authentication(this.customer, this.contacts);
 }
