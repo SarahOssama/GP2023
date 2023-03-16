@@ -44,6 +44,19 @@ class CompanyIndustryTypeQuestionViewObject {
       this.companyIndustryTypeQuestionObject, this.question);
 }
 
+//company service description
+class CompanyServiceDescriptionQuestionObject {
+  String hint;
+  CompanyServiceDescriptionQuestionObject(this.hint);
+}
+
+class CompanyServiceDescriptionQuestionViewObject {
+  CompanyServiceDescriptionQuestionObject
+      companyServiceDescriptionQuestionObject;
+  String question;
+  CompanyServiceDescriptionQuestionViewObject(
+      this.companyServiceDescriptionQuestionObject, this.question);
+}
 //login models
 
 class Customer {

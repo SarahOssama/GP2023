@@ -25,7 +25,8 @@ class _BusinessInfoState extends State<BusinessInfo> {
   final BusinessInfoViewModel _viewModel = BusinessInfoViewModel();
   final TextEditingController _companyNameTextController =
       TextEditingController();
-
+  final TextEditingController _providedServiceTextController =
+      TextEditingController();
   _bind() {
     _viewModel.start();
   }
@@ -36,6 +37,10 @@ class _BusinessInfoState extends State<BusinessInfo> {
     _bind();
     _companyNameTextController.addListener(() {
       _viewModel.setCompanyName(_companyNameTextController.text);
+    });
+    _providedServiceTextController.addListener(() {
+      _viewModel
+          .setCompanyServiceDescription(_providedServiceTextController.text);
     });
 
     super.initState();
@@ -159,13 +164,26 @@ class _BusinessInfoState extends State<BusinessInfo> {
                         height: 100,
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: _viewModel.getCurrentIndex() == 0
-                            ? _companyNameWidget(questionObject)
-                            : _viewModel.getCurrentIndex() == 1
-                                ? _brandPersonalityWidget(questionObject)
-                                : _companyIndustryTypeWidget(questionObject),
-                      ),
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          child: _viewModel.getCurrentIndex() == 0
+                              ? _textQuestionWidget(
+                                  questionObject.companyNameQuestionObject.hint,
+                                  "please enter a valid company name",
+                                  _companyNameTextController,
+                                  _viewModel.outputIsCompanyNameValid)
+                              : _viewModel.getCurrentIndex() == 1
+                                  ? _brandPersonalityWidget(questionObject)
+                                  : _viewModel.getCurrentIndex() == 2
+                                      ? _companyIndustryTypeWidget(
+                                          questionObject)
+                                      : _textQuestionWidget(
+                                          questionObject
+                                              .companyServiceDescriptionQuestionObject
+                                              .hint,
+                                          "Please enter the provided service",
+                                          _providedServiceTextController,
+                                          _viewModel
+                                              .outputIsCompanyServiceDescriptionValid)),
                       Spacer(),
                       _viewModel.getCurrentIndex() == 0
                           ? NextButtonWidget(
@@ -180,11 +198,19 @@ class _BusinessInfoState extends State<BusinessInfo> {
                                       .outputIsNextAvailableFromBrandPersonalityQuestion,
                                   _viewModel
                                       .getBrandPersonalityNextButtonStatus())
-                              : NextButtonWidget(
-                                  _carouselController,
-                                  _viewModel
-                                      .outputIsNextAvailableFromIndustryTypeQuestion,
-                                  _viewModel.getIndustryTypeNextButonStatus())
+                              : _viewModel.getCurrentIndex() == 2
+                                  ? NextButtonWidget(
+                                      _carouselController,
+                                      _viewModel
+                                          .outputIsNextAvailableFromIndustryTypeQuestion,
+                                      _viewModel
+                                          .getIndustryTypeNextButonStatus())
+                                  : NextButtonWidget(
+                                      _carouselController,
+                                      _viewModel
+                                          .outputIsNextAvailableFromCompanyServiceDescriptionQuestion,
+                                      _viewModel
+                                          .getCompanyServiceDescriptionNextButtonStatus()),
                     ],
                   ),
                 );
@@ -197,13 +223,13 @@ class _BusinessInfoState extends State<BusinessInfo> {
   }
 
   //4 widgets I will create to be shown in the carousal slider which will be handled through stream controllers in the view model
-  Widget _companyNameWidget(
-      CompanyNameQuestionViewObject companyNameQuestionViewObject) {
+  Widget _textQuestionWidget(String hint, String error,
+      TextEditingController textEditingController, Stream<bool> stream) {
     return StreamBuilder<bool>(
-        stream: _viewModel.outputIsCompanyNameValid,
+        stream: stream,
         builder: (context, snapshot) {
           return TextField(
-            controller: _companyNameTextController,
+            controller: textEditingController,
             style: ResponsiveTextStyles.businessDetailMainTextStyle(context),
             decoration: InputDecoration(
               floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -212,11 +238,8 @@ class _BusinessInfoState extends State<BusinessInfo> {
                   borderSide: BorderSide(
                 color: Colors.black,
               )),
-              hintText:
-                  companyNameQuestionViewObject.companyNameQuestionObject.hint,
-              errorText: (snapshot.data ?? true)
-                  ? null
-                  : "Please enter your company name",
+              hintText: hint,
+              errorText: (snapshot.data ?? true) ? null : error,
             ),
             cursorColor: Colors.white,
             cursorHeight: 30,
@@ -233,14 +256,18 @@ class _BusinessInfoState extends State<BusinessInfo> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[0], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[1], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[2], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[3], _viewModel),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[0],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[1],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[2],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[3],
+            ),
           ],
         ),
         SizedBox(
@@ -249,17 +276,67 @@ class _BusinessInfoState extends State<BusinessInfo> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[4], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[5], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[6], _viewModel),
-            ViewBrandPersonality(
-                brandPersonalityViewObject.brandPersonalityList[7], _viewModel),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[4],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[5],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[6],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[7],
+            ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _viewBrandPersonality(
+    BrandPersonalityQuestionObject brandPersonality,
+  ) {
+    return Expanded(
+      child: AnimatedContainer(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        curve: Curves.easeIn,
+        duration: Duration(milliseconds: 100),
+        child: InkWell(
+          onTap: () {
+            _viewModel.pickBrandPersonalityType(brandPersonality);
+          },
+          onHover: (isHovered) {
+            _viewModel.hoverOnBrandPersonalityType(brandPersonality, isHovered);
+          },
+          child: Column(
+            children: [
+              StreamBuilder<BrandPersonalityQuestionObject>(
+                  stream: _viewModel.outputBrandPersonality,
+                  builder: (context, snapshot) {
+                    return CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: (brandPersonality.isHovered) == true ? 45 : 34,
+                      child: SvgPicture.asset(
+                        brandPersonality.imgUrl,
+                        color: brandPersonality.color,
+                        colorBlendMode: BlendMode.modulate,
+                      ),
+                    );
+                  }),
+              SizedBox(
+                height: 3,
+              ),
+              Text(
+                brandPersonality.brandpersonality,
+                style: ResponsiveTextStyles.brandPersonalityTextStyle(context),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -282,7 +359,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
               iconStyleData: IconStyleData(iconSize: 36),
               buttonStyleData: ButtonStyleData(
                 padding: EdgeInsets.all(10),
-                elevation: 40, 
+                elevation: 40,
                 decoration: BoxDecoration(
                   boxShadow: //make fancy box shadow
                       [BoxShadow(color: Colors.white, blurRadius: 3)],
@@ -327,55 +404,56 @@ class _BusinessInfoState extends State<BusinessInfo> {
   }
 }
 
-class ViewBrandPersonality extends StatelessWidget {
-  BrandPersonalityQuestionObject brandPersonality;
-  BusinessInfoViewModel viewModel;
-  ViewBrandPersonality(this.brandPersonality, this.viewModel);
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: AnimatedContainer(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-        ),
-        curve: Curves.easeIn,
-        duration: Duration(milliseconds: 100),
-        child: InkWell(
-          onTap: () {
-            viewModel.pickBrandPersonalityType(brandPersonality);
-          },
-          onHover: (isHovered) {
-            viewModel.hoverOnBrandPersonalityType(brandPersonality, isHovered);
-          },
-          child: Column(
-            children: [
-              StreamBuilder<BrandPersonalityQuestionObject>(
-                  stream: viewModel.outputBrandPersonality,
-                  builder: (context, snapshot) {
-                    return CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: (brandPersonality.isHovered) == true ? 45 : 34,
-                      child: SvgPicture.asset(
-                        brandPersonality.imgUrl,
-                        color: brandPersonality.color,
-                        colorBlendMode: BlendMode.modulate,
-                      ),
-                    );
-                  }),
-              SizedBox(
-                height: 3,
-              ),
-              Text(
-                brandPersonality.brandpersonality,
-                style: ResponsiveTextStyles.brandPersonalityTextStyle(context),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+// class ViewBrandPersonality extends StatelessWidget {
+//   BrandPersonalityQuestionObject brandPersonality;
+//   BusinessInfoViewModel viewModel;
+//   ViewBrandPersonality(this.brandPersonality, this.viewModel);
+//   @override
+//   Widget build(BuildContext context) {
+//     print("a7a");
+//     return Expanded(
+//       child: AnimatedContainer(
+//         decoration: BoxDecoration(
+//           shape: BoxShape.circle,
+//         ),
+//         curve: Curves.easeIn,
+//         duration: Duration(milliseconds: 100),
+//         child: InkWell(
+//           onTap: () {
+//             viewModel.pickBrandPersonalityType(brandPersonality);
+//           },
+//           onHover: (isHovered) {
+//             viewModel.hoverOnBrandPersonalityType(brandPersonality, isHovered);
+//           },
+//           child: Column(
+//             children: [
+//               StreamBuilder<BrandPersonalityQuestionObject>(
+//                   stream: viewModel.outputBrandPersonality,
+//                   builder: (context, snapshot) {
+//                     return CircleAvatar(
+//                       backgroundColor: Colors.transparent,
+//                       radius: (brandPersonality.isHovered) == true ? 45 : 34,
+//                       child: SvgPicture.asset(
+//                         brandPersonality.imgUrl,
+//                         color: brandPersonality.color,
+//                         colorBlendMode: BlendMode.modulate,
+//                       ),
+//                     );
+//                   }),
+//               SizedBox(
+//                 height: 3,
+//               ),
+//               Text(
+//                 brandPersonality.brandpersonality,
+//                 style: ResponsiveTextStyles.brandPersonalityTextStyle(context),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class NextButtonWidget extends StatelessWidget {
   final CarouselController _carouselController;

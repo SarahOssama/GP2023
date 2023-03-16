@@ -151,27 +151,27 @@ abstract class _LoginObject implements LoginObject {
 }
 
 /// @nodoc
-mixin _$CompanyNameObject {
-  String get company => throw _privateConstructorUsedError;
+mixin _$TextObject {
+  String get text => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $CompanyNameObjectCopyWith<CompanyNameObject> get copyWith =>
+  $TextObjectCopyWith<TextObject> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $CompanyNameObjectCopyWith<$Res> {
-  factory $CompanyNameObjectCopyWith(
-          CompanyNameObject value, $Res Function(CompanyNameObject) then) =
-      _$CompanyNameObjectCopyWithImpl<$Res, CompanyNameObject>;
+abstract class $TextObjectCopyWith<$Res> {
+  factory $TextObjectCopyWith(
+          TextObject value, $Res Function(TextObject) then) =
+      _$TextObjectCopyWithImpl<$Res, TextObject>;
   @useResult
-  $Res call({String company});
+  $Res call({String text});
 }
 
 /// @nodoc
-class _$CompanyNameObjectCopyWithImpl<$Res, $Val extends CompanyNameObject>
-    implements $CompanyNameObjectCopyWith<$Res> {
-  _$CompanyNameObjectCopyWithImpl(this._value, this._then);
+class _$TextObjectCopyWithImpl<$Res, $Val extends TextObject>
+    implements $TextObjectCopyWith<$Res> {
+  _$TextObjectCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -181,45 +181,45 @@ class _$CompanyNameObjectCopyWithImpl<$Res, $Val extends CompanyNameObject>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? company = null,
+    Object? text = null,
   }) {
     return _then(_value.copyWith(
-      company: null == company
-          ? _value.company
-          : company // ignore: cast_nullable_to_non_nullable
+      text: null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_CompanyNameObjectCopyWith<$Res>
-    implements $CompanyNameObjectCopyWith<$Res> {
-  factory _$$_CompanyNameObjectCopyWith(_$_CompanyNameObject value,
-          $Res Function(_$_CompanyNameObject) then) =
-      __$$_CompanyNameObjectCopyWithImpl<$Res>;
+abstract class _$$_TextObjectCopyWith<$Res>
+    implements $TextObjectCopyWith<$Res> {
+  factory _$$_TextObjectCopyWith(
+          _$_TextObject value, $Res Function(_$_TextObject) then) =
+      __$$_TextObjectCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String company});
+  $Res call({String text});
 }
 
 /// @nodoc
-class __$$_CompanyNameObjectCopyWithImpl<$Res>
-    extends _$CompanyNameObjectCopyWithImpl<$Res, _$_CompanyNameObject>
-    implements _$$_CompanyNameObjectCopyWith<$Res> {
-  __$$_CompanyNameObjectCopyWithImpl(
-      _$_CompanyNameObject _value, $Res Function(_$_CompanyNameObject) _then)
+class __$$_TextObjectCopyWithImpl<$Res>
+    extends _$TextObjectCopyWithImpl<$Res, _$_TextObject>
+    implements _$$_TextObjectCopyWith<$Res> {
+  __$$_TextObjectCopyWithImpl(
+      _$_TextObject _value, $Res Function(_$_TextObject) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? company = null,
+    Object? text = null,
   }) {
-    return _then(_$_CompanyNameObject(
-      null == company
-          ? _value.company
-          : company // ignore: cast_nullable_to_non_nullable
+    return _then(_$_TextObject(
+      null == text
+          ? _value.text
+          : text // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -227,44 +227,43 @@ class __$$_CompanyNameObjectCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_CompanyNameObject implements _CompanyNameObject {
-  _$_CompanyNameObject(this.company);
+class _$_TextObject implements _TextObject {
+  _$_TextObject(this.text);
 
   @override
-  final String company;
+  final String text;
 
   @override
   String toString() {
-    return 'CompanyNameObject(company: $company)';
+    return 'TextObject(text: $text)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CompanyNameObject &&
-            (identical(other.company, company) || other.company == company));
+            other is _$_TextObject &&
+            (identical(other.text, text) || other.text == text));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, company);
+  int get hashCode => Object.hash(runtimeType, text);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CompanyNameObjectCopyWith<_$_CompanyNameObject> get copyWith =>
-      __$$_CompanyNameObjectCopyWithImpl<_$_CompanyNameObject>(
-          this, _$identity);
+  _$$_TextObjectCopyWith<_$_TextObject> get copyWith =>
+      __$$_TextObjectCopyWithImpl<_$_TextObject>(this, _$identity);
 }
 
-abstract class _CompanyNameObject implements CompanyNameObject {
-  factory _CompanyNameObject(final String company) = _$_CompanyNameObject;
+abstract class _TextObject implements TextObject {
+  factory _TextObject(final String text) = _$_TextObject;
 
   @override
-  String get company;
+  String get text;
   @override
   @JsonKey(ignore: true)
-  _$$_CompanyNameObjectCopyWith<_$_CompanyNameObject> get copyWith =>
+  _$$_TextObjectCopyWith<_$_TextObject> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

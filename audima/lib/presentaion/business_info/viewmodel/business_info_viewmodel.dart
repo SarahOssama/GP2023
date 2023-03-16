@@ -14,6 +14,13 @@ class BusinessInfoViewModel extends BaseViewModel
       StreamController<String>.broadcast();
   final StreamController _isNextAvailableFromCompanyNameQuestionController =
       StreamController<void>.broadcast();
+  //company service description stream controllers
+  final StreamController _companyServiceDescriptionStreamController =
+      StreamController<String>.broadcast();
+  final StreamController
+      _isNextAvailableFromCompanyServiceDescriptionQuestionController =
+      StreamController<void>.broadcast();
+
   final StreamController _brandPersonalityStreamController =
       StreamController<BrandPersonalityQuestionObject>.broadcast();
   final StreamController
@@ -27,7 +34,8 @@ class BusinessInfoViewModel extends BaseViewModel
   int _currentIndex = 0;
   late final List<dynamic> _list;
   late final List<bool> _nextStatusList;
-  var _companyObject = CompanyNameObject("");
+  var _companyObject = TextObject("");
+  var _serviceDescriptionObject = TextObject("");
   var _brandPersonalityObject = BrandPersonalityObject("");
   var _companyIndustryTypeOnject = CompanyIndustryTypeObject("");
   @override
@@ -58,6 +66,9 @@ class BusinessInfoViewModel extends BaseViewModel
     if (index == 2) {
       inputIsNextAvailableFromIndustryTypeQuestion.add(null);
     }
+    if (index == 3) {
+      inputIsNextAvailableFromCompanyServiceDescriptionQuestion.add(null);
+    }
 
     _currentIndex = index;
     _postDataToView();
@@ -83,20 +94,37 @@ class BusinessInfoViewModel extends BaseViewModel
   void setCompanyName(String companyName) {
     inputCompanyName.add(companyName);
     inputIsNextAvailableFromCompanyNameQuestion.add(null);
-    _companyObject = _companyObject.copyWith(company: companyName);
-    _isCompanyNameValid(_companyObject.company)
+    _companyObject = _companyObject.copyWith(text: companyName);
+    _isCompanyNameValid(_companyObject.text)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
   }
 
   @override
   bool getCompanyNextButtonStatus() {
-    return _isCompanyNameValid(_companyObject.company);
+    return _isCompanyNameValid(_companyObject.text);
   }
 
   @override
   int getListSize() {
     return _list.length;
+  }
+// ------------------------------------------------------------------------------Service Description view orders
+
+  @override
+  void setCompanyServiceDescription(String companyServiceDescription) {
+    inputCompanyServiceDescription.add(companyServiceDescription);
+    inputIsNextAvailableFromCompanyServiceDescriptionQuestion.add(null);
+    _serviceDescriptionObject =
+        _serviceDescriptionObject.copyWith(text: companyServiceDescription);
+    _isServiceDescriptionValid(_serviceDescriptionObject.text)
+        ? _nextStatusList[_currentIndex] = true
+        : _nextStatusList[_currentIndex] = false;
+  }
+
+  @override
+  bool getCompanyServiceDescriptionNextButtonStatus() {
+    return _isServiceDescriptionValid(_serviceDescriptionObject.text);
   }
 
   //-----------------------------------------------------------------------------brand personality view orders
@@ -165,18 +193,38 @@ class BusinessInfoViewModel extends BaseViewModel
   Sink get inputCompanyName => _companyNameStreamController.sink;
 
   @override
+  Sink get inputIsNextAvailableFromCompanyNameQuestion =>
+      _isNextAvailableFromCompanyNameQuestionController.sink;
+  @override
   Stream<bool> get outputIsCompanyNameValid =>
       _companyNameStreamController.stream
           .map((companyName) => _isCompanyNameValid(companyName));
-
-  @override
-  Sink get inputIsNextAvailableFromCompanyNameQuestion =>
-      _isNextAvailableFromCompanyNameQuestionController.sink;
-
   @override
   Stream<bool> get outputIsNextAvailableFromCompanyNameQuestion =>
       _isNextAvailableFromCompanyNameQuestionController.stream
-          .map((_) => _isCompanyNameValid(_companyObject.company));
+          .map((_) => _isCompanyNameValid(_companyObject.text));
+
+//--------------------------------------------------------------------------------this sinks and streams will be used for provided service description widget
+
+  @override
+  Sink get inputCompanyServiceDescription =>
+      _companyServiceDescriptionStreamController.sink;
+
+  @override
+  Sink get inputIsNextAvailableFromCompanyServiceDescriptionQuestion =>
+      _isNextAvailableFromCompanyServiceDescriptionQuestionController.sink;
+
+  @override
+  Stream<bool> get outputIsCompanyServiceDescriptionValid =>
+      _companyServiceDescriptionStreamController.stream.map(
+          (serviceDescription) =>
+              _isServiceDescriptionValid(serviceDescription));
+
+  @override
+  Stream<bool> get outputIsNextAvailableFromCompanyServiceDescriptionQuestion =>
+      _isNextAvailableFromCompanyServiceDescriptionQuestionController.stream
+          .map((_) =>
+              _isServiceDescriptionValid(_serviceDescriptionObject.text));
 
   //-----------------------------------------------------------------------------this sinks and streams will be used for brand personality widget
   @override
@@ -206,12 +254,10 @@ class BusinessInfoViewModel extends BaseViewModel
       _industryTypeStreamController.stream.map((item) => item);
 
   @override
-  // TODO: implement inputIsNextAvailableFromIndustryTypeQuestion
   Sink get inputIsNextAvailableFromIndustryTypeQuestion =>
       _isNextAvailableFromIndustryTypeQuestionController.sink;
 
   @override
-  // TODO: implement outputIsNextAvailableFromIndustryTypeQuestion
   Stream<bool> get outputIsNextAvailableFromIndustryTypeQuestion =>
       _isNextAvailableFromIndustryTypeQuestionController.stream.map(
           (_) => _isIndustryTypeValid(_companyIndustryTypeOnject.industryType));
@@ -228,6 +274,11 @@ class BusinessInfoViewModel extends BaseViewModel
   // ----------------------------------------------------------------------------company name view model private functions
   bool _isCompanyNameValid(String companyName) {
     return companyName.isNotEmpty;
+  }
+
+  // ----------------------------------------------------------------------------service description view model private functions
+  bool _isServiceDescriptionValid(String serviceDescription) {
+    return serviceDescription.isNotEmpty;
   }
 
 // ------------------------------------------------------------------------------personality brand view model private functions
@@ -257,11 +308,14 @@ class BusinessInfoViewModel extends BaseViewModel
   //return the list of business info objects
   List<dynamic> _getBusinessInfoList() => [
         CompanyNameQuestionViewObject(
-            CompanyNameQuestionObject("Company"), "What is your Company"),
+            CompanyNameQuestionObject("Company"), "What is your Company Name?"),
         BrandPersonalityQuestionViewObject(
             _brandsList, "What personality best describes your brand?"),
         CompanyIndustryTypeQuestionViewObject(
             _industryTypesList, "What industry is your company in?"),
+        CompanyServiceDescriptionQuestionViewObject(
+            CompanyServiceDescriptionQuestionObject("description"),
+            "In 4 words or less, what's the main\ngood or service you provide?"),
       ];
 
   //-----------------------------------------------------------------------------brand personality list of items
@@ -333,6 +387,9 @@ abstract class BusinessInfoViewModelInputs {
   //orders from company name question view
   void setCompanyName(String companyName);
   bool getCompanyNextButtonStatus();
+  //orders from company service provided
+  void setCompanyServiceDescription(String companyServiceDescription);
+  bool getCompanyServiceDescriptionNextButtonStatus();
   //orders from brand personality question view
   void hoverOnBrandPersonalityType(
       BrandPersonalityQuestionObject brandPersonality, bool isHovered);
@@ -350,6 +407,9 @@ abstract class BusinessInfoViewModelInputs {
   //this sink is for company name widget
   Sink get inputCompanyName;
   Sink get inputIsNextAvailableFromCompanyNameQuestion;
+  //this sink is for company service description widget
+  Sink get inputCompanyServiceDescription;
+  Sink get inputIsNextAvailableFromCompanyServiceDescriptionQuestion;
   //this sink is for brand personality widget
   Sink get inputBrandPersonality;
   Sink get inputIsNextAvailableFromBrandPersonalityQuestion;
@@ -365,6 +425,10 @@ abstract class BusinessInfoViewModelOutputs {
   //this sink is for company name widget
   Stream<bool> get outputIsCompanyNameValid;
   Stream<bool> get outputIsNextAvailableFromCompanyNameQuestion;
+  //this sink is for company service description widget
+  Stream<bool> get outputIsCompanyServiceDescriptionValid;
+  Stream<bool> get outputIsNextAvailableFromCompanyServiceDescriptionQuestion;
+
   //this sink is for brand personality widget
   Stream<BrandPersonalityQuestionObject> get outputBrandPersonality;
   Stream<bool> get outputIsNextAvailableFromBrandPersonalityQuestion;

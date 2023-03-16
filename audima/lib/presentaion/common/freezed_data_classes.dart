@@ -7,8 +7,8 @@ class LoginObject with _$LoginObject {
 }
 
 @freezed
-class CompanyNameObject with _$CompanyNameObject {
-  factory CompanyNameObject(String company) = _CompanyNameObject;
+class TextObject with _$TextObject {
+  factory TextObject(String text) = _TextObject;
 }
 
 @freezed
