@@ -536,6 +536,27 @@ class ResponsiveTextStyles {
         fontWeight: FontWeight.bold);
   }
 
+  static TextStyle companyIndustryTypesTextStyle(context) {
+    return GoogleFonts.sora(
+        // shadows: <Shadow>[
+        //   const Shadow(
+        //     blurRadius: 2,
+        //     color: Colors.black,
+        //   ),
+        // ],
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 26.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 27.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+            const Condition.smallerThan(name: TABLET, value: 20.0),
+          ],
+        ).value,
+        color: Colors.black,
+        fontWeight: FontWeight.bold);
+  }
+
   static TextStyle businessDetailTextStyle(context) {
     return GoogleFonts.sora(
         // shadows: <Shadow>[

@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../responsive.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hovering/hovering.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../resources/assets_manager.dart';
 
@@ -163,7 +164,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
                             ? _companyNameWidget(questionObject)
                             : _viewModel.getCurrentIndex() == 1
                                 ? _brandPersonalityWidget(questionObject)
-                                : Container(),
+                                : _companyIndustryTypeWidget(questionObject),
                       ),
                       Spacer(),
                       _viewModel.getCurrentIndex() == 0
@@ -172,11 +173,18 @@ class _BusinessInfoState extends State<BusinessInfo> {
                               _viewModel
                                   .outputIsNextAvailableFromCompanyNameQuestion,
                               _viewModel.getCompanyNextButtonStatus())
-                          : NextButtonWidget(
-                              _carouselController,
-                              _viewModel
-                                  .outputIsNextAvailableFromBrandPersonalityQuestion,
-                              _viewModel.getBrandPersonalityNextButtonStatus())
+                          : _viewModel.getCurrentIndex() == 1
+                              ? NextButtonWidget(
+                                  _carouselController,
+                                  _viewModel
+                                      .outputIsNextAvailableFromBrandPersonalityQuestion,
+                                  _viewModel
+                                      .getBrandPersonalityNextButtonStatus())
+                              : NextButtonWidget(
+                                  _carouselController,
+                                  _viewModel
+                                      .outputIsNextAvailableFromIndustryTypeQuestion,
+                                  _viewModel.getIndustryTypeNextButonStatus())
                     ],
                   ),
                 );
@@ -255,9 +263,68 @@ class _BusinessInfoState extends State<BusinessInfo> {
     );
   }
 
-  // Widget _companyIndustryTypeWidget() {
-  //   return DropdownButton(items: items, onChanged: onChanged)
-  // }
+  Widget _companyIndustryTypeWidget(
+      CompanyIndustryTypeQuestionViewObject
+          companyIndustryTypeQuestionViewObject) {
+    return StreamBuilder<String>(
+        stream: _viewModel.outputIndustryType,
+        builder: (context, snapshot) {
+          return DropdownButtonHideUnderline(
+            child: DropdownButton2<String>(
+              hint: Text("Please select an item"),
+              isExpanded: true,
+              value: snapshot.data ??
+                  ((_viewModel.getCompanyIndustryType() != "")
+                      ? _viewModel.getCompanyIndustryType()
+                      : snapshot.data),
+              menuItemStyleData: MenuItemStyleData(
+                  overlayColor: MaterialStatePropertyAll(Colors.grey)),
+              iconStyleData: IconStyleData(iconSize: 36),
+              buttonStyleData: ButtonStyleData(
+                padding: EdgeInsets.all(10),
+                elevation: 40, 
+                decoration: BoxDecoration(
+                  boxShadow: //make fancy box shadow
+                      [BoxShadow(color: Colors.white, blurRadius: 3)],
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  border: Border.all(color: Colors.grey, width: 1),
+                ),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                  elevation: 20,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    border: Border.all(color: Colors.grey, width: 1),
+                  ),
+                  maxHeight: 300,
+                  scrollbarTheme: ScrollbarThemeData(
+                      thumbVisibility: MaterialStatePropertyAll(true),
+                      thumbColor: MaterialStatePropertyAll(Colors.grey))),
+              style:
+                  ResponsiveTextStyles.companyIndustryTypesTextStyle(context),
+              barrierColor: Colors.white.withOpacity(0.2),
+              onChanged: (String? newValue) {
+                _viewModel.setIndustryType(newValue);
+              },
+              items: companyIndustryTypeQuestionViewObject
+                  .companyIndustryTypeQuestionObject
+                  .map<DropdownMenuItem<String>>(
+                      (CompanyIndustryTypeQuestionObject value) {
+                return DropdownMenuItem<String>(
+                  value: value.industrytype,
+                  child: Text(
+                    value.industrytype!,
+                    style: ResponsiveTextStyles.companyIndustryTypesTextStyle(
+                        context),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        });
+  }
 }
 
 class ViewBrandPersonality extends StatelessWidget {

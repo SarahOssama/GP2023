@@ -16,3 +16,9 @@ class BrandPersonalityObject with _$BrandPersonalityObject {
   factory BrandPersonalityObject(String brandCharacteristic) =
       _BrandPersonalityObject;
 }
+
+@freezed
+class CompanyIndustryTypeObject with _$CompanyIndustryTypeObject {
+  factory CompanyIndustryTypeObject(String industryType) =
+      _CompanyIndustryTypeObject;
+}

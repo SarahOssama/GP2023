@@ -33,14 +33,15 @@ class BrandPersonalityQuestionViewObject {
 
 //company industry type
 class CompanyIndustryTypeQuestionObject {
-  String industrytype;
-  String imgUrl;
-  bool isSelected;
-  bool isHovered;
-  int index;
-  Color color;
-  CompanyIndustryTypeQuestionObject(this.industrytype, this.imgUrl,
-      this.isSelected, this.isHovered, this.index, this.color);
+  String? industrytype;
+  CompanyIndustryTypeQuestionObject(this.industrytype);
+}
+
+class CompanyIndustryTypeQuestionViewObject {
+  List<CompanyIndustryTypeQuestionObject> companyIndustryTypeQuestionObject;
+  String question;
+  CompanyIndustryTypeQuestionViewObject(
+      this.companyIndustryTypeQuestionObject, this.question);
 }
 
 //login models

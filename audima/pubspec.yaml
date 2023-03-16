@@ -72,6 +72,7 @@ dependencies:
   freezed: ^2.3.2
   flutter_svg: ^1.1.6
   flutter_svg_provider: ^1.0.3
+  dropdown_button2: ^2.0.0
   
 
 dev_dependencies:

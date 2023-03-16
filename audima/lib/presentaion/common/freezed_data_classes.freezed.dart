@@ -389,3 +389,127 @@ abstract class _BrandPersonalityObject implements BrandPersonalityObject {
   _$$_BrandPersonalityObjectCopyWith<_$_BrandPersonalityObject> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$CompanyIndustryTypeObject {
+  String get industryType => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $CompanyIndustryTypeObjectCopyWith<CompanyIndustryTypeObject> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CompanyIndustryTypeObjectCopyWith<$Res> {
+  factory $CompanyIndustryTypeObjectCopyWith(CompanyIndustryTypeObject value,
+          $Res Function(CompanyIndustryTypeObject) then) =
+      _$CompanyIndustryTypeObjectCopyWithImpl<$Res, CompanyIndustryTypeObject>;
+  @useResult
+  $Res call({String industryType});
+}
+
+/// @nodoc
+class _$CompanyIndustryTypeObjectCopyWithImpl<$Res,
+        $Val extends CompanyIndustryTypeObject>
+    implements $CompanyIndustryTypeObjectCopyWith<$Res> {
+  _$CompanyIndustryTypeObjectCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? industryType = null,
+  }) {
+    return _then(_value.copyWith(
+      industryType: null == industryType
+          ? _value.industryType
+          : industryType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_CompanyIndustryTypeObjectCopyWith<$Res>
+    implements $CompanyIndustryTypeObjectCopyWith<$Res> {
+  factory _$$_CompanyIndustryTypeObjectCopyWith(
+          _$_CompanyIndustryTypeObject value,
+          $Res Function(_$_CompanyIndustryTypeObject) then) =
+      __$$_CompanyIndustryTypeObjectCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String industryType});
+}
+
+/// @nodoc
+class __$$_CompanyIndustryTypeObjectCopyWithImpl<$Res>
+    extends _$CompanyIndustryTypeObjectCopyWithImpl<$Res,
+        _$_CompanyIndustryTypeObject>
+    implements _$$_CompanyIndustryTypeObjectCopyWith<$Res> {
+  __$$_CompanyIndustryTypeObjectCopyWithImpl(
+      _$_CompanyIndustryTypeObject _value,
+      $Res Function(_$_CompanyIndustryTypeObject) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? industryType = null,
+  }) {
+    return _then(_$_CompanyIndustryTypeObject(
+      null == industryType
+          ? _value.industryType
+          : industryType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_CompanyIndustryTypeObject implements _CompanyIndustryTypeObject {
+  _$_CompanyIndustryTypeObject(this.industryType);
+
+  @override
+  final String industryType;
+
+  @override
+  String toString() {
+    return 'CompanyIndustryTypeObject(industryType: $industryType)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_CompanyIndustryTypeObject &&
+            (identical(other.industryType, industryType) ||
+                other.industryType == industryType));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, industryType);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_CompanyIndustryTypeObjectCopyWith<_$_CompanyIndustryTypeObject>
+      get copyWith => __$$_CompanyIndustryTypeObjectCopyWithImpl<
+          _$_CompanyIndustryTypeObject>(this, _$identity);
+}
+
+abstract class _CompanyIndustryTypeObject implements CompanyIndustryTypeObject {
+  factory _CompanyIndustryTypeObject(final String industryType) =
+      _$_CompanyIndustryTypeObject;
+
+  @override
+  String get industryType;
+  @override
+  @JsonKey(ignore: true)
+  _$$_CompanyIndustryTypeObjectCopyWith<_$_CompanyIndustryTypeObject>
+      get copyWith => throw _privateConstructorUsedError;
+}
