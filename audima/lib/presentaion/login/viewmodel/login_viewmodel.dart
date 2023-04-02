@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:audima/domain/usecase/login_usecase.dart';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
+import 'package:flutter/widgets.dart';
 
 class LoginViewModel extends BaseViewModel
     with LoginViewModelInputs, LoginViewModelOutputs {
@@ -14,23 +17,30 @@ class LoginViewModel extends BaseViewModel
       StreamController<String>.broadcast();
   final StreamController _areAllInputsValidStreamController =
       StreamController<void>.broadcast();
+  final StreamController isUserLoggedInSuccessStreamController =
+      StreamController<bool>();
 
   var loginObject = LoginObject("", "");
 
-  // final LoginUseCase _loginUseCase;
+  final LoginUseCase _loginUseCase;
 
-  LoginViewModel();
+  LoginViewModel(this._loginUseCase);
 
   //inputs
   @override
   void dispose() {
+    super.dispose();
+    isUserLoggedInSuccessStreamController.close();
     _passwordStreamController.close();
     _usernameStreamController.close();
     _areAllInputsValidStreamController.close();
   }
 
   @override
-  void start() {}
+  void start() {
+    //view model should ask the view to show the content state as no api is called when the login view is created
+    inputState.add(ContentState());
+  }
 
   @override
   Sink get inputPassword => _passwordStreamController.sink;
@@ -43,17 +53,20 @@ class LoginViewModel extends BaseViewModel
 
   @override
   void login() async {
-    // (await _loginUseCase.execute(
-    //         LoginUseCaseInput(loginObject.username, loginObject.password)))
-    //     .fold(
-    //         (failure) => {
-    //               //left means failure
-    //               print(failure.message)
-    //             },
-    //         (data) => {
-    //               //right means success
-    //               print(data.customer?.name)
-    //             });
+    inputState.add(
+        LoadingState(stateRendererType: StateRendererType.popUpLoadingState));
+    (await _loginUseCase.execute(
+            LoginUseCaseInput(loginObject.username, loginObject.password)))
+        .fold((failure) {
+      inputState
+          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
+      //left means failure
+      print(failure.message);
+    }, (data) {
+      //right means success
+      // inputState.add(ContentState());
+      isUserLoggedInSuccessStreamController.add(true);
+    });
   }
 
   @override
@@ -116,4 +129,14 @@ abstract class LoginViewModelOutputs {
   Stream<bool> get outputIsUsernameValid;
   Stream<bool> get outputIsPasswordValid;
   Stream<bool> get outputAreAllInputsValid;
+}
+
+_isCurrentDialogShowing(BuildContext context) {
+  return ModalRoute.of(context)?.isCurrent != true;
+}
+
+dismissDialog(BuildContext context) {
+  if (_isCurrentDialogShowing(context)) {
+    Navigator.of(context, rootNavigator: true).pop(true);
+  }
 }

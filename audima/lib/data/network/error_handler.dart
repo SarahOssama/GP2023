@@ -6,6 +6,7 @@ class ErrorHandler implements Exception {
   ErrorHandler.handle(dynamic error) {
     if (error is DioError) {
       //dio error so it is error from response of the API or dio itself
+
       switch (error.type) {
         case DioErrorType.cancel:
           failure = DataSource.CANCEL.getFailure();
@@ -20,7 +21,7 @@ class ErrorHandler implements Exception {
           failure = DataSource.SEND_TIMEOUT.getFailure();
           break;
         case DioErrorType
-            .badResponse: //this one means that api itself returned to me error with a specific status code and message
+            .unknown: //this one means that api itself returned to me error with a specific status code and message
           if (error.response != null &&
               error.response?.statusCode != null &&
               error.response?.statusMessage != null) {
@@ -30,14 +31,16 @@ class ErrorHandler implements Exception {
           }
           failure = DataSource.DEFAULT.getFailure();
           break;
-        case DioErrorType.unknown:
-          failure = DataSource.DEFAULT.getFailure();
-          break;
+
         case DioErrorType.badCertificate:
-          // TODO: Handle this case.
+          failure = DataSource.DEFAULT.getFailure();
+
           break;
         case DioErrorType.connectionError:
-          // TODO: Handle this case.
+          failure = DataSource.DEFAULT.getFailure();
+          break;
+        case DioErrorType.badResponse:
+          failure = DataSource.DEFAULT.getFailure();
           break;
       }
     } else {
@@ -138,6 +141,6 @@ class ResponseMessage {
 }
 
 class APIInternalStatus {
-  static const int SUCESS = 1;
-  static const int FAIULRE = 0;
+  static const int SUCESS = 0;
+  static const int FAIULRE = 1;
 }

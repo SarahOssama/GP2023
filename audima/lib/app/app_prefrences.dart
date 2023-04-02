@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String PREFS_KEY_LANGUAGE = "PREFS_KEY_LANGUAGE";
 
-class AppPrefrences {
+class AppPreferences {
   final SharedPreferences _sharedPreferences;
-  AppPrefrences(this._sharedPreferences);
+  AppPreferences(this._sharedPreferences);
 
   Future<String> getAppLanguage() async {
     String? language = _sharedPreferences.getString(PREFS_KEY_LANGUAGE);

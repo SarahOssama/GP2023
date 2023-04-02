@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:audima/presentaion/base/baseviewmodel.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/model/models.dart';
@@ -20,7 +22,6 @@ class BusinessInfoViewModel extends BaseViewModel
   final StreamController
       _isNextAvailableFromCompanyServiceDescriptionQuestionController =
       StreamController<void>.broadcast();
-
   final StreamController _brandPersonalityStreamController =
       StreamController<BrandPersonalityQuestionObject>.broadcast();
   final StreamController
@@ -31,6 +32,8 @@ class BusinessInfoViewModel extends BaseViewModel
   final StreamController _isNextAvailableFromIndustryTypeQuestionController =
       StreamController<void>.broadcast();
 
+  final StreamController isUserLoggedInSuccessStreamController =
+      StreamController<bool>();
   int _currentIndex = 0;
   late final List<dynamic> _list;
   late final List<bool> _nextStatusList;
@@ -40,6 +43,8 @@ class BusinessInfoViewModel extends BaseViewModel
   var _companyIndustryTypeOnject = CompanyIndustryTypeObject("");
   @override
   void dispose() {
+    isUserLoggedInSuccessStreamController.close();
+
     _mainStreamController.close();
     _companyNameStreamController.close();
     _isNextAvailableFromCompanyNameQuestionController.close();
@@ -49,6 +54,8 @@ class BusinessInfoViewModel extends BaseViewModel
 
   @override
   void start() {
+    inputState.add(ContentState());
+
     _list = _getBusinessInfoList();
     _nextStatusList = _getNextStatusList();
     _postDataToView();
@@ -142,6 +149,9 @@ class BusinessInfoViewModel extends BaseViewModel
   @override
   void pickBrandPersonalityType(
       BrandPersonalityQuestionObject brandPersonality) {
+    inputState.add(
+        LoadingState(stateRendererType: StateRendererType.popUpLoadingState));
+
     _updateBrandPersonalityList(brandPersonality);
     inputBrandPersonality.add(brandPersonality);
     _brandPersonalityObject = _brandPersonalityObject.copyWith(
@@ -150,6 +160,7 @@ class BusinessInfoViewModel extends BaseViewModel
     _isBrandPersonalityValid(_brandPersonalityObject.brandCharacteristic)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
+    isUserLoggedInSuccessStreamController.add(true);
   }
 
   @override

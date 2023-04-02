@@ -1,18 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
-import 'package:audima/presentaion/presentation_widgets.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
-
 import 'package:audima/responsive.dart';
 
 class HomeView extends StatelessWidget {
   // Controllers
-
-  HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +62,7 @@ class HomeView extends StatelessWidget {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.white)),
                       onPressed: () {
-                        context.go("/business-info");
+                        context.push("/login");
                       },
                       child: CustomizedText(
                           text: "Start Your Business Journey",

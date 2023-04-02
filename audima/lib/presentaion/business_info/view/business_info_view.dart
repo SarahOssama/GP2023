@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:audima/domain/model/models.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import '../../../responsive.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hovering/hovering.dart';
@@ -14,8 +17,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import '../../resources/assets_manager.dart';
 
 class BusinessInfo extends StatefulWidget {
-  const BusinessInfo({Key? key}) : super(key: key);
-
   @override
   State<BusinessInfo> createState() => _BusinessInfoState();
 }
@@ -27,14 +28,23 @@ class _BusinessInfoState extends State<BusinessInfo> {
       TextEditingController();
   final TextEditingController _providedServiceTextController =
       TextEditingController();
-  _bind() {
-    _viewModel.start();
-  }
+  final StreamController<FlowState> _businessInfoViewStreamController =
+      StreamController<FlowState>.broadcast();
+  // _bind() {
+  //   _viewModel.start();
+  // }
 
   late Stream mystream;
   @override
   void initState() {
-    _bind();
+    // _bind();
+
+    _viewModel.outputState.listen((event) {
+      print("businessInfo");
+      print(event);
+      _businessInfoViewStreamController.sink.add(event);
+    });
+    _viewModel.start();
     _companyNameTextController.addListener(() {
       _viewModel.setCompanyName(_companyNameTextController.text);
     });
@@ -43,6 +53,14 @@ class _BusinessInfoState extends State<BusinessInfo> {
           .setCompanyServiceDescription(_providedServiceTextController.text);
     });
 
+    _viewModel.isUserLoggedInSuccessStreamController.stream
+        .listen((isLoggedIn) {
+      if (isLoggedIn) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          context.push('/login');
+        });
+      }
+    });
     super.initState();
   }
 
@@ -55,16 +73,29 @@ class _BusinessInfoState extends State<BusinessInfo> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: StreamBuilder<FlowState>(
+          stream: _businessInfoViewStreamController.stream,
+          builder: (context, snapshot) {
+            return snapshot.data
+                    ?.getScreenWidget(context, _getContentWidget(), () {}) ??
+                Center(child: CircularProgressIndicator());
+          }),
+    );
+  }
+
+  Widget _getContentWidget() {
     return StreamBuilder<dynamic>(
       stream: _viewModel.outputQuestionObject,
       initialData: _viewModel.getCurrentPage(),
       builder: (context, snapshot) {
-        return _getContentWidget(snapshot.data);
+        return _getSecondContentWidget(snapshot.data);
       },
     );
   }
 
-  Widget _getContentWidget(dynamic questionObject) {
+  Widget _getSecondContentWidget(dynamic questionObject) {
     if (questionObject == null) {
       return Container(
         color: Colors.amber,

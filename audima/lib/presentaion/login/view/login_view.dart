@@ -1,29 +1,49 @@
+import 'dart:async';
+
+import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/login/viewmodel/login_viewmodel.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
-
+import 'package:audima/app/di.dart';
 import '../../../responsive.dart';
+import '../../common/state_renderer/state_renderer.dart';
 import '../../resources/assets_manager.dart';
 
 class LoginView extends StatefulWidget {
-  LoginView({Key? key}) : super(key: key);
-
   @override
   State<LoginView> createState() => _LoginViewState();
 }
 
 class _LoginViewState extends State<LoginView> {
-  final LoginViewModel _loginViewModel = LoginViewModel();
+  final LoginViewModel _loginViewModel = instance<LoginViewModel>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final StreamController<FlowState> _loginViewStreamController =
+      StreamController<FlowState>();
 
   _bind() {
-    _loginViewModel.start(); //tell viewmodel start your job
+    _loginViewModel.outputState.listen((event) {
+      print("login");
+      print(event);
+      _loginViewStreamController.sink.add(event);
+    });
+    _loginViewModel.start();
     _usernameController.addListener(
         () => _loginViewModel.setUsername(_usernameController.text));
     _passwordController.addListener(
         () => _loginViewModel.setPassword(_passwordController.text));
+    _loginViewModel.isUserLoggedInSuccessStreamController.stream
+        .listen((isLoggedIn) {
+      if (isLoggedIn) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          context.push('/business-info');
+        });
+      }
+    });
   }
 
   @override
@@ -34,13 +54,23 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void dispose() {
+    _loginViewStreamController.close();
     _loginViewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _getContentWidget();
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: StreamBuilder<FlowState>(
+          stream: _loginViewStreamController.stream,
+          builder: (context, snapshot) {
+            return snapshot.data
+                    ?.getScreenWidget(context, _getContentWidget(), () {}) ??
+                _getContentWidget();
+          }),
+    );
   }
 
   Widget _getContentWidget() {
@@ -157,7 +187,6 @@ class _LoginViewState extends State<LoginView> {
                           onPressed: (snapshot.data ?? false)
                               ? () {
                                   _loginViewModel.login();
-                                  context.go("/home");
                                 }
                               : null,
                           child: CustomizedText(
