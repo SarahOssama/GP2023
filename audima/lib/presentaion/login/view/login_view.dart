@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/login/viewmodel/login_viewmodel.dart';
@@ -19,28 +20,25 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final LoginViewModel _loginViewModel = instance<LoginViewModel>();
+  //login view instances and controllers-----------------------------------------------------------------------------------------------------------------------------------
+  final LoginViewModel _viewModel = instance<LoginViewModel>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final StreamController<FlowState> _loginViewStreamController =
-      StreamController<FlowState>();
+  final AppPreferences _appPreferences = instance<AppPreferences>();
 
+  //binding between view and view model-----------------------------------------------------------------------------------------------------------------------------------
   _bind() {
-    _loginViewModel.outputState.listen((event) {
-      print("login");
-      print(event);
-      _loginViewStreamController.sink.add(event);
-    });
-    _loginViewModel.start();
-    _usernameController.addListener(
-        () => _loginViewModel.setUsername(_usernameController.text));
-    _passwordController.addListener(
-        () => _loginViewModel.setPassword(_passwordController.text));
-    _loginViewModel.isUserLoggedInSuccessStreamController.stream
+    _viewModel.start();
+    _usernameController
+        .addListener(() => _viewModel.setUsername(_usernameController.text));
+    _passwordController
+        .addListener(() => _viewModel.setPassword(_passwordController.text));
+    _viewModel.isUserLoggedInSuccessStreamController.stream
         .listen((isLoggedIn) {
       if (isLoggedIn) {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          context.push('/business-info');
+          _appPreferences.setUserLoggedIn();
+          context.go('/business-info');
         });
       }
     });
@@ -54,8 +52,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void dispose() {
-    _loginViewStreamController.close();
-    _loginViewModel.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -64,7 +61,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: StreamBuilder<FlowState>(
-          stream: _loginViewStreamController.stream,
+          stream: _viewModel.outputState,
           builder: (context, snapshot) {
             return snapshot.data
                     ?.getScreenWidget(context, _getContentWidget(), () {}) ??
@@ -106,7 +103,7 @@ class _LoginViewState extends State<LoginView> {
                   height: 60,
                 ),
                 StreamBuilder<bool>(
-                    stream: _loginViewModel.outputIsUsernameValid,
+                    stream: _viewModel.outputIsUsernameValid,
                     builder: (context, snapshot) {
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 600),
@@ -137,7 +134,7 @@ class _LoginViewState extends State<LoginView> {
                   height: 50,
                 ),
                 StreamBuilder<bool>(
-                    stream: _loginViewModel.outputIsPasswordValid,
+                    stream: _viewModel.outputIsPasswordValid,
                     builder: (context, snapshot) {
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 600),
@@ -171,7 +168,7 @@ class _LoginViewState extends State<LoginView> {
                   height: 40,
                   width: ResponsiveValues.aboutUsBrowseProductsWidth(context),
                   child: StreamBuilder<bool>(
-                      stream: _loginViewModel.outputAreAllInputsValid,
+                      stream: _viewModel.outputAreAllInputsValid,
                       builder: (context, snapshot) {
                         return ElevatedButton(
                           style: ButtonStyle(
@@ -186,7 +183,7 @@ class _LoginViewState extends State<LoginView> {
                                   : MaterialStateProperty.all(Colors.grey)),
                           onPressed: (snapshot.data ?? false)
                               ? () {
-                                  _loginViewModel.login();
+                                  _viewModel.login();
                                 }
                               : null,
                           child: CustomizedText(

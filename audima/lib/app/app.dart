@@ -43,20 +43,5 @@ class _AppState extends State<App> {
         routeInformationProvider: RoutesManager.router.routeInformationProvider,
         routeInformationParser: RoutesManager.router.routeInformationParser,
         routerDelegate: RoutesManager.router.routerDelegate,
-
-        //   initialRoute: '/',
-        // routes: {
-        //   '/': (context) {
-        //     initLoginModule();
-        //     return LoginView();
-        //   },
-        //   '/login': (context) {
-        //     initLoginModule();
-        //     return LoginView();
-        //   },
-        //   '/home': (context) {
-        //     return HomeView();
-        //   },
-        // },
       );
 }

@@ -40,8 +40,6 @@ class _BusinessInfoState extends State<BusinessInfo> {
     // _bind();
 
     _viewModel.outputState.listen((event) {
-      print("businessInfo");
-      print(event);
       _businessInfoViewStreamController.sink.add(event);
     });
     _viewModel.start();
@@ -53,14 +51,6 @@ class _BusinessInfoState extends State<BusinessInfo> {
           .setCompanyServiceDescription(_providedServiceTextController.text);
     });
 
-    _viewModel.isUserLoggedInSuccessStreamController.stream
-        .listen((isLoggedIn) {
-      if (isLoggedIn) {
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          context.push('/login');
-        });
-      }
-    });
     super.initState();
   }
 
@@ -80,7 +70,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
           builder: (context, snapshot) {
             return snapshot.data
                     ?.getScreenWidget(context, _getContentWidget(), () {}) ??
-                Center(child: CircularProgressIndicator());
+                _getContentWidget();
           }),
     );
   }

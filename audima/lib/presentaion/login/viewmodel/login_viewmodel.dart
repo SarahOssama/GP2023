@@ -64,7 +64,7 @@ class LoginViewModel extends BaseViewModel
       print(failure.message);
     }, (data) {
       //right means success
-      // inputState.add(ContentState());
+      inputState.add(ContentState());
       isUserLoggedInSuccessStreamController.add(true);
     });
   }

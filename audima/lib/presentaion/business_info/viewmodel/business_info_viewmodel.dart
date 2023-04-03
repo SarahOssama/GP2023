@@ -32,19 +32,13 @@ class BusinessInfoViewModel extends BaseViewModel
   final StreamController _isNextAvailableFromIndustryTypeQuestionController =
       StreamController<void>.broadcast();
 
-  final StreamController isUserLoggedInSuccessStreamController =
-      StreamController<bool>();
   int _currentIndex = 0;
   late final List<dynamic> _list;
   late final List<bool> _nextStatusList;
-  var _companyObject = TextObject("");
-  var _serviceDescriptionObject = TextObject("");
-  var _brandPersonalityObject = BrandPersonalityObject("");
-  var _companyIndustryTypeOnject = CompanyIndustryTypeObject("");
+  var _businessInfoObject = BusinessInfoObject("", "", "", "");
+
   @override
   void dispose() {
-    isUserLoggedInSuccessStreamController.close();
-
     _mainStreamController.close();
     _companyNameStreamController.close();
     _isNextAvailableFromCompanyNameQuestionController.close();
@@ -101,15 +95,16 @@ class BusinessInfoViewModel extends BaseViewModel
   void setCompanyName(String companyName) {
     inputCompanyName.add(companyName);
     inputIsNextAvailableFromCompanyNameQuestion.add(null);
-    _companyObject = _companyObject.copyWith(text: companyName);
-    _isCompanyNameValid(_companyObject.text)
+    _businessInfoObject =
+        _businessInfoObject.copyWith(companyName: companyName);
+    _isCompanyNameValid(_businessInfoObject.companyName)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
   }
 
   @override
   bool getCompanyNextButtonStatus() {
-    return _isCompanyNameValid(_companyObject.text);
+    return _isCompanyNameValid(_businessInfoObject.companyName);
   }
 
   @override
@@ -122,16 +117,16 @@ class BusinessInfoViewModel extends BaseViewModel
   void setCompanyServiceDescription(String companyServiceDescription) {
     inputCompanyServiceDescription.add(companyServiceDescription);
     inputIsNextAvailableFromCompanyServiceDescriptionQuestion.add(null);
-    _serviceDescriptionObject =
-        _serviceDescriptionObject.copyWith(text: companyServiceDescription);
-    _isServiceDescriptionValid(_serviceDescriptionObject.text)
+    _businessInfoObject = _businessInfoObject.copyWith(
+        serviceProvided: companyServiceDescription);
+    _isServiceDescriptionValid(_businessInfoObject.serviceProvided)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
   }
 
   @override
   bool getCompanyServiceDescriptionNextButtonStatus() {
-    return _isServiceDescriptionValid(_serviceDescriptionObject.text);
+    return _isServiceDescriptionValid(_businessInfoObject.serviceProvided);
   }
 
   //-----------------------------------------------------------------------------brand personality view orders
@@ -149,46 +144,41 @@ class BusinessInfoViewModel extends BaseViewModel
   @override
   void pickBrandPersonalityType(
       BrandPersonalityQuestionObject brandPersonality) {
-    inputState.add(
-        LoadingState(stateRendererType: StateRendererType.popUpLoadingState));
-
     _updateBrandPersonalityList(brandPersonality);
     inputBrandPersonality.add(brandPersonality);
-    _brandPersonalityObject = _brandPersonalityObject.copyWith(
-        brandCharacteristic: brandPersonality.brandpersonality);
+    _businessInfoObject = _businessInfoObject.copyWith(
+        brandPersonality: brandPersonality.brandpersonality);
     inputIsNextAvailableFromBrandPersonalityQuestion.add(null);
-    _isBrandPersonalityValid(_brandPersonalityObject.brandCharacteristic)
+    _isBrandPersonalityValid(_businessInfoObject.brandPersonality)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
-    isUserLoggedInSuccessStreamController.add(true);
   }
 
   @override
   bool getBrandPersonalityNextButtonStatus() {
-    return _isBrandPersonalityValid(
-        _brandPersonalityObject.brandCharacteristic);
+    return _isBrandPersonalityValid(_businessInfoObject.brandPersonality);
   }
   //-----------------------------------------------------------------------------company intdustry types view orders
 
   @override
   void setIndustryType(String? industryType) {
     inputIndustryType.add(industryType);
-    _companyIndustryTypeOnject =
-        _companyIndustryTypeOnject.copyWith(industryType: industryType!);
+    _businessInfoObject =
+        _businessInfoObject.copyWith(industryType: industryType!);
     inputIsNextAvailableFromIndustryTypeQuestion.add(null);
-    _isIndustryTypeValid(_companyIndustryTypeOnject.industryType)
+    _isIndustryTypeValid(_businessInfoObject.industryType)
         ? _nextStatusList[_currentIndex] = true
         : _nextStatusList[_currentIndex] = false;
   }
 
   @override
   String getCompanyIndustryType() {
-    return _companyIndustryTypeOnject.industryType;
+    return _businessInfoObject.industryType;
   }
 
   @override
   bool getIndustryTypeNextButonStatus() {
-    return _isIndustryTypeValid(_companyIndustryTypeOnject.industryType);
+    return _isIndustryTypeValid(_businessInfoObject.industryType);
   }
 
   //----------------------------------------------------------------------------this sink and stream will be used for all widgets in the main view
@@ -213,7 +203,7 @@ class BusinessInfoViewModel extends BaseViewModel
   @override
   Stream<bool> get outputIsNextAvailableFromCompanyNameQuestion =>
       _isNextAvailableFromCompanyNameQuestionController.stream
-          .map((_) => _isCompanyNameValid(_companyObject.text));
+          .map((_) => _isCompanyNameValid(_businessInfoObject.companyName));
 
 //--------------------------------------------------------------------------------this sinks and streams will be used for provided service description widget
 
@@ -235,7 +225,7 @@ class BusinessInfoViewModel extends BaseViewModel
   Stream<bool> get outputIsNextAvailableFromCompanyServiceDescriptionQuestion =>
       _isNextAvailableFromCompanyServiceDescriptionQuestionController.stream
           .map((_) =>
-              _isServiceDescriptionValid(_serviceDescriptionObject.text));
+              _isServiceDescriptionValid(_businessInfoObject.serviceProvided));
 
   //-----------------------------------------------------------------------------this sinks and streams will be used for brand personality widget
   @override
@@ -252,8 +242,7 @@ class BusinessInfoViewModel extends BaseViewModel
   @override
   Stream<bool> get outputIsNextAvailableFromBrandPersonalityQuestion =>
       _isNextAvailableFromBrandPersonalityQuestionController.stream.map((_) =>
-          _isBrandPersonalityValid(
-              _brandPersonalityObject.brandCharacteristic));
+          _isBrandPersonalityValid(_businessInfoObject.brandPersonality));
 
   //-----------------------------------------------------------------------------this sinks and streams will be used for company industry types widget
 
@@ -270,8 +259,8 @@ class BusinessInfoViewModel extends BaseViewModel
 
   @override
   Stream<bool> get outputIsNextAvailableFromIndustryTypeQuestion =>
-      _isNextAvailableFromIndustryTypeQuestionController.stream.map(
-          (_) => _isIndustryTypeValid(_companyIndustryTypeOnject.industryType));
+      _isNextAvailableFromIndustryTypeQuestionController.stream
+          .map((_) => _isIndustryTypeValid(_businessInfoObject.industryType));
 
   //-----------------------------------------------------------------------------view model private functions and members
   //main view model private functions

@@ -353,6 +353,20 @@ class ResponsiveTextStyles {
     );
   }
 
+  static TextStyle audimaSplash(context) {
+    return GoogleFonts.lobster(
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 60.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 45.0),
+          const Condition.smallerThan(name: TABLET, value: 30.0),
+        ],
+      ).value,
+      color: Colors.white,
+    );
+  }
+
   static TextStyle mainTabsStyle(context) {
     return GoogleFonts.sora(
       fontSize: ResponsiveValue(

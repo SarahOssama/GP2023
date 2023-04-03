@@ -94,7 +94,6 @@ extension FlowStateExtension on FlowState {
         {
           //show pop up
           showPopUp(context, getStateRendererType(), getMessage());
-          ErrorState.popUp = true;
           //show content screen
           return contentScreenWidget;
         } else {
@@ -111,13 +110,8 @@ extension FlowStateExtension on FlowState {
             message: getMessage());
       case ContentState:
         if (LoadingState.popUp) {
-          print("pop up the last dialog");
           dismissDialog(context);
           LoadingState.popUp = false;
-        }
-        if (ErrorState.popUp) {
-          dismissDialog(context);
-          ErrorState.popUp = false;
         }
         return contentScreenWidget;
       default:
@@ -127,15 +121,8 @@ extension FlowStateExtension on FlowState {
     }
   }
 
-  _isCurrentDialogShowing(BuildContext context) {
-    return ModalRoute.of(context)?.isCurrent != true;
-  }
-
   dismissDialog(BuildContext context) {
-    while (ModalRoute.of(context)?.isCurrent != true) {
-      Navigator.of(context, rootNavigator: true).pop(true);
-    }
-    // Navigator.of(context).pop(navKey.currentContext!);
+    Navigator.of(context, rootNavigator: true).pop(true);
   }
 
   showPopUp(BuildContext context, StateRendererType stateRendererType,

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:audima/app/app_prefrences.dart';
+import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,8 +10,20 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:audima/responsive.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final AppPreferences _appPreferences = instance<AppPreferences>();
   // Controllers
+
+  @override
+  void initState() {
+    _appPreferences.setHomeScreenViewed();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +76,7 @@ class HomeView extends StatelessWidget {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.white)),
                       onPressed: () {
-                        context.push("/login");
+                        context.go("/login");
                       },
                       child: CustomizedText(
                           text: "Start Your Business Journey",

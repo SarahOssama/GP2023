@@ -1,5 +1,6 @@
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/login/view/login_view.dart';
+import 'package:audima/presentaion/splash/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../business_info/view/business_info_view.dart';
@@ -29,8 +30,20 @@ class RoutesManager {
       navigatorKey: navKey,
       routes: <GoRoute>[
         GoRoute(
-          name: "home",
+          name: "splash",
           path: '/',
+          pageBuilder: (context, state) => CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: SplashView(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        ),
+        GoRoute(
+          name: "home",
+          path: '/home',
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
             child: HomeView(),
