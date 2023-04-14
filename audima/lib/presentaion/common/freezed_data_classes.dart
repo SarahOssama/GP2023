@@ -11,3 +11,9 @@ class BusinessInfoObject with _$BusinessInfoObject {
   factory BusinessInfoObject(String companyName, String brandPersonality,
       String industryType, String serviceProvided) = _BusinessInfoObject;
 }
+
+@freezed
+class MissionStatementObject with _$MissionStatementObject {
+  factory MissionStatementObject(String missionStatement) =
+      _MissionStatementObject;
+}

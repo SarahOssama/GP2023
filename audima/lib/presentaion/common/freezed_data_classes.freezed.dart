@@ -333,3 +333,125 @@ abstract class _BusinessInfoObject implements BusinessInfoObject {
   _$$_BusinessInfoObjectCopyWith<_$_BusinessInfoObject> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$MissionStatementObject {
+  String get missionStatement => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $MissionStatementObjectCopyWith<MissionStatementObject> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MissionStatementObjectCopyWith<$Res> {
+  factory $MissionStatementObjectCopyWith(MissionStatementObject value,
+          $Res Function(MissionStatementObject) then) =
+      _$MissionStatementObjectCopyWithImpl<$Res, MissionStatementObject>;
+  @useResult
+  $Res call({String missionStatement});
+}
+
+/// @nodoc
+class _$MissionStatementObjectCopyWithImpl<$Res,
+        $Val extends MissionStatementObject>
+    implements $MissionStatementObjectCopyWith<$Res> {
+  _$MissionStatementObjectCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? missionStatement = null,
+  }) {
+    return _then(_value.copyWith(
+      missionStatement: null == missionStatement
+          ? _value.missionStatement
+          : missionStatement // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_MissionStatementObjectCopyWith<$Res>
+    implements $MissionStatementObjectCopyWith<$Res> {
+  factory _$$_MissionStatementObjectCopyWith(_$_MissionStatementObject value,
+          $Res Function(_$_MissionStatementObject) then) =
+      __$$_MissionStatementObjectCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String missionStatement});
+}
+
+/// @nodoc
+class __$$_MissionStatementObjectCopyWithImpl<$Res>
+    extends _$MissionStatementObjectCopyWithImpl<$Res,
+        _$_MissionStatementObject>
+    implements _$$_MissionStatementObjectCopyWith<$Res> {
+  __$$_MissionStatementObjectCopyWithImpl(_$_MissionStatementObject _value,
+      $Res Function(_$_MissionStatementObject) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? missionStatement = null,
+  }) {
+    return _then(_$_MissionStatementObject(
+      null == missionStatement
+          ? _value.missionStatement
+          : missionStatement // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_MissionStatementObject implements _MissionStatementObject {
+  _$_MissionStatementObject(this.missionStatement);
+
+  @override
+  final String missionStatement;
+
+  @override
+  String toString() {
+    return 'MissionStatementObject(missionStatement: $missionStatement)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_MissionStatementObject &&
+            (identical(other.missionStatement, missionStatement) ||
+                other.missionStatement == missionStatement));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, missionStatement);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_MissionStatementObjectCopyWith<_$_MissionStatementObject> get copyWith =>
+      __$$_MissionStatementObjectCopyWithImpl<_$_MissionStatementObject>(
+          this, _$identity);
+}
+
+abstract class _MissionStatementObject implements MissionStatementObject {
+  factory _MissionStatementObject(final String missionStatement) =
+      _$_MissionStatementObject;
+
+  @override
+  String get missionStatement;
+  @override
+  @JsonKey(ignore: true)
+  _$$_MissionStatementObjectCopyWith<_$_MissionStatementObject> get copyWith =>
+      throw _privateConstructorUsedError;
+}

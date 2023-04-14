@@ -5,8 +5,11 @@ import 'package:audima/data/network/dio_factory.dart';
 import 'package:audima/data/network/network_info.dart';
 import 'package:audima/data/repository/repository_impl.dart';
 import 'package:audima/domain/repository/repository.dart';
+import 'package:audima/domain/usecase/businessInfo_usecase.dart';
 import 'package:audima/domain/usecase/login_usecase.dart';
+import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
 import 'package:audima/presentaion/login/viewmodel/login_viewmodel.dart';
+import 'package:audima/presentaion/mission_statement/viewmodel/mission_statement_viewmodel.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -51,5 +54,17 @@ void initLoginModule() {
     instance.registerFactory<LoginUseCase>(() => LoginUseCase(instance()));
     //register login viewmodel
     instance.registerFactory<LoginViewModel>(() => LoginViewModel(instance()));
+  }
+}
+
+void initMissionStatementModule() {
+  //check if mission statement usecase is not registered
+  if (!GetIt.I.isRegistered<MissionStatementUseCase>()) {
+    //register mission statement usecase
+    instance.registerFactory<MissionStatementUseCase>(
+        () => MissionStatementUseCase(instance()));
+    //register mission statement viewmodel
+    instance.registerFactory<MissionStatementViewModel>(
+        () => MissionStatementViewModel(instance()));
   }
 }

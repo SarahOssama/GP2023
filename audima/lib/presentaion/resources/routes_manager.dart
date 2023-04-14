@@ -1,5 +1,9 @@
+import 'package:audima/app/app_prefrences.dart';
+import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/login/view/login_view.dart';
+import 'package:audima/presentaion/mission_statement/view/mission_statement_view.dart';
 import 'package:audima/presentaion/splash/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,23 +12,9 @@ import '../home/home_view.dart';
 
 GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
-// class RouterGenerator{
-//   static Route<dynamic> generateRoute(RouteSettings settings) {
-//     switch (settings.name) {
-//       case '/':
-//         return MaterialPageRoute(builder: (_) => HomeView());
-//       case '/login':
-//         return MaterialPageRoute(builder: (_) => LoginView());
-//       case '/business-info':
-//         return MaterialPageRoute(builder: (_) => BusinessInfo());
-//       default:
-//         return MaterialPageRoute(builder: (_) => Scaffold(
-//           body: Center(child: Text('No route defined for ${settings.name}')),
-//         ));
-//     }
-//   }
-// }
 class RoutesManager {
+  AppPreferences _appPreferences = instance<AppPreferences>();
+
   static final GoRouter router = GoRouter(
       urlPathStrategy: UrlPathStrategy.path,
       navigatorKey: navKey,
@@ -79,6 +69,28 @@ class RoutesManager {
             transitionDuration: const Duration(milliseconds: 500),
           ),
         ),
+        GoRoute(
+            name: "mission-statement",
+            path: '/mission-statement',
+            redirect: ((state) {
+              if (Constants.BusinessInfoScreenViewStatus == false) {
+                return "/business-info";
+              }
+            }),
+            pageBuilder: (context, state) {
+              initMissionStatementModule();
+              BusinessInfoObject businessInfoObject =
+                  state.extra as BusinessInfoObject;
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: MissionStatementView(
+                    businessInfoObject: businessInfoObject),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
       ],
       errorPageBuilder: (context, state) {
         return MaterialPage(

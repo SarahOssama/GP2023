@@ -34,13 +34,15 @@ class StateRenderer extends StatelessWidget {
   Widget _getStateWidget(BuildContext context) {
     switch (stateRendererType) {
       case StateRendererType.popUpLoadingState:
-        return _getPopUpDialog(
-            context, [_getAnimatedImage(JsonAssets.loading)]);
+        return _getPopUpDialog(context, [
+          _getAnimatedImage(JsonAssets.loading),
+          _getMessage(message, context)
+        ]);
       case StateRendererType.popUpErrorState:
         return _getPopUpDialog(context, [
           _getAnimatedImage(JsonAssets.error),
           SizedBox(height: 10),
-          _getMessage(message),
+          _getMessage(message, context),
           SizedBox(height: 10),
           _getRetryButton("Ok", context)
         ]);
@@ -48,14 +50,14 @@ class StateRenderer extends StatelessWidget {
         return _getColumnItems([
           _getAnimatedImage(JsonAssets.loading),
           SizedBox(height: 10),
-          _getMessage(message),
+          _getMessage(message, context),
           SizedBox(height: 10),
         ]);
       case StateRendererType.fullScreenErrorState:
         return _getColumnItems([
           _getAnimatedImage(JsonAssets.error),
           SizedBox(height: 10),
-          _getMessage(message),
+          _getMessage(message, context),
           SizedBox(height: 10),
           _getRetryButton("Retry", context)
         ]);
@@ -63,7 +65,7 @@ class StateRenderer extends StatelessWidget {
         return _getColumnItems([
           _getAnimatedImage(JsonAssets.empty),
           SizedBox(height: 10),
-          _getMessage(message),
+          _getMessage(message, context),
           SizedBox(height: 10),
         ]);
       case StateRendererType.contentState:
@@ -110,10 +112,18 @@ class StateRenderer extends StatelessWidget {
         height: 100, width: 100, child: Lottie.asset(animationName));
   }
 
-  Widget _getMessage(String message) {
-    return Text(
-      message,
-      style: TextStyle(color: Colors.black, fontSize: 15),
+  Widget _getMessage(String message, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Text(message,
+              style: ResponsiveTextStyles.LoadingMessageTextStyle(context)),
+          SizedBox(
+            height: 20,
+          ),
+        ],
+      ),
     );
   }
 

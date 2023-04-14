@@ -1,4 +1,5 @@
 //business info models
+import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:flutter/material.dart';
 
 //company name models
@@ -57,6 +58,13 @@ class CompanyServiceDescriptionQuestionViewObject {
   CompanyServiceDescriptionQuestionViewObject(
       this.companyServiceDescriptionQuestionObject, this.question);
 }
+
+//business info all data model
+class BusinessWholeData {
+  BusinessInfoObject businessInfoObject;
+  bool isBusinessInfoCompleted;
+  BusinessWholeData(this.businessInfoObject, this.isBusinessInfoCompleted);
+}
 //login models
 
 class Customer {
@@ -79,4 +87,9 @@ class Authentication {
   Customer? customer;
   Contacts? contacts;
   Authentication(this.customer, this.contacts);
+}
+
+class MissionStatement {
+  String? missionStatement;
+  MissionStatement(this.missionStatement);
 }

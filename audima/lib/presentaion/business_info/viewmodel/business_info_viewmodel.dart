@@ -16,7 +16,7 @@ class BusinessInfoViewModel extends BaseViewModel
       StreamController<String>.broadcast();
   final StreamController _isNextAvailableFromCompanyNameQuestionController =
       StreamController<void>.broadcast();
-  //company service description stream controllers
+
   final StreamController _companyServiceDescriptionStreamController =
       StreamController<String>.broadcast();
   final StreamController
@@ -32,6 +32,11 @@ class BusinessInfoViewModel extends BaseViewModel
   final StreamController _isNextAvailableFromIndustryTypeQuestionController =
       StreamController<void>.broadcast();
 
+  //stream controller to invoke mission statement widget
+  final StreamController<BusinessWholeData>
+      inputMissionStatementStreamController =
+      StreamController<BusinessWholeData>.broadcast();
+
   int _currentIndex = 0;
   late final List<dynamic> _list;
   late final List<bool> _nextStatusList;
@@ -44,12 +49,16 @@ class BusinessInfoViewModel extends BaseViewModel
     _isNextAvailableFromCompanyNameQuestionController.close();
     _brandPersonalityStreamController.close();
     _isNextAvailableFromBrandPersonalityQuestionController.close();
+    _industryTypeStreamController.close();
+    _isNextAvailableFromIndustryTypeQuestionController.close();
+    _companyServiceDescriptionStreamController.close();
+    _isNextAvailableFromCompanyServiceDescriptionQuestionController.close();
+    inputMissionStatementStreamController.close();
   }
 
   @override
   void start() {
     inputState.add(ContentState());
-
     _list = _getBusinessInfoList();
     _nextStatusList = _getNextStatusList();
     _postDataToView();
@@ -88,6 +97,18 @@ class BusinessInfoViewModel extends BaseViewModel
   @override
   List<bool> getNextStatusList() {
     return _nextStatusList;
+  }
+
+  @override
+  bool isAllDataCollected() {
+    return _currentIndex == _list.length - 1 ? true : false;
+  }
+
+  @override
+  void callSendDataToMissionStatementView() {
+    inputState.add(ContentState());
+    inputMissionStatementStreamController.sink
+        .add(BusinessWholeData(_businessInfoObject, true));
   }
 //-------------------------------------------------------------------------------company name view orders
 
@@ -384,6 +405,8 @@ abstract class BusinessInfoViewModelInputs {
   int getCurrentIndex();
   int getListSize();
   List<bool> getNextStatusList();
+  bool isAllDataCollected();
+  void callSendDataToMissionStatementView();
   //orders from company name question view
   void setCompanyName(String companyName);
   bool getCompanyNextButtonStatus();
@@ -400,7 +423,6 @@ abstract class BusinessInfoViewModelInputs {
   void setIndustryType(String? industryType);
   bool getIndustryTypeNextButonStatus();
   String getCompanyIndustryType();
-
   //stream controller input
   //this sink is for all widgets
   Sink get inputQuestionObject;

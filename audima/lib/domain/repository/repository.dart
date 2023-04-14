@@ -19,4 +19,7 @@ abstract class Repository {
   //6- then the model object will be returned to the repository
   //7- then the repository will return the model object to the view model
   //8- then the view model will return the model object to the view
+
+  Future<Either<Failure, MissionStatement>> getMissionStatement(
+      BusinessInfoRequest businessInfoRequest);
 }

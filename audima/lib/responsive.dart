@@ -1,3 +1,4 @@
+import 'package:audima/domain/model/models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -532,6 +533,36 @@ class ResponsiveTextStyles {
           ],
         ).value,
         color: Colors.white,
+        fontWeight: FontWeight.bold);
+  }
+
+  static TextStyle MissionStatementTextStyle(context) {
+    return GoogleFonts.sora(
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 20.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 27.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+            const Condition.smallerThan(name: TABLET, value: 20.0),
+          ],
+        ).value,
+        color: Colors.white,
+        fontWeight: FontWeight.bold);
+  }
+
+  static TextStyle LoadingMessageTextStyle(context) {
+    return GoogleFonts.sora(
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 20.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 27.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+            const Condition.smallerThan(name: TABLET, value: 20.0),
+          ],
+        ).value,
+        color: Colors.black,
         fontWeight: FontWeight.bold);
   }
 

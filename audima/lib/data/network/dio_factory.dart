@@ -9,6 +9,7 @@ const String CONTENT_TYPE = "Content-Type";
 const String ACCEPT = "accept";
 const String AUTHORIZATION = "authorization";
 const String DEFAULT_LANGUAGE = "language";
+const String API_KEY = "x-api-key";
 
 class DioFactory {
   final AppPreferences _appPrefrences;
@@ -18,16 +19,14 @@ class DioFactory {
     String language = await _appPrefrences.getAppLanguage();
     Map<String, String> headers = {
       CONTENT_TYPE: APPLICATION_JSON,
-      ACCEPT: APPLICATION_JSON,
-      DEFAULT_LANGUAGE: language, //TODO get lang from app prefrences
-      AUTHORIZATION: Constants.token,
+      API_KEY: Constants.missionStatementApiKey,
+      // ACCEPT: APPLICATION_JSON,
+      // DEFAULT_LANGUAGE: language, //TODO get lang from app prefrences
+      // AUTHORIZATION: Constants.token,
     };
-
     dio.options = BaseOptions(
-      baseUrl: Constants.baseUrl,
+      baseUrl: Constants.baseUrl2,
       headers: headers,
-      receiveTimeout: Constants.apiTimeout,
-      sendTimeout: Constants.apiTimeout,
     );
 
     if (!kReleaseMode) {

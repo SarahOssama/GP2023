@@ -12,6 +12,9 @@ abstract class RemoteDataSource {
   //while the functions in the repository inside the domain layer will return a model object
   //so the functions here will return a future of the responses not the model objects
   Future<AuthenticationResponse> login(LoginRequest loginRequest);
+  //business info
+  Future<MissionStatementResponse> getMissionStatement(
+      BusinessInfoRequest businessInfoRequest);
 }
 
 //create the class which implements the remote data source abstract class
@@ -37,5 +40,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     //then i need to return the response from the login function
     return await _appServiceClient.login(
         loginRequest.email, loginRequest.password);
+  }
+
+  @override
+  Future<MissionStatementResponse> getMissionStatement(
+      BusinessInfoRequest businessInfoRequest) async {
+    return await _appServiceClient
+        .getMissionStatement(businessInfoRequest.bussinesInfoTextElements);
   }
 }

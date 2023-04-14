@@ -7,12 +7,12 @@ part of 'responses.dart';
 // **************************************************************************
 
 BaseResponse _$BaseResponseFromJson(Map<String, dynamic> json) => BaseResponse()
-  ..status = json['status'] as int?
+  ..status = json['statuscode'] as int?
   ..message = json['message'] as String?;
 
 Map<String, dynamic> _$BaseResponseToJson(BaseResponse instance) =>
     <String, dynamic>{
-      'status': instance.status,
+      'statuscode': instance.status,
       'message': instance.message,
     };
 
@@ -54,14 +54,30 @@ AuthenticationResponse _$AuthenticationResponseFromJson(
           ? null
           : ContactsResponse.fromJson(json['contacts'] as Map<String, dynamic>),
     )
-      ..status = json['status'] as int?
+      ..status = json['statuscode'] as int?
       ..message = json['message'] as String?;
 
 Map<String, dynamic> _$AuthenticationResponseToJson(
         AuthenticationResponse instance) =>
     <String, dynamic>{
-      'status': instance.status,
+      'statuscode': instance.status,
       'message': instance.message,
       'customer': instance.customer,
       'contacts': instance.contacts,
+    };
+
+MissionStatementResponse _$MissionStatementResponseFromJson(
+        Map<String, dynamic> json) =>
+    MissionStatementResponse(
+      json['prediction'] as String?,
+    )
+      ..status = json['statuscode'] as int?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$MissionStatementResponseToJson(
+        MissionStatementResponse instance) =>
+    <String, dynamic>{
+      'statuscode': instance.status,
+      'message': instance.message,
+      'prediction': instance.missionStatement,
     };

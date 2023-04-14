@@ -38,3 +38,12 @@ extension AuthenticationResponseMapper on AuthenticationResponse? {
     );
   }
 }
+
+//extension for MissionStatementResponse
+extension MissionStatementResponseMapper on MissionStatementResponse? {
+  MissionStatement toDomain() {
+    return MissionStatement(
+      this?.missionStatement.orEmpty() ?? Constants.empty,
+    );
+  }
+}

@@ -2,10 +2,8 @@
 
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/di.dart';
-import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:audima/responsive.dart';

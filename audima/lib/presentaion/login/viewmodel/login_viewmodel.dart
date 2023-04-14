@@ -60,6 +60,7 @@ class LoginViewModel extends BaseViewModel
         .fold((failure) {
       inputState
           .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
+      isUserLoggedInSuccessStreamController.add(true);
       //left means failure
       print(failure.message);
     }, (data) {
@@ -71,14 +72,14 @@ class LoginViewModel extends BaseViewModel
 
   @override
   void setPassword(String password) {
-    inputPassword.add(password);
+    // inputPassword.add(password);
     inputAreAllInputsValid.add(null);
     loginObject = loginObject.copyWith(password: password);
   }
 
   @override
   void setUsername(String userName) {
-    inputUsername.add(userName);
+    // inputUsername.add(userName);
     inputAreAllInputsValid.add(null);
     loginObject = loginObject.copyWith(username: userName);
   }

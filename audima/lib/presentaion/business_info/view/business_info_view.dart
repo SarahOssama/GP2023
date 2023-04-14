@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:audima/app/app_prefrences.dart';
+import 'package:audima/app/constants.dart';
+import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
-import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -10,11 +12,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../responsive.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:hovering/hovering.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-
-import '../../resources/assets_manager.dart';
 
 class BusinessInfo extends StatefulWidget {
   @override
@@ -28,20 +26,9 @@ class _BusinessInfoState extends State<BusinessInfo> {
       TextEditingController();
   final TextEditingController _providedServiceTextController =
       TextEditingController();
-  final StreamController<FlowState> _businessInfoViewStreamController =
-      StreamController<FlowState>.broadcast();
-  // _bind() {
-  //   _viewModel.start();
-  // }
+  AppPreferences _appPreferences = instance<AppPreferences>();
 
-  late Stream mystream;
-  @override
-  void initState() {
-    // _bind();
-
-    _viewModel.outputState.listen((event) {
-      _businessInfoViewStreamController.sink.add(event);
-    });
+  _bind() {
     _viewModel.start();
     _companyNameTextController.addListener(() {
       _viewModel.setCompanyName(_companyNameTextController.text);
@@ -50,6 +37,24 @@ class _BusinessInfoState extends State<BusinessInfo> {
       _viewModel
           .setCompanyServiceDescription(_providedServiceTextController.text);
     });
+    _viewModel.inputMissionStatementStreamController.stream
+        .listen((businessInfoWholeData) {
+      //this means that the business info is completed and i should send it to the mission statement model
+      if (businessInfoWholeData.isBusinessInfoCompleted) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          _appPreferences.setBusinessInfoViewed();
+          Constants.BusinessInfoScreenViewStatus = true;
+          context.go('/mission-statement',
+              extra: businessInfoWholeData.businessInfoObject);
+        });
+      }
+    });
+  }
+
+  late Stream mystream;
+  @override
+  void initState() {
+    _bind();
 
     super.initState();
   }
@@ -66,7 +71,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: StreamBuilder<FlowState>(
-          stream: _businessInfoViewStreamController.stream,
+          stream: _viewModel.outputState,
           builder: (context, snapshot) {
             return snapshot.data
                     ?.getScreenWidget(context, _getContentWidget(), () {}) ??
@@ -185,53 +190,14 @@ class _BusinessInfoState extends State<BusinessInfo> {
                         height: 100,
                       ),
                       Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
-                          child: _viewModel.getCurrentIndex() == 0
-                              ? _textQuestionWidget(
-                                  questionObject.companyNameQuestionObject.hint,
-                                  "please enter a valid company name",
-                                  _companyNameTextController,
-                                  _viewModel.outputIsCompanyNameValid)
-                              : _viewModel.getCurrentIndex() == 1
-                                  ? _brandPersonalityWidget(questionObject)
-                                  : _viewModel.getCurrentIndex() == 2
-                                      ? _companyIndustryTypeWidget(
-                                          questionObject)
-                                      : _textQuestionWidget(
-                                          questionObject
-                                              .companyServiceDescriptionQuestionObject
-                                              .hint,
-                                          "Please enter the provided service",
-                                          _providedServiceTextController,
-                                          _viewModel
-                                              .outputIsCompanyServiceDescriptionValid)),
+                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        child: _getQuestionWidget(
+                            _viewModel.getCurrentIndex(), questionObject),
+                      ),
                       Spacer(),
-                      _viewModel.getCurrentIndex() == 0
-                          ? NextButtonWidget(
-                              _carouselController,
-                              _viewModel
-                                  .outputIsNextAvailableFromCompanyNameQuestion,
-                              _viewModel.getCompanyNextButtonStatus())
-                          : _viewModel.getCurrentIndex() == 1
-                              ? NextButtonWidget(
-                                  _carouselController,
-                                  _viewModel
-                                      .outputIsNextAvailableFromBrandPersonalityQuestion,
-                                  _viewModel
-                                      .getBrandPersonalityNextButtonStatus())
-                              : _viewModel.getCurrentIndex() == 2
-                                  ? NextButtonWidget(
-                                      _carouselController,
-                                      _viewModel
-                                          .outputIsNextAvailableFromIndustryTypeQuestion,
-                                      _viewModel
-                                          .getIndustryTypeNextButonStatus())
-                                  : NextButtonWidget(
-                                      _carouselController,
-                                      _viewModel
-                                          .outputIsNextAvailableFromCompanyServiceDescriptionQuestion,
-                                      _viewModel
-                                          .getCompanyServiceDescriptionNextButtonStatus()),
+                      _getNextButtonWidget(
+                        _viewModel.getCurrentIndex(),
+                      ),
                     ],
                   ),
                 );
@@ -240,6 +206,56 @@ class _BusinessInfoState extends State<BusinessInfo> {
           ],
         ),
       );
+    }
+  }
+
+  // _getQuestionWidget for 4 questions main widgets
+  Widget _getQuestionWidget(int index, dynamic questionObject) {
+    if (index == 0) {
+      return _textQuestionWidget(
+          questionObject.companyNameQuestionObject.hint,
+          "please enter a valid company name",
+          _companyNameTextController,
+          _viewModel.outputIsCompanyNameValid);
+    } else if (index == 1) {
+      return _brandPersonalityWidget(questionObject);
+    } else if (index == 2) {
+      return _companyIndustryTypeWidget(questionObject);
+    } else {
+      return _textQuestionWidget(
+          questionObject.companyServiceDescriptionQuestionObject.hint,
+          "Please enter the provided service",
+          _providedServiceTextController,
+          _viewModel.outputIsCompanyServiceDescriptionValid);
+    }
+  }
+
+  // _getNextButtonWidget for 4 questions next widgets
+  Widget _getNextButtonWidget(int index) {
+    if (index == 0) {
+      return NextButtonWidget(
+          _carouselController,
+          _viewModel.outputIsNextAvailableFromCompanyNameQuestion,
+          _viewModel.getCompanyNextButtonStatus(),
+          "Next");
+    } else if (index == 1) {
+      return NextButtonWidget(
+          _carouselController,
+          _viewModel.outputIsNextAvailableFromBrandPersonalityQuestion,
+          _viewModel.getBrandPersonalityNextButtonStatus(),
+          "Next");
+    } else if (index == 2) {
+      return NextButtonWidget(
+          _carouselController,
+          _viewModel.outputIsNextAvailableFromIndustryTypeQuestion,
+          _viewModel.getIndustryTypeNextButonStatus(),
+          "Next");
+    } else {
+      return NextButtonWidget(
+          _carouselController,
+          _viewModel.outputIsNextAvailableFromCompanyServiceDescriptionQuestion,
+          _viewModel.getCompanyServiceDescriptionNextButtonStatus(),
+          "Finish");
     }
   }
 
@@ -256,9 +272,10 @@ class _BusinessInfoState extends State<BusinessInfo> {
               floatingLabelBehavior: FloatingLabelBehavior.always,
               hintStyle: ResponsiveTextStyles.businessInfoHintStyle(context),
               focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                color: Colors.black,
-              )),
+                borderSide: BorderSide(
+                  color: Colors.black,
+                ),
+              ),
               hintText: hint,
               errorText: (snapshot.data ?? true) ? null : error,
             ),
@@ -423,67 +440,9 @@ class _BusinessInfoState extends State<BusinessInfo> {
           );
         });
   }
-}
 
-// class ViewBrandPersonality extends StatelessWidget {
-//   BrandPersonalityQuestionObject brandPersonality;
-//   BusinessInfoViewModel viewModel;
-//   ViewBrandPersonality(this.brandPersonality, this.viewModel);
-//   @override
-//   Widget build(BuildContext context) {
-//     print("a7a");
-//     return Expanded(
-//       child: AnimatedContainer(
-//         decoration: BoxDecoration(
-//           shape: BoxShape.circle,
-//         ),
-//         curve: Curves.easeIn,
-//         duration: Duration(milliseconds: 100),
-//         child: InkWell(
-//           onTap: () {
-//             viewModel.pickBrandPersonalityType(brandPersonality);
-//           },
-//           onHover: (isHovered) {
-//             viewModel.hoverOnBrandPersonalityType(brandPersonality, isHovered);
-//           },
-//           child: Column(
-//             children: [
-//               StreamBuilder<BrandPersonalityQuestionObject>(
-//                   stream: viewModel.outputBrandPersonality,
-//                   builder: (context, snapshot) {
-//                     return CircleAvatar(
-//                       backgroundColor: Colors.transparent,
-//                       radius: (brandPersonality.isHovered) == true ? 45 : 34,
-//                       child: SvgPicture.asset(
-//                         brandPersonality.imgUrl,
-//                         color: brandPersonality.color,
-//                         colorBlendMode: BlendMode.modulate,
-//                       ),
-//                     );
-//                   }),
-//               SizedBox(
-//                 height: 3,
-//               ),
-//               Text(
-//                 brandPersonality.brandpersonality,
-//                 style: ResponsiveTextStyles.brandPersonalityTextStyle(context),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class NextButtonWidget extends StatelessWidget {
-  final CarouselController _carouselController;
-  final Stream<bool> _stream;
-  final bool nextButtonStatus;
-  NextButtonWidget(
-      this._carouselController, this._stream, this.nextButtonStatus);
-  @override
-  Widget build(BuildContext context) {
+  Widget NextButtonWidget(CarouselController _carouselController,
+      Stream<bool> _stream, bool nextButtonStatus, String buttonName) {
     return StreamBuilder(
         stream: _stream,
         builder: (context, snapshot) {
@@ -506,15 +465,17 @@ class NextButtonWidget extends StatelessWidget {
                           : MaterialStateProperty.all(Colors.grey)),
                   onPressed: (snapshot.data ?? nextButtonStatus)
                       ? () {
-                          _carouselController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.ease);
+                          _viewModel.isAllDataCollected()
+                              ? _viewModel.callSendDataToMissionStatementView()
+                              : _carouselController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.ease);
                         }
                       : null,
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      "Next",
+                      buttonName,
                       style: ResponsiveTextStyles.startYourBusinessJourney(
                           context),
                     ),
