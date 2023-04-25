@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "775e4fc3-a878-4151-acbd-3be4474c1b25",
+		"name": "GP Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "UPLOAD",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "media_file",
+							"type": "file",
+							"src": "/D:/Uni/Graduation-Project/Models/Video_Handling/Attempt1/Test1.mp4"
+						},
+						{
+							"key": "caption",
+							"value": "New",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/video/upload/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"video",
+						"upload",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ViewAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/video/viewVideo/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"video",
+						"viewVideo",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "command",
+							"value": "Audima put text \"I am graduated !!\" in video start 01:00 duration 05:00 size default color black position center",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/video/edit/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"video",
+						"edit",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
