@@ -17,3 +17,8 @@ class MissionStatementObject with _$MissionStatementObject {
   factory MissionStatementObject(String missionStatement) =
       _MissionStatementObject;
 }
+
+@freezed
+class VideoEditsObject with _$VideoEditsObject {
+  factory VideoEditsObject(String videoEdits) = _VideoEditsObject;
+}

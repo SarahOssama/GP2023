@@ -1,6 +1,7 @@
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/business_video/view/business_video_view.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/login/view/login_view.dart';
 import 'package:audima/presentaion/mission_statement/view/mission_statement_view.dart';
@@ -24,7 +25,7 @@ class RoutesManager {
           path: '/',
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
-            child: SplashView(),
+            child: VideoPlayerPage(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),
@@ -72,25 +73,40 @@ class RoutesManager {
         GoRoute(
             name: "mission-statement",
             path: '/mission-statement',
-            redirect: ((state) {
-              if (Constants.BusinessInfoScreenViewStatus == false) {
-                return "/business-info";
-              }
-            }),
+            // redirect: ((state) {
+            //   if (Constants.BusinessInfoScreenViewStatus == false) {
+            //     return "/business-info";
+            //   }
+            // }),
             pageBuilder: (context, state) {
               initMissionStatementModule();
-              BusinessInfoObject businessInfoObject =
-                  state.extra as BusinessInfoObject;
+              BusinessInfoObject _businessInfoObject = BusinessInfoObject(
+                  "tmico", "authentic", "business", "selling medical devices");
+              // BusinessInfoObject businessInfoObject =
+              //     state.extra as BusinessInfoObject;
               return CustomTransitionPage<void>(
                 key: state.pageKey,
                 child: MissionStatementView(
-                    businessInfoObject: businessInfoObject),
+                    businessInfoObject: BusinessInfoObject("tmico", "authentic",
+                        "business", "selling medical devices")),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) =>
                         FadeTransition(opacity: animation, child: child),
                 transitionDuration: const Duration(milliseconds: 500),
               );
             }),
+        GoRoute(
+          name: "business-video",
+          path: '/business-video',
+          pageBuilder: (context, state) => CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: VideoPlayerPage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        ),
       ],
       errorPageBuilder: (context, state) {
         return MaterialPage(

@@ -108,13 +108,12 @@ class StateRenderer extends StatelessWidget {
   }
 
   Widget _getAnimatedImage(String animationName) {
-    return SizedBox(
-        height: 100, width: 100, child: Lottie.asset(animationName));
+    return SizedBox(height: 60, width: 60, child: Lottie.asset(animationName));
   }
 
   Widget _getMessage(String message, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
           Text(message,

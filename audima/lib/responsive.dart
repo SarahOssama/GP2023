@@ -555,11 +555,11 @@ class ResponsiveTextStyles {
     return GoogleFonts.sora(
         fontSize: ResponsiveValue(
           context,
-          defaultValue: 20.0,
+          defaultValue: 15.0,
           valueWhen: [
-            const Condition.smallerThan(name: DESKTOP, value: 27.0),
-            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
-            const Condition.smallerThan(name: TABLET, value: 20.0),
+            const Condition.smallerThan(name: DESKTOP, value: 15.0),
+            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 15.0),
+            const Condition.smallerThan(name: TABLET, value: 15.0),
           ],
         ).value,
         color: Colors.black,

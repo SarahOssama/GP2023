@@ -455,3 +455,121 @@ abstract class _MissionStatementObject implements MissionStatementObject {
   _$$_MissionStatementObjectCopyWith<_$_MissionStatementObject> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$VideoEditsObject {
+  String get videoEdits => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $VideoEditsObjectCopyWith<VideoEditsObject> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $VideoEditsObjectCopyWith<$Res> {
+  factory $VideoEditsObjectCopyWith(
+          VideoEditsObject value, $Res Function(VideoEditsObject) then) =
+      _$VideoEditsObjectCopyWithImpl<$Res, VideoEditsObject>;
+  @useResult
+  $Res call({String videoEdits});
+}
+
+/// @nodoc
+class _$VideoEditsObjectCopyWithImpl<$Res, $Val extends VideoEditsObject>
+    implements $VideoEditsObjectCopyWith<$Res> {
+  _$VideoEditsObjectCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? videoEdits = null,
+  }) {
+    return _then(_value.copyWith(
+      videoEdits: null == videoEdits
+          ? _value.videoEdits
+          : videoEdits // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_VideoEditsObjectCopyWith<$Res>
+    implements $VideoEditsObjectCopyWith<$Res> {
+  factory _$$_VideoEditsObjectCopyWith(
+          _$_VideoEditsObject value, $Res Function(_$_VideoEditsObject) then) =
+      __$$_VideoEditsObjectCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String videoEdits});
+}
+
+/// @nodoc
+class __$$_VideoEditsObjectCopyWithImpl<$Res>
+    extends _$VideoEditsObjectCopyWithImpl<$Res, _$_VideoEditsObject>
+    implements _$$_VideoEditsObjectCopyWith<$Res> {
+  __$$_VideoEditsObjectCopyWithImpl(
+      _$_VideoEditsObject _value, $Res Function(_$_VideoEditsObject) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? videoEdits = null,
+  }) {
+    return _then(_$_VideoEditsObject(
+      null == videoEdits
+          ? _value.videoEdits
+          : videoEdits // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_VideoEditsObject implements _VideoEditsObject {
+  _$_VideoEditsObject(this.videoEdits);
+
+  @override
+  final String videoEdits;
+
+  @override
+  String toString() {
+    return 'VideoEditsObject(videoEdits: $videoEdits)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_VideoEditsObject &&
+            (identical(other.videoEdits, videoEdits) ||
+                other.videoEdits == videoEdits));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, videoEdits);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_VideoEditsObjectCopyWith<_$_VideoEditsObject> get copyWith =>
+      __$$_VideoEditsObjectCopyWithImpl<_$_VideoEditsObject>(this, _$identity);
+}
+
+abstract class _VideoEditsObject implements VideoEditsObject {
+  factory _VideoEditsObject(final String videoEdits) = _$_VideoEditsObject;
+
+  @override
+  String get videoEdits;
+  @override
+  @JsonKey(ignore: true)
+  _$$_VideoEditsObjectCopyWith<_$_VideoEditsObject> get copyWith =>
+      throw _privateConstructorUsedError;
+}
