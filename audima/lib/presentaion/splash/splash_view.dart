@@ -16,22 +16,15 @@ AppPreferences _appPreferences = instance<AppPreferences>();
 
 class _SplashViewState extends State<SplashView> {
   _goNext() {
-    _appPreferences.isUserLoggedIn().then((isUserLoggedIn) {
-      if (isUserLoggedIn) {
-        //navigate to business info
-        context.push('/business-info');
-      } else {
-        _appPreferences.isHomeScreenViewed().then((isHomeScreenViewed) {
-          if (isHomeScreenViewed) {
-            //navigate to login
-            context.push('/login');
-          } else {
-            //navigate to home
-            context.push('/home');
-          }
-        });
-      }
-    });
+    context.go("/home");
+    // _appPreferences.isUserLoggedIn().then((isUserLoggedIn) {
+    //   if (isUserLoggedIn) {
+    //     //navigate to business info
+    //     context.push('/business-info');
+    //   } else {
+
+    //   }
+    // });
   }
 
   @override

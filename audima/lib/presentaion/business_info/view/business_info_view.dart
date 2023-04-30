@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:flutter/material.dart';
@@ -96,79 +97,60 @@ class _BusinessInfoState extends State<BusinessInfo> {
         color: Colors.amber,
       );
     } else {
-      return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          title: Text(
-            'Audima',
-            style: ResponsiveTextStyles.audima(context),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-        ),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage('assets/images/businessinfo.jpg'),
-                ),
-              ),
+      return ContainerWithinImage(
+          mainChild: CarouselSlider.builder(
+            carouselController: _carouselController,
+            itemCount: _viewModel.getListSize(),
+            options: CarouselOptions(
+              onScrolled: (index) {
+                _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
+                    ? null
+                    : _carouselController
+                        .animateToPage(_viewModel.getCurrentIndex());
+              },
+              enableInfiniteScroll: false,
+              viewportFraction: 4,
+              enlargeCenterPage: false,
+              height: 400,
+              initialPage: 0,
+              autoPlay: false,
+              onPageChanged: (index, reason) {
+                _viewModel.onPageChanged(index);
+              },
             ),
-            CarouselSlider.builder(
-              carouselController: _carouselController,
-              itemCount: _viewModel.getListSize(),
-              options: CarouselOptions(
-                onScrolled: (index) {
-                  _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
-                      ? null
-                      : _carouselController
-                          .animateToPage(_viewModel.getCurrentIndex());
-                },
-                enableInfiniteScroll: false,
-                viewportFraction: 4,
-                enlargeCenterPage: false,
-                height: MediaQuery.of(context).size.height / 1.5,
-                initialPage: 0,
-                autoPlay: false,
-                onPageChanged: (index, reason) {
-                  _viewModel.onPageChanged(index);
-                },
-              ),
-              itemBuilder: (context, index, realIndex) {
-                return Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [
-                          0.1,
-                          0.5,
-                          0.9,
-                        ],
-                        colors: [
-                          Colors.black,
-                          Colors.white,
-                          Colors.black,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(30))),
-                  width: 900,
-                  height: 900,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 40),
+            itemBuilder: (context, index, realIndex) {
+              return Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [
+                        0.1,
+                        0.5,
+                        0.9,
+                      ],
+                      colors: [
+                        Colors.black,
+                        Colors.white,
+                        Colors.black,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
+                width: 350,
+                height: 400,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
                             child: Text(
                               questionObject.question,
                               style:
@@ -176,38 +158,62 @@ class _BusinessInfoState extends State<BusinessInfo> {
                                       context),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 40),
-                            child: Text(
-                              '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 100,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: _getQuestionWidget(
-                            _viewModel.getCurrentIndex(), questionObject),
-                      ),
-                      Spacer(),
-                      _getNextButtonWidget(
-                        _viewModel.getCurrentIndex(),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      );
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Text(
+                            '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: _getQuestionWidget(
+                          _viewModel.getCurrentIndex(), questionObject),
+                    ),
+                    Spacer(),
+                    _getNextButtonWidget(
+                      _viewModel.getCurrentIndex(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          containerContentHeight: 400,
+          containerContentWidth: 350);
     }
   }
+  // Scaffold(
+  //       extendBodyBehindAppBar: true,
+  //       appBar: AppBar(
+  //         title: Text(
+  //           'Audima',
+  //           style: ResponsiveTextStyles.audima(context),
+  //         ),
+  //         elevation: 0,
+  //         backgroundColor: Colors.transparent,
+  //       ),
+  //       body: Stack(
+  //         alignment: Alignment.center,
+  //         children: [
+  //           Container(
+  //             decoration: BoxDecoration(
+  //               image: DecorationImage(
+  //                 fit: BoxFit.cover,
+  //                 image: AssetImage('assets/images/businessinfo.jpg'),
+  //               ),
+  //             ),
+  //           ),
+
+  //         ],
+  //       ),
+  //     );
 
   // _getQuestionWidget for 4 questions main widgets
   Widget _getQuestionWidget(int index, dynamic questionObject) {
@@ -262,27 +268,36 @@ class _BusinessInfoState extends State<BusinessInfo> {
   //4 widgets I will create to be shown in the carousal slider which will be handled through stream controllers in the view model
   Widget _textQuestionWidget(String hint, String error,
       TextEditingController textEditingController, Stream<bool> stream) {
-    return StreamBuilder<bool>(
-        stream: stream,
-        builder: (context, snapshot) {
-          return TextField(
-            controller: textEditingController,
-            style: ResponsiveTextStyles.businessDetailMainTextStyle(context),
-            decoration: InputDecoration(
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintStyle: ResponsiveTextStyles.businessInfoHintStyle(context),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.black,
+    return Column(
+      children: [
+        SizedBox(
+          height: 50,
+        ),
+        StreamBuilder<bool>(
+            stream: stream,
+            builder: (context, snapshot) {
+              return TextField(
+                controller: textEditingController,
+                style:
+                    ResponsiveTextStyles.businessDetailMainTextStyle(context),
+                decoration: InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  hintStyle:
+                      ResponsiveTextStyles.businessInfoHintStyle(context),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                    ),
+                  ),
+                  hintText: hint,
+                  errorText: (snapshot.data ?? true) ? null : error,
                 ),
-              ),
-              hintText: hint,
-              errorText: (snapshot.data ?? true) ? null : error,
-            ),
-            cursorColor: Colors.white,
-            cursorHeight: 30,
-          );
-        });
+                cursorColor: Colors.white,
+                cursorHeight: 30,
+              );
+            }),
+      ],
+    );
   }
 
   Widget _brandPersonalityWidget(
@@ -309,7 +324,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
           ],
         ),
         SizedBox(
-          height: 60,
+          height: 20,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -356,7 +371,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
                   builder: (context, snapshot) {
                     return CircleAvatar(
                       backgroundColor: Colors.transparent,
-                      radius: (brandPersonality.isHovered) == true ? 45 : 34,
+                      radius: (brandPersonality.isHovered) == true ? 25 : 25,
                       child: SvgPicture.asset(
                         brandPersonality.imgUrl,
                         color: brandPersonality.color,
@@ -447,7 +462,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
         stream: _stream,
         builder: (context, snapshot) {
           return Padding(
-            padding: const EdgeInsets.only(right: 100, bottom: 100),
+            padding: const EdgeInsets.only(right: 100),
             child: Align(
               alignment: Alignment.bottomRight,
               child: Container(

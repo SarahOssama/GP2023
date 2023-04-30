@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerPage extends StatefulWidget {
+class BusinessVideo extends StatefulWidget {
   @override
-  _VideoPlayerPageState createState() => _VideoPlayerPageState();
+  _BusinessVideoState createState() => _BusinessVideoState();
 }
 
-class _VideoPlayerPageState extends State<VideoPlayerPage> {
+class _BusinessVideoState extends State<BusinessVideo> {
   // late VideoPlayerController _controller;
   final TextEditingController _videoEditsTextController =
       TextEditingController();

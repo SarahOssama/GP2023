@@ -25,7 +25,7 @@ class RoutesManager {
           path: '/',
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
-            child: VideoPlayerPage(),
+            child: SplashView(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),
@@ -44,20 +44,20 @@ class RoutesManager {
             transitionDuration: const Duration(milliseconds: 500),
           ),
         ),
-        GoRoute(
-            name: "login",
-            path: '/login',
-            pageBuilder: (context, state) {
-              initLoginModule();
-              return CustomTransitionPage<void>(
-                key: state.pageKey,
-                child: LoginView(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) =>
-                        FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 500),
-              );
-            }),
+        // GoRoute(
+        //     name: "login",
+        //     path: '/login',
+        //     pageBuilder: (context, state) {
+        //       initLoginModule();
+        //       return CustomTransitionPage<void>(
+        //         key: state.pageKey,
+        //         child: LoginView(),
+        //         transitionsBuilder:
+        //             (context, animation, secondaryAnimation, child) =>
+        //                 FadeTransition(opacity: animation, child: child),
+        //         transitionDuration: const Duration(milliseconds: 500),
+        //       );
+        //     }),
         GoRoute(
           name: "business-info",
           path: '/business-info',
@@ -80,15 +80,12 @@ class RoutesManager {
             // }),
             pageBuilder: (context, state) {
               initMissionStatementModule();
-              BusinessInfoObject _businessInfoObject = BusinessInfoObject(
-                  "tmico", "authentic", "business", "selling medical devices");
-              // BusinessInfoObject businessInfoObject =
-              //     state.extra as BusinessInfoObject;
+              BusinessInfoObject businessInfoObject =
+                  state.extra as BusinessInfoObject;
               return CustomTransitionPage<void>(
                 key: state.pageKey,
                 child: MissionStatementView(
-                    businessInfoObject: BusinessInfoObject("tmico", "authentic",
-                        "business", "selling medical devices")),
+                    businessInfoObject: businessInfoObject),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) =>
                         FadeTransition(opacity: animation, child: child),
@@ -100,7 +97,7 @@ class RoutesManager {
           path: '/business-video',
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
-            child: VideoPlayerPage(),
+            child: BusinessVideo(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),

@@ -50,7 +50,7 @@ class _HomeViewState extends State<HomeView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 200,
+                  radius: 120,
                   backgroundImage: AssetImage('assets/images/audimalogo.png'),
                 ),
                 SizedBox(
@@ -62,7 +62,7 @@ class _HomeViewState extends State<HomeView> {
                   colorOpacity: 1,
                   child: SizedBox(
                     height: 40,
-                    width: ResponsiveValues.aboutUsBrowseProductsWidth(context),
+                    width: 250,
                     child: ElevatedButton(
                       style: ButtonStyle(
                           shape:
@@ -74,7 +74,7 @@ class _HomeViewState extends State<HomeView> {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.white)),
                       onPressed: () {
-                        context.go("/login");
+                        context.go("/business-info");
                       },
                       child: CustomizedText(
                           text: "Start Your Business Journey",

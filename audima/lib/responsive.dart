@@ -519,7 +519,7 @@ class ResponsiveTextStyles {
     return GoogleFonts.sora(
         shadows: <Shadow>[
           const Shadow(
-            blurRadius: 2,
+            blurRadius: 10,
             color: Colors.black,
           ),
         ],
@@ -529,7 +529,7 @@ class ResponsiveTextStyles {
           valueWhen: [
             const Condition.smallerThan(name: DESKTOP, value: 27.0),
             const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
-            const Condition.smallerThan(name: TABLET, value: 20.0),
+            const Condition.smallerThan(name: TABLET, value: 11.0),
           ],
         ).value,
         color: Colors.white,
@@ -784,18 +784,12 @@ class ResponsiveTextStyles {
   }
 
   static TextStyle startYourBusinessJourney(context) {
-    return GoogleFonts.lato(
+    return GoogleFonts.lobster(
       fontSize: ResponsiveValue(
         context,
-        defaultValue: 20.0,
+        defaultValue: 13.0,
         valueWhen: [
           const Condition.smallerThan(name: DESKTOP, value: 18.0),
-          const Condition.smallerThan(name: "SMALLERDESKTOP", value: 16.0),
-          const Condition.smallerThan(name: TABLET, value: 15.0),
-          const Condition.smallerThan(name: "SMALLERTABLET", value: 14.0),
-          const Condition.smallerThan(name: MOBILE, value: 12.0),
-          const Condition.smallerThan(name: "SMALLERMOBILE", value: 10.0),
-          const Condition.smallerThan(name: "SMALLESTMOBILE", value: 9.0),
         ],
       ).value,
       color: Colors.black,

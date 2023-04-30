@@ -62,8 +62,8 @@ class _MissionStatementViewState extends State<MissionStatementView> {
 
   Widget _getContentWidget() {
     return ContainerWithinImage(
-      containerContentWidth: 800,
-      containerContentHeight: 700,
+      containerContentWidth: 300,
+      containerContentHeight: 500,
       mainChild: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,7 +81,7 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                     textAlign: TextAlign.center,
                     keyboardType: TextInputType.multiline,
                     minLines: 1, //Normal textInputField will be displayed
-                    maxLines: 15, // wh
+                    maxLines: 6, // wh
 
                     controller: _missionStatementTextController,
                     style:
