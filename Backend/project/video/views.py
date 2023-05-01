@@ -8,11 +8,13 @@ from rest_framework.response import Response
 
 
 
+
 from .models import Video
 from .forms import Video_Form
 from .serializers import VideoSerializer
 from .parameters import getParams
-from .edits import editVideo
+from .edits import editVideo,editVideoNER
+from .NER import getParamsNER
 
 # Create your views here.
 
@@ -55,12 +57,13 @@ def edit(request):
     reqCommand = request.data['command']
     print(reqCommand)
     # Get Parameters 
-    result =getParams(reqCommand)
+    # result =getParams(reqCommand)
+    result= getParamsNER(reqCommand)
     clip= video.media_file
     print("clip",clip)
     # Edit Video
     ## Pass parameters 
-    flag=editVideo(clip,result)
+    flag=editVideoNER(clip,result)
     if( flag):
         video.media_file="videos/Out.mp4"
         video.save()

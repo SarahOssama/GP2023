@@ -11,6 +11,27 @@ global i
 i=0
 
 
+def editVideoNER(clip,entities):
+
+    # Create a Clip with video
+    clip="media/"+str(clip)
+    clip=createClip(clip)
+    result = [(ent.text,ent.label_) for ent in entities]
+
+    # for text,label in result:
+    #     # print(entity.text, entity.label_)
+    #     # print(type(entity))
+    if len(result)==3:
+        if result[0][1] == 'TRIM':
+                clip=trim(clip,result[1][0],result[2][0])
+    
+    if finalFit(clip) : return True
+
+    
+
+        
+
+
 def editVideo(clip,commandParams):
 
     command = commandParams[0] if len(commandParams) > 0 else None
