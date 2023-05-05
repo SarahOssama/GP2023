@@ -25,7 +25,7 @@ class RoutesManager {
           path: '/',
           pageBuilder: (context, state) => CustomTransitionPage<void>(
             key: state.pageKey,
-            child: SplashView(),
+            child: BusinessVideo(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),
