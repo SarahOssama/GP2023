@@ -5,12 +5,12 @@ from django.shortcuts import render
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-
+from rest_framework import status
 
 
 from .models import Video
 from .forms import Video_Form
+from .views_functions import check_existence_of_media_file,upload_video
 from .serializers import VideoSerializer
 from .parameters import getParams
 from .edits import editVideo,editVideoNER
@@ -29,17 +29,30 @@ def index(request):
     return render(request,'index.html',{"video":video})
 
 
+
 @api_view(['POST'])
 def upload(request):
     #upload video one at a time
-    # video=Video.objects.all()
-    # print(request.data)
+    empty,msg,response = check_existence_of_media_file(request.data)
+
     serializer=VideoSerializer(data=request.data)
+    if empty :
+        return Response( {'message': str(msg)}, status=response)
+    
     if serializer.is_valid():
-        serializer.save()
+        file_field = request.FILES['media_file']
+        message,response,success= upload_video(file_field)
+        if success:
+            serializer.save()
+            # increment the count of media 
+            return Response({'message': str(message)},status=response)
+        else:
+            return Response({'message': str(message)}, status=response)  
+    else:
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   
-    return Response(serializer.data)
 
 @api_view(['GET'])
 def viewVideo(request):
