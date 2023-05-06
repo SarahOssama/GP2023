@@ -36,5 +36,11 @@ abstract class VideoServiceClient {
       @Part(name: 'caption') String caption,
   );
 
+  //edit video api
+  @GET("/video/edit/")
+  @MultiPart()
+  Future<VideoResponse> editVideo(
+      @Part(name: 'command') String command,
+  );
  
 }

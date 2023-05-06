@@ -24,5 +24,8 @@ abstract class Repository {
       BusinessInfoRequest businessInfoRequest);
 
   //upload video
-  Future<Either<Failure, Video>> uploadVideo(VideoRequest videoRequest);
+  Future<Either<Failure, Video>> uploadVideo(UploadVideoRequest videoRequest);
+
+  //edit video
+  Future<Either<Failure, Video>> editVideo(EditVideoRequest editVideoRequest);
 }

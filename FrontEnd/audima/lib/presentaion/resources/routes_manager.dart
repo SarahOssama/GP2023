@@ -23,10 +23,9 @@ class RoutesManager {
           name: "splash",
           path: '/',
           pageBuilder: (context, state) { 
-            initVideoUploadModule(); 
           return CustomTransitionPage<void>(
             key: state.pageKey,
-            child: BusinessVideo(),
+            child: SplashView(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),

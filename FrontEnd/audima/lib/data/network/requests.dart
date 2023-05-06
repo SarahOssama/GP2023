@@ -10,8 +10,12 @@ class BusinessInfoRequest {
   String bussinesInfoTextElements;
   BusinessInfoRequest(this.bussinesInfoTextElements);
 }
-class VideoRequest {
+class UploadVideoRequest {
   File file;
   String caption;
-  VideoRequest(this.file, this.caption);
+  UploadVideoRequest(this.file, this.caption);
+}
+class EditVideoRequest {
+  String command;
+  EditVideoRequest(this.command);
 }

@@ -6,6 +6,7 @@ import 'package:audima/data/network/network_info.dart';
 import 'package:audima/data/repository/repository_impl.dart';
 import 'package:audima/domain/repository/repository.dart';
 import 'package:audima/domain/usecase/businessInfo_usecase.dart';
+import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/login_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
@@ -78,11 +79,14 @@ void initMissionStatementModule() {
 void initVideoUploadModule() {
   //check if upload video usecase is not registered
   if (!GetIt.I.isRegistered<UploadVideoUseCase>()) {
-    //register mission statement usecase
+    //register upload video usecase
     instance.registerFactory<UploadVideoUseCase>(
         () => UploadVideoUseCase(instance()));
+    //register edit video usecase
+    instance.registerFactory<EditVideoUseCase>(
+        () => EditVideoUseCase(instance()));
     //register mission statement viewmodel
     instance.registerFactory<BusinessVideoViewModel>(
-        () => BusinessVideoViewModel(instance()));
+        () => BusinessVideoViewModel(instance(), instance()));
   }
 }

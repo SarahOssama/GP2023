@@ -14,7 +14,7 @@ class BusinessVideo extends StatefulWidget {
   _BusinessVideoState createState() => _BusinessVideoState();
 }
   final BusinessVideoViewModel _viewModel =
-     BusinessVideoViewModel(instance());
+     BusinessVideoViewModel(instance(), instance());
 class _BusinessVideoState extends State<BusinessVideo> {
   // late VideoPlayerController _controller;
   final TextEditingController _videoEditsTextController =
@@ -110,26 +110,21 @@ class _BusinessVideoState extends State<BusinessVideo> {
                           children: [
                             Expanded(
                               flex: 3,
-                              child: GestureDetector(
-                                onTap: () {
-                                 print("object");
-                                },
-                                child: TextField(
-                                  textInputAction: TextInputAction.done,
-                                  showCursor: true,
-                                  controller: _videoEditsTextController,
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: 'Type in your video edits',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide(color: Colors.blue),
-                                    ),
+                              child: TextField(
+                                textInputAction: TextInputAction.done,
+                                showCursor: true,
+                                controller: _videoEditsTextController,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  hintText: 'Type in your video edits',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(color: Colors.blue),
                                   ),
                                 ),
                               ),
@@ -144,7 +139,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                   return ReactiveElevatedButton(
                                     text: 'Edit',
                                     onPressed: () {
-                                      _viewModel.editVideo();
+                                      _viewModel.editVideo(_videoEditsTextController);
                                     },
                                     buttonColorCondition:
                                         (snapshot.data??false)
