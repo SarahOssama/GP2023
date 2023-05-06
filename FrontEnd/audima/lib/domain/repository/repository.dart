@@ -22,4 +22,7 @@ abstract class Repository {
 
   Future<Either<Failure, MissionStatement>> getMissionStatement(
       BusinessInfoRequest businessInfoRequest);
+
+  //upload video
+  Future<Either<Failure, Video>> uploadVideo(VideoRequest videoRequest);
 }

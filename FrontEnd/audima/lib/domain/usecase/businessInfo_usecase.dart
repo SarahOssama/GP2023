@@ -7,19 +7,19 @@ import 'package:dartz/dartz.dart';
 
 class MissionStatementUseCase
     implements
-        BaseUseCase<MissionStatementUseCaseUseCaseInput, MissionStatement> {
+        BaseUseCase<MissionStatementUseCaseInput, MissionStatement> {
   final Repository _repository;
   MissionStatementUseCase(this._repository);
   @override
   Future<Either<Failure, MissionStatement>> execute(
-      MissionStatementUseCaseUseCaseInput input) async {
+      MissionStatementUseCaseInput input) async {
     return await _repository
         .getMissionStatement(BusinessInfoRequest(input.businessInfoStatement));
   }
 }
 
-class MissionStatementUseCaseUseCaseInput {
+class MissionStatementUseCaseInput {
   String businessInfoStatement;
 
-  MissionStatementUseCaseUseCaseInput(this.businessInfoStatement);
+  MissionStatementUseCaseInput(this.businessInfoStatement);
 }

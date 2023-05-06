@@ -15,6 +15,8 @@ abstract class RemoteDataSource {
   //business info
   Future<MissionStatementResponse> getMissionStatement(
       BusinessInfoRequest businessInfoRequest);
+  //video
+  Future<VideoResponse> uploadVideo(VideoRequest videoRequest);
 }
 
 //create the class which implements the remote data source abstract class
@@ -24,7 +26,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   //so i need to create a constructor
   //then i need to create an instance from the appserviceclient
   final AppServiceClient _appServiceClient;
-  RemoteDataSourceImpl(this._appServiceClient);
+  final VideoServiceClient _videoServiceClient;
+  RemoteDataSourceImpl(this._appServiceClient, this._videoServiceClient);
   @override
   Future<AuthenticationResponse> login(LoginRequest loginRequest) async {
     //here i need to call the login function from the appserviceclient
@@ -48,4 +51,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     return await _appServiceClient
         .getMissionStatement(businessInfoRequest.bussinesInfoTextElements);
   }
+  
+  @override
+  Future<VideoResponse> uploadVideo(VideoRequest videoRequest) {
+    return _videoServiceClient.uploadVideo(videoRequest.file, videoRequest.caption);
+  }
+
 }

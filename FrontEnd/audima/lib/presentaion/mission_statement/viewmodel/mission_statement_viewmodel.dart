@@ -42,27 +42,6 @@ class MissionStatementViewModel extends BaseViewModel
     _generateMissionStatement();
   }
 
-  void _generateMissionStatement() async {
-    inputState.add(LoadingState(
-      stateRendererType: StateRendererType.popUpLoadingState,
-      message: 'Generating Mission Statement',
-    ));
-
-    (await _missionStatementUseCase.execute(MissionStatementUseCaseUseCaseInput(
-            missionStatementBasicStatement)))
-        .fold((failure) {
-      inputState
-          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
-
-      //left means failure
-    }, (data) {
-      //right means success
-      inputState.add(ContentState());
-      inputMissionStatement.add(data.missionStatement);
-      missionStatementObject = missionStatementObject.copyWith(
-          missionStatement: data.missionStatement!);
-    });
-  }
 
   @override
   void doEditOrSaveFunction() {
@@ -107,6 +86,27 @@ class MissionStatementViewModel extends BaseViewModel
   }
 
   //------------------------------------------------------------------------------helper functions
+  void _generateMissionStatement() async {
+    inputState.add(LoadingState(
+      stateRendererType: StateRendererType.popUpLoadingState,
+      message: 'Generating Mission Statement',
+    ));
+
+    (await _missionStatementUseCase.execute(MissionStatementUseCaseInput(
+            missionStatementBasicStatement)))
+        .fold((failure) {
+      inputState
+          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
+
+      //left means failure
+    }, (data) {
+      //right means success
+      inputState.add(ContentState());
+      inputMissionStatement.add(data.missionStatement);
+      missionStatementObject = missionStatementObject.copyWith(
+          missionStatement: data.missionStatement);
+    });
+  }
   bool _checkIfMissionStatementIsEmpty() {
     if (missionStatementObject.missionStatement == "") {
       return true;
