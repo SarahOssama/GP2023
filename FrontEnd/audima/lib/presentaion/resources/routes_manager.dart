@@ -15,7 +15,6 @@ GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 class RoutesManager {
   AppPreferences _appPreferences = instance<AppPreferences>();
-
   static final GoRouter router = GoRouter(
       urlPathStrategy: UrlPathStrategy.path,
       navigatorKey: navKey,
@@ -23,14 +22,16 @@ class RoutesManager {
         GoRoute(
           name: "splash",
           path: '/',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
+          pageBuilder: (context, state) { 
+          return CustomTransitionPage<void>(
             key: state.pageKey,
-            child: BusinessVideo(),
+            child: SplashView(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),
             transitionDuration: const Duration(milliseconds: 500),
-          ),
+          );
+          }
         ),
         GoRoute(
           name: "home",
@@ -95,14 +96,17 @@ class RoutesManager {
         GoRoute(
           name: "business-video",
           path: '/business-video',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
+                    pageBuilder: (context, state) { 
+            initVideoUploadModule(); 
+          return CustomTransitionPage<void>(
             key: state.pageKey,
             child: BusinessVideo(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) =>
                     FadeTransition(opacity: animation, child: child),
             transitionDuration: const Duration(milliseconds: 500),
-          ),
+          );
+          }
         ),
       ],
       errorPageBuilder: (context, state) {

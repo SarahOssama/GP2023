@@ -47,3 +47,14 @@ extension MissionStatementResponseMapper on MissionStatementResponse? {
     );
   }
 }
+//extension for VideoResponse
+extension VideoResponseMapper on VideoResponse? {
+  Video toDomain() {
+    return Video(
+      this?.id.orZero() ?? Constants.zero,
+      this?.videoPath.orEmpty() ?? Constants.empty,
+      this?.caption.orEmpty() ?? Constants.empty,
+    );
+  }
+
+}

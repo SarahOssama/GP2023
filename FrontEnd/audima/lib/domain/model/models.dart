@@ -65,6 +65,9 @@ class BusinessWholeData {
   bool isBusinessInfoCompleted;
   BusinessWholeData(this.businessInfoObject, this.isBusinessInfoCompleted);
 }
+
+//---------------------------------------------------------------------------------------apis models
+
 //login models
 
 class Customer {
@@ -90,6 +93,12 @@ class Authentication {
 }
 
 class MissionStatement {
-  String? missionStatement;
+  String missionStatement;
   MissionStatement(this.missionStatement);
+}
+class Video {
+  int id;
+  String videoUrl;
+  String caption;
+  Video(this.id,this.videoUrl, this.caption);
 }

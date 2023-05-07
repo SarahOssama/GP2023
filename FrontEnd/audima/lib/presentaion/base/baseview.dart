@@ -16,7 +16,7 @@ class ContainerWithinImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset:true,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
@@ -37,22 +37,26 @@ class ContainerWithinImage extends StatelessWidget {
               ),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Container(
-                  width: containerContentWidth,
-                  height: containerContentHeight,
-                  decoration: Constants.blackedShadowContainer,
-                  child: mainChild,
-                ),
+          SingleChildScrollView(
+            
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Container(
+                      width: containerContentWidth,
+                      height: containerContentHeight,
+                      decoration: Constants.blackedShadowContainer,
+                      child: mainChild,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  secondaryChild ?? const SizedBox.shrink()
+                ],
               ),
-              SizedBox(
-                height: 50,
-              ),
-              secondaryChild ?? const SizedBox.shrink()
-            ],
+            
           )
         ],
       ),

@@ -6,8 +6,12 @@ import 'package:audima/data/network/network_info.dart';
 import 'package:audima/data/repository/repository_impl.dart';
 import 'package:audima/domain/repository/repository.dart';
 import 'package:audima/domain/usecase/businessInfo_usecase.dart';
+import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/login_usecase.dart';
+import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
+import 'package:audima/presentaion/business_video/view/business_video_view.dart';
+import 'package:audima/presentaion/business_video/viewmodel/business_video_viewmodel.dart';
 import 'package:audima/presentaion/login/viewmodel/login_viewmodel.dart';
 import 'package:audima/presentaion/mission_statement/viewmodel/mission_statement_viewmodel.dart';
 import 'package:dio/dio.dart';
@@ -38,10 +42,12 @@ Future<void> initAppModule() async {
   //appservice client instance
   Dio dio = await instance<DioFactory>().getDio();
   instance.registerLazySingleton<AppServiceClient>(() => AppServiceClient(dio));
+    instance.registerLazySingleton<VideoServiceClient>(() => VideoServiceClient(dio));
+
 
   //remote data source instance
   instance.registerLazySingleton<RemoteDataSource>(
-      () => RemoteDataSourceImpl(instance()));
+      () => RemoteDataSourceImpl(instance(), instance()));
   //repository instance
   instance.registerLazySingleton<Repository>(
       () => RepositoryImpl(instance(), instance()));
@@ -66,5 +72,21 @@ void initMissionStatementModule() {
     //register mission statement viewmodel
     instance.registerFactory<MissionStatementViewModel>(
         () => MissionStatementViewModel(instance()));
+  }
+}
+
+//init for video upload module
+void initVideoUploadModule() {
+  //check if upload video usecase is not registered
+  if (!GetIt.I.isRegistered<UploadVideoUseCase>()) {
+    //register upload video usecase
+    instance.registerFactory<UploadVideoUseCase>(
+        () => UploadVideoUseCase(instance()));
+    //register edit video usecase
+    instance.registerFactory<EditVideoUseCase>(
+        () => EditVideoUseCase(instance()));
+    //register mission statement viewmodel
+    instance.registerFactory<BusinessVideoViewModel>(
+        () => BusinessVideoViewModel(instance(), instance()));
   }
 }

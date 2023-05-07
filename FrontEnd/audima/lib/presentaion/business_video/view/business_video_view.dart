@@ -1,24 +1,28 @@
 import 'dart:io';
+import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/business_info/viewModel/business_info_viewModel.dart';
 import 'package:audima/presentaion/business_video/viewModel/business_video_viewModel.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:get_it/get_it.dart';
 import 'package:video_player/video_player.dart';
 
 class BusinessVideo extends StatefulWidget {
   @override
   _BusinessVideoState createState() => _BusinessVideoState();
 }
-
+  final BusinessVideoViewModel _viewModel =
+     BusinessVideoViewModel(instance(), instance());
 class _BusinessVideoState extends State<BusinessVideo> {
   // late VideoPlayerController _controller;
   final TextEditingController _videoEditsTextController =
       TextEditingController();
-  final BusinessVideoViewModel _viewModel = BusinessVideoViewModel();
+
   @override
   void initState() {
+    
     _videoEditsTextController.addListener(() {
       _viewModel.updateVideoEdits(_videoEditsTextController.text);
     });
@@ -43,7 +47,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
           builder: (context, snapshot) {
             return ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(18)),
-              child: snapshot.hasData
+              child: snapshot.data == true
                   ? Stack(
                       children: [
                         VideoPlayer(
@@ -107,6 +111,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                             Expanded(
                               flex: 3,
                               child: TextField(
+                                textInputAction: TextInputAction.done,
                                 showCursor: true,
                                 controller: _videoEditsTextController,
                                 decoration: InputDecoration(
@@ -128,19 +133,24 @@ class _BusinessVideoState extends State<BusinessVideo> {
                               width: 10,
                             ),
                             Expanded(
-                              child: ReactiveElevatedButton(
-                                text: 'Edit',
-                                onPressed: () {
-                                  _viewModel.editVideo();
-                                },
-                                buttonColorCondition:
-                                    _videoEditsTextController.text.isNotEmpty
-                                        ? false
-                                        : true,
-                                buttonPressedCondition:
-                                    _videoEditsTextController.text.isNotEmpty
-                                        ? false
-                                        : true,
+                              child: StreamBuilder<bool>(
+                                stream: _viewModel.outputVideoEditsState,
+                                builder: (context, snapshot) {
+                                  return ReactiveElevatedButton(
+                                    text: 'Edit',
+                                    onPressed: () {
+                                      _viewModel.editVideo(_videoEditsTextController);
+                                    },
+                                    buttonColorCondition:
+                                        (snapshot.data??false)
+                                            ? false
+                                            : true,
+                                    buttonPressedCondition:
+                                        (snapshot.data??false)
+                                            ? false
+                                            : true,
+                                  );
+                                }
                               ),
                             ),
                           ],
