@@ -18,7 +18,14 @@
   },
   "labels":{
     "ner":[
+      "BLUR",
+      "BRIGHT",
+      "COLOR",
+      "DARK",
+      "POSITION",
+      "SIZE",
       "SPEED",
+      "TEXT",
       "TIME",
       "TRIM"
     ]

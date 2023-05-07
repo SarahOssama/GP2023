@@ -68,6 +68,7 @@ def edit(request):
     video = Video.objects.last()
     # serializer=VideoSerializer(video,many=True)
     reqCommand = request.data['command']
+    id = Video.objects.last().id
     print(reqCommand)
     # Get Parameters 
     # result =getParams(reqCommand)
@@ -76,9 +77,9 @@ def edit(request):
     print("clip",clip)
     # Edit Video
     ## Pass parameters 
-    flag=editVideoNER(clip,result,reqCommand)
+    flag=editVideoNER(clip,result,reqCommand,id)
     if( flag):
-        video.media_file="videos/Out.mp4"
+        video.media_file=f'videos/Out{id}.mp4'
         video.save()
         serializer=VideoSerializer(video)
         return Response(serializer.data)

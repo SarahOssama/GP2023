@@ -13,19 +13,22 @@ global i
 i=0
 
 
-def editVideoNER(clip,entities,reqCommand):
+def editVideoNER(clip,entities,reqCommand,id):
 
     # Create a Clip with video
     clip="media/"+str(clip)
     clip=createClip(clip)
+    print(clip.size)
+    #,clip.duration,clip.fps,clip.w,clip.h,clip.ro
 
-    actions=['TRIM','TEXT','FADE_IN','FADE_OUT','SPEED','VOLUME','RESIZE','CROP','BLUR']
+    actions = ['TRIM','SPEED','TEXT','BLUR','BRIGHT','DARK','ANIMATE','MONOC']
     extractedLabels=[entity.label_ for entity in entities]
     allAction=[entity.label_ for entity in entities if entity.label_ in actions]
     
 
     edits_Items = [[ent.label_,ent.text] for ent in entities]
-    print(extractedLabels)
+    print(edits_Items)
+    print(allAction)
     if len(allAction) == 0 :
         # Sorry We Have No Action Given
         pass
@@ -69,13 +72,21 @@ def editVideoNER(clip,entities,reqCommand):
 
             extractedSize=[entity.text for entity in entities if entity.label_ == 'SIZE']
             size= extractedSize[0] if len(extractedSize) > 0 else size
+            size_map = {
+                'small': 50,
+                'medium': 75,
+                'large': 100
+            }
+
+            size = size_map.get(size.lower(), None)
+
 
             extractedPosition=[entity.text for entity in entities if entity.label_ == 'POSITION']
             position= extractedPosition[0] if len(extractedPosition) > 0 else position
 
             pattern = "'(.*?)'"
             text = re.search(pattern, reqCommand).group(1)
-
+            print(text,position,colour,size,start,duration)    
             clip= addText(clip,text,position,colour,size,start,duration)
             pass
         
@@ -84,21 +95,25 @@ def editVideoNER(clip,entities,reqCommand):
             pass
 
         if 'BRIGHT' in extractedLabels:
+            clip= Brighten(clip)
             
             pass
 
         if 'DARK' in extractedLabels:
+            clip= Darken(clip)
             pass
 
         if 'ANIMATE' in extractedLabels:
+            clip= animate(clip)
             pass
 
         if 'MONOC' in extractedLabels:
+            clip= monochrome(clip)
             pass
         pass
 
 
-    if finalFit(clip) : return True
+    if finalFit(clip,id) : return True
 
 
     
@@ -146,11 +161,11 @@ def addText(clip, text='Hello Test', position='center', color='black', size=75,s
     txt_clip = txt_clip.set_duration(duration)
     return CompositeVideoClip([clip, txt_clip]) 
 
-def finalFit(clip, width=848, height=1280):
+def finalFit(clip,id, width=848, height=1280):
     combine = clips_array([[clip]])
     cambiado = combine.fx(vfx.resize,(width,height),width= width)
     print("Hamada in final fit")
-    cambiado.write_videofile("media/videos/Out.mp4")
+    cambiado.write_videofile(f'media/videos/Out{id}.mp4')
     return True
     
     
