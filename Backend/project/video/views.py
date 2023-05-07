@@ -76,7 +76,7 @@ def edit(request):
     print("clip",clip)
     # Edit Video
     ## Pass parameters 
-    flag=editVideoNER(clip,result)
+    flag=editVideoNER(clip,result,reqCommand)
     if( flag):
         video.media_file="videos/Out.mp4"
         video.save()

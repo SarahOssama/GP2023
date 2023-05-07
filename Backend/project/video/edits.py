@@ -1,4 +1,6 @@
+import re
 from moviepy.editor import *
+from skimage.filters import gaussian
 import asyncio
 from rest_framework.response import Response
 
@@ -11,21 +13,93 @@ global i
 i=0
 
 
-def editVideoNER(clip,entities):
+def editVideoNER(clip,entities,reqCommand):
 
     # Create a Clip with video
     clip="media/"+str(clip)
     clip=createClip(clip)
-    result = [(ent.text,ent.label_) for ent in entities]
 
-    # for text,label in result:
-    #     # print(entity.text, entity.label_)
-    #     # print(type(entity))
-    if len(result)==3:
-        if result[0][1] == 'TRIM':
-                clip=trim(clip,result[1][0],result[2][0])
+    actions=['TRIM','TEXT','FADE_IN','FADE_OUT','SPEED','VOLUME','RESIZE','CROP','BLUR']
+    extractedLabels=[entity.label_ for entity in entities]
+    allAction=[entity.label_ for entity in entities if entity.label_ in actions]
     
+
+    edits_Items = [[ent.label_,ent.text] for ent in entities]
+    print(extractedLabels)
+    if len(allAction) == 0 :
+        # Sorry We Have No Action Given
+        pass
+    if len(allAction) > 1 :
+        # Handle Multiple actions
+        pass
+    if len(allAction) == 1 :
+        # Handle 1 action
+        if 'TRIM' in extractedLabels:
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            start=0
+            end=clip.duration
+            # Handle Trim
+            start= min(extractedtime) if len(extractedtime) > 0 else start
+            end= max(extractedtime) if max(extractedtime) != start else end
+            clip= trim(clip,start,end)
+            pass
+        if 'SPEED' in extractedLabels:
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            factor=1
+            # Handle Speed
+            factor= extractedtime[0] if len(extractedtime) > 0 else factor
+            print(factor)
+            clip= speedx(clip,int(factor))
+            pass
+
+        if 'TEXT' in extractedLabels:
+            
+            start=0
+            duration=clip.duration
+            colour = 'black'
+            size = 75
+            position = 'center'
+            # Handle Trim
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            start= min(extractedtime) if len(extractedtime) > 0 else start
+            duration= max(extractedtime) if max(extractedtime) != start else end
+
+            extractedColour=[entity.text for entity in entities if entity.label_ == 'COLOR']
+            colour= extractedColour[0] if len(extractedColour) > 0 else colour
+
+            extractedSize=[entity.text for entity in entities if entity.label_ == 'SIZE']
+            size= extractedSize[0] if len(extractedSize) > 0 else size
+
+            extractedPosition=[entity.text for entity in entities if entity.label_ == 'POSITION']
+            position= extractedPosition[0] if len(extractedPosition) > 0 else position
+
+            pattern = "'(.*?)'"
+            text = re.search(pattern, reqCommand).group(1)
+
+            clip= addText(clip,text,position,colour,size,start,duration)
+            pass
+        
+        if 'BLUR' in extractedLabels:
+            clip= blur(clip)
+            pass
+
+        if 'BRIGHT' in extractedLabels:
+            
+            pass
+
+        if 'DARK' in extractedLabels:
+            pass
+
+        if 'ANIMATE' in extractedLabels:
+            pass
+
+        if 'MONOC' in extractedLabels:
+            pass
+        pass
+
+
     if finalFit(clip) : return True
+
 
     
 
@@ -80,7 +154,29 @@ def finalFit(clip, width=848, height=1280):
     return True
     
     
-    
+
+
+
+def blur_helper(image):
+    """ Returns a blurred (radius=2 pixels) version of the image """
+    return gaussian(image.astype(float), sigma=6)
+
+def blur(clip):
+    return clip.fl_image(blur_helper)
+
+
+def Brighten(clip):
+    return  clip.fx(vfx.gamma_corr, 0.5)
+
+def Darken(clip):
+    return  clip.fx(vfx.gamma_corr, 1.5)
+
+
+def animate(clip ):
+    return clip.fx(vfx.painting, saturation = 1.6, black = 0.006)
+
+def monochrome(clip):
+    return clip.fx(vfx.blackwhite)
 
 
 def fade_in(clip, duration):
@@ -100,6 +196,8 @@ def resize(clip, width, height):
 
 def crop(clip, x1, y1, x2, y2):
     return clip.crop(x1, y1, x2, y2)
+
+
 
 # def set_duration(clip, duration):
 #     return clip.set_duration(duration)
