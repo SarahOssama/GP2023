@@ -3,6 +3,7 @@ import 'package:audima/data/mapper/mapper.dart';
 import 'package:audima/data/network/error_handler.dart';
 import 'package:audima/data/network/network_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:audima/domain/model/models.dart';
 
@@ -89,6 +90,14 @@ class RepositoryImpl implements Repository {
   @override
   Future<Either<Failure, Video>> uploadVideo(
       UploadVideoRequest videoRequest) async {
+    // final connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.mobile) {
+    //   print("mobile");
+    //   // I am connected to a mobile network.
+    // } else if (connectivityResult == ConnectivityResult.wifi) {
+    //   print("wifi");
+    //   // I am connected to a wifi network.
+    // }
     if (await _networkInfo.isConnected) {
       //it is connected to interent so it is safe to call the api
       //so i need to call the login function from the remote data source
@@ -96,7 +105,7 @@ class RepositoryImpl implements Repository {
         final response = await _remoteDataSource.uploadVideo(videoRequest);
 
         //then i need to check if the response is success or failure
-        if (response.videoPath != null) {
+        if (response.message == "uploaded") {
           //it is success so i need to return a success
           //return the data
           return Right(response.toDomain());

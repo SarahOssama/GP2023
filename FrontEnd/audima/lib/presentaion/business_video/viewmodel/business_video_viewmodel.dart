@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:audima/app/constants.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
+import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
+import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -15,6 +17,7 @@ import 'package:video_player/video_player.dart';
 class BusinessVideoViewModel extends BaseViewModel
     with BusinessVideoViewModelInputs, BusinessVideoViewModelOutputs {
   late VideoPlayerController controller;
+  late ChewieController chewieController;
   bool isVideoUploaded = false;
   final UploadVideoUseCase _uploadVideoUseCase;
   final EditVideoUseCase _editVideoUseCase;
@@ -32,37 +35,104 @@ class BusinessVideoViewModel extends BaseViewModel
 
   @override
   void start() {
+    inputIsAnyVideoUploaded.add(false);
     inputState.add(ContentState());
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerControllerStreamController.close();
+    _isAnyVideoUploadedStreamController.close();
+    _videoEditsStateStreamController.close();
+    controller.dispose();
+    chewieController.dispose();
+
+    super.dispose();
   }
 
   //------------------------------------------------------------------------------video player orders
   @override
   Future<void> pickVideo() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.video,
-    )
-        .then((result) async {
-      if (result != null) {
-        if (isVideoUploaded) {
-          controller.dispose();
-          inputIsVideoPlayerControllerInitialized.add(false);
-        }
-        isVideoUploaded = true;
-        inputState.add(LoadingState(
-            stateRendererType: StateRendererType.popUpLoadingState,
-            message: "Uploading your Video"));
-        File file = File(result.files.single.path!);
-        await _uploadVideo(file, "ss");
-        controller = VideoPlayerController.file(file)
-          ..initialize().then((_) {})
-          ..addListener(() {
-            _updateVideoPlayerController();
-          })
-          ..play();
-        inputState.add(ContentState());
-        inputIsAnyVideoUploaded.add(true);
+    );
+
+    if (result != null) {
+      if (isVideoUploaded) {
+        // controller.dispose();
+        // chewieController.dispose();
+        inputIsVideoPlayerControllerInitialized.add(false);
       }
+
+      inputState.add(LoadingState(
+          stateRendererType: StateRendererType.popUpLoadingState,
+          message: "Uploading your Video"));
+      File file = File(result.files.single.path!);
+      (await _uploadVideoUseCase.execute(UploadVideoUseCaseInput(file, "ss")))
+          .fold((failure) {
+        inputState.add(
+            ErrorState(StateRendererType.popUpErrorState, failure.message));
+
+        //left means failure
+      }, (data) async {
+        //right means success
+        controller = VideoPlayerController.file(file);
+        await Future.wait([controller.initialize()]);
+        chewieController = ChewieController(
+          autoInitialize: true,
+          videoPlayerController: controller,
+          autoPlay: true,
+          looping: true,
+          aspectRatio: controller.value.aspectRatio,
+        );
+        inputIsVideoPlayerControllerInitialized.add(true);
+        inputIsAnyVideoUploaded.add(true);
+        inputState.add(ContentState());
+        isVideoUploaded = true;
+      });
+    }
+  }
+
+  @override
+  Future<void> editVideo(TextEditingController textEditingController) async {
+    inputState.add(
+      LoadingState(
+        stateRendererType: StateRendererType.popUpLoadingState,
+        message: "Editing your Video",
+      ),
+    );
+    controller.pause();
+    (await _editVideoUseCase.execute(
+      EditVideoUseCaseInput(videoEditsObject.videoEdits),
+    ))
+        .fold((failure) {
+      controller.play();
+      inputState.add(
+        ErrorState(
+          StateRendererType.popUpErrorState,
+          failure.message,
+        ),
+      );
+
+      //left means failure
+    }, (data) async {
+      //right means success
+      // controller.dispose();
+      // chewieController.dispose();
+      textEditingController.clear();
+      controller = VideoPlayerController.network(
+          "${Constants.videoManipulationUrl}${data.videoUrl}");
+      await Future.wait([controller.initialize()]);
+      chewieController = ChewieController(
+        autoInitialize: true,
+        videoPlayerController: controller,
+        autoPlay: true,
+        looping: true,
+        aspectRatio: controller.value.aspectRatio,
+      );
+      inputIsVideoPlayerControllerInitialized.add(true);
+      inputIsAnyVideoUploaded.add(true);
+      inputState.add(ContentState());
     });
   }
 
@@ -72,14 +142,6 @@ class BusinessVideoViewModel extends BaseViewModel
     videoEditsObject.videoEdits == ""
         ? inputVideoEditsState.add(false)
         : inputVideoEditsState.add(true);
-  }
-
-  @override
-  void editVideo(TextEditingController textEditingController) {
-    inputState.add(LoadingState(
-        stateRendererType: StateRendererType.popUpLoadingState,
-        message: "Editing your Video"));
-    _editVideo(videoEditsObject.videoEdits, textEditingController);
   }
 
   //------------------------------------------------------------------------------video player streams
@@ -106,22 +168,14 @@ class BusinessVideoViewModel extends BaseViewModel
       _videoEditsStateStreamController.stream.map((cond) => cond);
 
   //------------------------------------------------------------------------------------------helper functions
-  Future<void> _uploadVideo(File video, String caption) async {
-    (await _uploadVideoUseCase.execute(UploadVideoUseCaseInput(video, caption)))
-        .fold((failure) {
-      inputState
-          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
-
-      //left means failure
-    }, (data) {
-      //right means success
-    });
-  }
+  Future<void> _uploadVideo(File video, String caption) async {}
 
   Future<void> _editVideo(
       String command, TextEditingController textEditingController) async {
+    controller.pause();
     (await _editVideoUseCase.execute(EditVideoUseCaseInput(command))).fold(
         (failure) {
+      controller.play();
       inputState
           .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
 
@@ -129,7 +183,6 @@ class BusinessVideoViewModel extends BaseViewModel
     }, (data) {
       //right means success
       controller.pause();
-
       controller.dispose();
       textEditingController.clear();
       controller = VideoPlayerController.network(
@@ -138,14 +191,28 @@ class BusinessVideoViewModel extends BaseViewModel
         ..addListener(() {
           _updateVideoPlayerController();
         })
-        ..play();
+        ..play()
+        ..setLooping(true);
+      chewieController = ChewieController(
+        videoPlayerController: controller,
+        autoPlay: true,
+        looping: true,
+        showControls: true,
+        allowFullScreen: true,
+        allowPlaybackSpeedChanging: false,
+        allowMuting: false,
+        showOptions: false,
+        showControlsOnInitialize: false,
+        aspectRatio: 16 / 9,
+        autoInitialize: true,
+      );
       inputState.add(ContentState());
       inputIsAnyVideoUploaded.add(true);
     });
   }
 
   void _updateVideoPlayerController() {
-    controller.value.isInitialized
+    chewieController.videoPlayerController.value.isInitialized
         ? inputIsVideoPlayerControllerInitialized.add(true)
         : inputIsVideoPlayerControllerInitialized.add(false);
   }

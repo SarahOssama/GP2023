@@ -20,19 +20,19 @@ class RoutesManager {
       navigatorKey: navKey,
       routes: <GoRoute>[
         GoRoute(
-          name: "splash",
-          path: '/',
-          pageBuilder: (context, state) { 
-          return CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: SplashView(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 500),
-          );
-          }
-        ),
+            name: "splash",
+            path: '/',
+            pageBuilder: (context, state) {
+              initVideoUploadModule();
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: BusinessVideo(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
         GoRoute(
           name: "home",
           path: '/home',
@@ -94,20 +94,19 @@ class RoutesManager {
               );
             }),
         GoRoute(
-          name: "business-video",
-          path: '/business-video',
-                    pageBuilder: (context, state) { 
-            initVideoUploadModule(); 
-          return CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: BusinessVideo(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 500),
-          );
-          }
-        ),
+            name: "business-video",
+            path: '/business-video',
+            pageBuilder: (context, state) {
+              initVideoUploadModule();
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: BusinessVideo(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
       ],
       errorPageBuilder: (context, state) {
         return MaterialPage(

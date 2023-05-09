@@ -3,29 +3,14 @@ import 'package:audima/presentaion/mission_statement/viewmodel/mission_statement
 import 'package:audima/responsive.dart';
 import 'package:flutter/material.dart';
 
-class ContainerWithinImage extends StatelessWidget {
-  Widget mainChild;
-  Widget? secondaryChild;
-  double containerContentWidth;
-  double containerContentHeight;
-  ContainerWithinImage(
-      {required this.mainChild,
-      required this.containerContentHeight,
-      required this.containerContentWidth,
-      this.secondaryChild});
+class MainScaffold extends StatelessWidget {
+  Widget child;
+  MainScaffold({required this.child});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:true,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          'Audima',
-          style: ResponsiveTextStyles.audima(context),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
+      resizeToAvoidBottomInset: true,
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -37,29 +22,33 @@ class ContainerWithinImage extends StatelessWidget {
               ),
             ),
           ),
-          SingleChildScrollView(
-            
-              child:Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      width: containerContentWidth,
-                      height: containerContentHeight,
-                      decoration: Constants.blackedShadowContainer,
-                      child: mainChild,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  secondaryChild ?? const SizedBox.shrink()
-                ],
-              ),
-            
-          )
+          AppBar(
+            title: Text(
+              'Audima',
+              style: ResponsiveTextStyles.audima(context),
+            ),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
+          child
         ],
       ),
+    );
+  }
+}
+
+class BlackedShadowContainer extends StatelessWidget {
+  Widget child;
+  double? width;
+  double? height;
+  BlackedShadowContainer({required this.child, this.width, this.height});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: Constants.blackedShadowContainer,
+      child: child,
     );
   }
 }
