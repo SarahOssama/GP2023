@@ -26,7 +26,8 @@ class DioFactory {
     // };
     dio.options = BaseOptions(
       baseUrl: Constants.baseUrl,
-      // headers: headers,
+      connectTimeout: Duration(minutes: 10),
+      receiveTimeout: Duration(minutes: 10),
     );
 
     if (!kReleaseMode) {

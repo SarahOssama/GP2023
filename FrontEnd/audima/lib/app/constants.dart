@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const String baseUrl = "https://api.metatext.ai/hub-inference";
-  static const String videoManipulationUrl = "http://192.168.1.5:8000";
+  static const String videoManipulationUrl = "http://192.168.1.32:8000";
   static const String empty = "";
   static const int zero = 0;
   static const Duration apiTimeout = Duration(minutes: 1);

@@ -117,8 +117,8 @@ class BusinessVideoViewModel extends BaseViewModel
       //left means failure
     }, (data) async {
       //right means success
-      // controller.dispose();
-      // chewieController.dispose();
+      controller.dispose();
+      chewieController.dispose();
       textEditingController.clear();
       controller = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");

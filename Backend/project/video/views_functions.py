@@ -12,13 +12,10 @@ def check_existence_of_media_file(data):
         response = status.HTTP_400_BAD_REQUEST
     return bool,message ,response  
 
-
 def upload_video(file_field):
     message='uploaded'
     bool=False
-
     response = status.HTTP_201_CREATED  
-
     content_type = file_field.name.split('.')[-1]
     valid_extensions =  ['mp4', 'mov', 'avi']  
     # print("HEllo ",content_type.lower())

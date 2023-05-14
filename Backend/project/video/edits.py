@@ -1,10 +1,13 @@
 import re
+import cv2
 from moviepy.editor import *
 from skimage.filters import gaussian
 import asyncio
 from rest_framework.response import Response
 
-
+from azure.storage.blob import BlobServiceClient
+from datetime import datetime, timedelta
+from azure.storage.blob import generate_blob_sas, BlobSasPermissions
 from video.serializers import VideoSerializer
 from .models import Video
 
@@ -13,19 +16,18 @@ global i
 i=0
 
 
-def editVideoNER(clip,entities,reqCommand,id):
+def editVideoNER(clip,entities,reqCommand,id=0):
 
     # Create a Clip with video
     clip="media/"+str(clip)
+    
     clip=createClip(clip)
-    print(clip.size)
-    #,clip.duration,clip.fps,clip.w,clip.h,clip.ro
+    clip=restoreClipSize(clip)
+
 
     actions = ['TRIM','SPEED','TEXT','BLUR','BRIGHT','DARK','ANIMATE','MONOC']
     extractedLabels=[entity.label_ for entity in entities]
     allAction=[entity.label_ for entity in entities if entity.label_ in actions]
-    
-
     edits_Items = [[ent.label_,ent.text] for ent in entities]
     print(edits_Items)
     print(allAction)
@@ -91,16 +93,30 @@ def editVideoNER(clip,entities,reqCommand,id):
             pass
         
         if 'BLUR' in extractedLabels:
-            clip= blur(clip)
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            start=0
+            end=clip.duration
+            start= min(extractedtime) if len(extractedtime) > 0 else start
+            end= max(extractedtime) if max(extractedtime) != start else end
+            clip= edit_video_duration(clip,int(start),int(end),"blur")
             pass
 
         if 'BRIGHT' in extractedLabels:
-            clip= Brighten(clip)
-            
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            start=0
+            end=clip.duration
+            start= min(extractedtime) if len(extractedtime) > 0 else start
+            end= max(extractedtime) if max(extractedtime) != start else end
+            clip= edit_video_duration(clip,int(start),int(end),"brighten")
             pass
 
         if 'DARK' in extractedLabels:
-            clip= Darken(clip)
+            extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
+            start=0
+            end=clip.duration
+            start= min(extractedtime) if len(extractedtime) > 0 else start
+            end= max(extractedtime) if max(extractedtime) != start else end
+            clip= edit_video_duration(clip,int(start),int(end),"darken")
             pass
 
         if 'ANIMATE' in extractedLabels:
@@ -161,11 +177,8 @@ def addText(clip, text='Hello Test', position='center', color='black', size=75,s
     txt_clip = txt_clip.set_duration(duration)
     return CompositeVideoClip([clip, txt_clip]) 
 
-def finalFit(clip,id, width=848, height=1280):
-    combine = clips_array([[clip]])
-    cambiado = combine.fx(vfx.resize,(width,height),width= width)
-    print("Hamada in final fit")
-    cambiado.write_videofile(f'media/videos/Out{id}.mp4')
+def finalFit(clip,id):
+    clip.write_videofile(f'media/videos/Out{id}.mp4')
     return True
     
     
@@ -233,5 +246,46 @@ def crop(clip, x1, y1, x2, y2):
 
 # clip.write_videofile("media/videos/combina5v.mp4")
 
+#------------------------------------------------------------------------helper functions------------------------------------------------------------
+def restoreClipSize(clip):
+    rotation = clip.rotation
+    width = clip.w
+    height = clip.h
+    if rotation in [90, 270]:
+        width, height = height, width
+    restoredClip = clip.fx(vfx.resize,(width,height))
+    return restoredClip
+
+
+def edit_video_duration(clip,start_time, end_time,effect_type):
+    if start_time <= clip.duration and end_time <= clip.duration:
+        if effect_type=="blur":
+            edited_sub_clip=clip.subclip(start_time, end_time).fl_image(lambda image: gaussian(image.astype(float), sigma=6))
+
+        elif effect_type=="brighten":
+            edited_sub_clip=clip.subclip(start_time, end_time).fx(vfx.gamma_corr, 0.5)
+
+        elif effect_type=="darken":
+            edited_sub_clip=clip.subclip(start_time, end_time).fx(vfx.gamma_corr, 1.5)
+        # Concatenate the modified subclip with the remaining part of the main video
+        edited_video = concatenate_videoclips([clip.subclip(0, start_time),edited_sub_clip,clip.subclip(end_time)])
+        print("--------------------------------------------------------------------------------------")
+        print(edited_video)
+        print("--------------------------------------------------------------------------------------")
+
+        
+        
+            
+    return edited_video
+# def blur_frame(get_frame, t, start_time, end_time, blur_radius):
+#     frame = get_frame(t)
+#     if start_time <= t <= end_time:
+#         blurred_frame = cv2.GaussianBlur(frame, (blur_radius, blur_radius), 0)
+#         return blurred_frame
+#     return frame
+
+# def blur_video_duration(clip, start_time, end_time, blur_radius=25):
+#     blurred_video = clip.fl(lambda gf, t: blur_frame(gf, t, start_time, end_time, blur_radius))
+#     return blurred_video
 
 
