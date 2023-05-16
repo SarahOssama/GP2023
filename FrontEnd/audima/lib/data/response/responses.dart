@@ -82,13 +82,13 @@ class MissionStatementResponse extends BaseResponse {
 //video response
 @JsonSerializable()
 class VideoResponse extends BaseResponse {
-  @JsonKey(name:"id")
-  int?id;
+  @JsonKey(name: "id")
+  int? id;
   @JsonKey(name: "media_file")
   String? videoPath;
   @JsonKey(name: "caption")
   String? caption;
-  VideoResponse(this.id,this.videoPath, this.caption);
+  VideoResponse(this.id, this.videoPath, this.caption);
 
   //from json
   factory VideoResponse.fromJson(Map<String, dynamic> json) =>
@@ -96,4 +96,24 @@ class VideoResponse extends BaseResponse {
 
   //to   json
   Map<String, dynamic> toJson() => _$VideoResponseToJson(this);
+}
+
+//ConfirmEdit response
+@JsonSerializable()
+class ConfirmEditResponse extends BaseResponse {
+  @JsonKey(name: "confirmationMessage")
+  String? confirmationMessage;
+  @JsonKey(name: "errorMessage")
+  String? errorMessage;
+  @JsonKey(name: "parameters")
+  String? parameters;
+  ConfirmEditResponse(
+      this.confirmationMessage, this.errorMessage, this.parameters);
+
+  //from json
+  factory ConfirmEditResponse.fromJson(Map<String, dynamic> json) =>
+      _$ConfirmEditResponseFromJson(json);
+
+  //to   json
+  Map<String, dynamic> toJson() => _$ConfirmEditResponseToJson(this);
 }

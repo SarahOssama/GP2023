@@ -99,3 +99,22 @@ Map<String, dynamic> _$VideoResponseToJson(VideoResponse instance) =>
       'media_file': instance.videoPath,
       'caption': instance.caption,
     };
+
+ConfirmEditResponse _$ConfirmEditResponseFromJson(Map<String, dynamic> json) =>
+    ConfirmEditResponse(
+      json['confirmationMessage'] as String?,
+      json['errorMessage'] as String?,
+      json['parameters'] as String?,
+    )
+      ..status = json['statuscode'] as int?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$ConfirmEditResponseToJson(
+        ConfirmEditResponse instance) =>
+    <String, dynamic>{
+      'statuscode': instance.status,
+      'message': instance.message,
+      'confirmationMessage': instance.confirmationMessage,
+      'errorMessage': instance.errorMessage,
+      'parameters': instance.parameters,
+    };

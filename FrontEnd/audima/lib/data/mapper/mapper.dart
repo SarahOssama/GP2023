@@ -47,6 +47,7 @@ extension MissionStatementResponseMapper on MissionStatementResponse? {
     );
   }
 }
+
 //extension for VideoResponse
 extension VideoResponseMapper on VideoResponse? {
   Video toDomain() {
@@ -56,5 +57,14 @@ extension VideoResponseMapper on VideoResponse? {
       this?.caption.orEmpty() ?? Constants.empty,
     );
   }
+}
 
+extension ConfirmEditResponseMapper on ConfirmEditResponse? {
+  ConfirmEdit toDomain() {
+    return ConfirmEdit(
+      this?.confirmationMessage.orEmpty() ?? Constants.empty,
+      this?.errorMessage.orEmpty() ?? Constants.empty,
+      this?.parameters.orEmpty() ?? Constants.empty,
+    );
+  }
 }

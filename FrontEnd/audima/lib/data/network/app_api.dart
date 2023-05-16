@@ -1,4 +1,4 @@
-import 'dart:io'; 
+import 'dart:io';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
@@ -25,6 +25,7 @@ abstract class AppServiceClient {
     @Field("text") String businessInfoStatement,
   );
 }
+
 @RestApi(baseUrl: Constants.videoManipulationUrl)
 abstract class VideoServiceClient {
   factory VideoServiceClient(Dio dio, {String baseUrl}) = _VideoServiceClient;
@@ -32,15 +33,19 @@ abstract class VideoServiceClient {
   @POST("/video/upload/")
   @MultiPart()
   Future<VideoResponse> uploadVideo(
-      @Part(name: 'media_file') File file,
-      @Part(name: 'caption') String caption,
+    @Part(name: 'media_file') File file,
+    @Part(name: 'caption') String caption,
   );
 
   //edit video api
   @GET("/video/edit/")
   @MultiPart()
   Future<VideoResponse> editVideo(
-      @Part(name: 'command') String command,
+    @Part(name: 'command') String command,
   );
- 
+  @GET("/video/preEditConfirmation/")
+  @MultiPart()
+  Future<ConfirmEditResponse> preEditVideo(
+    @Part(name: 'command') String command,
+  );
 }

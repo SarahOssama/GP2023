@@ -28,4 +28,7 @@ abstract class Repository {
 
   //edit video
   Future<Either<Failure, Video>> editVideo(EditVideoRequest editVideoRequest);
+  //pre edit video
+  Future<Either<Failure, ConfirmEdit>> preEditVideo(
+      PreEditVideoRequest preEditVideoRequest);
 }

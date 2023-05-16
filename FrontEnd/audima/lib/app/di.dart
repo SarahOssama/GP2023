@@ -8,6 +8,7 @@ import 'package:audima/domain/repository/repository.dart';
 import 'package:audima/domain/usecase/businessInfo_usecase.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/login_usecase.dart';
+import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
 import 'package:audima/presentaion/business_video/view/business_video_view.dart';
@@ -42,8 +43,8 @@ Future<void> initAppModule() async {
   //appservice client instance
   Dio dio = await instance<DioFactory>().getDio();
   instance.registerLazySingleton<AppServiceClient>(() => AppServiceClient(dio));
-    instance.registerLazySingleton<VideoServiceClient>(() => VideoServiceClient(dio));
-
+  instance
+      .registerLazySingleton<VideoServiceClient>(() => VideoServiceClient(dio));
 
   //remote data source instance
   instance.registerLazySingleton<RemoteDataSource>(
@@ -83,8 +84,11 @@ void initVideoUploadModule() {
     instance.registerFactory<UploadVideoUseCase>(
         () => UploadVideoUseCase(instance()));
     //register edit video usecase
-    instance.registerFactory<EditVideoUseCase>(
-        () => EditVideoUseCase(instance()));
+    instance
+        .registerFactory<EditVideoUseCase>(() => EditVideoUseCase(instance()));
+    //register pre edit video usecase
+    instance.registerFactory<PreEditVideoUseCase>(
+        () => PreEditVideoUseCase(instance()));
     //register mission statement viewmodel
     instance.registerFactory<BusinessVideoViewModel>(
         () => BusinessVideoViewModel(instance(), instance()));

@@ -96,9 +96,17 @@ class MissionStatement {
   String missionStatement;
   MissionStatement(this.missionStatement);
 }
+
 class Video {
   int id;
   String videoUrl;
   String caption;
-  Video(this.id,this.videoUrl, this.caption);
+  Video(this.id, this.videoUrl, this.caption);
+}
+
+class ConfirmEdit {
+  String confirmationMessage;
+  String errorMessage;
+  String parameters;
+  ConfirmEdit(this.confirmationMessage, this.errorMessage, this.parameters);
 }

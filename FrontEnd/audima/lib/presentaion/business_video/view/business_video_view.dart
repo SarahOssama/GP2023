@@ -18,7 +18,7 @@ class BusinessVideo extends StatefulWidget {
 }
 
 final BusinessVideoViewModel _viewModel =
-    BusinessVideoViewModel(instance(), instance());
+    BusinessVideoViewModel(instance(), instance(), instance());
 
 class _BusinessVideoState extends State<BusinessVideo> {
   final stt.SpeechToText _speech = stt.SpeechToText();

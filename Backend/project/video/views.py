@@ -2,12 +2,13 @@ import asyncio
 from io import BytesIO
 import io
 import tempfile
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import JSONParser
 
 from moviepy.editor import *
 
@@ -16,7 +17,7 @@ from .forms import Video_Form
 from .views_functions import check_existence_of_media_file,upload_video
 from .serializers import VideoSerializer
 from .parameters import getParams
-from .edits import editVideo,editVideoNER
+from .edits import editVideo,editVideoNER, preEditVideoNER
 from .NER import getParamsNER
 
 # Create your views here.
@@ -65,16 +66,22 @@ def viewVideo(request):
      
     return Response(serializer.data)
 
+@api_view(['GET'])
+def preEditConfirmation(request):
+    video = Video.objects.last()
+    clip= video.media_file
+    reqCommand = request.data['command']
+    result= getParamsNER(reqCommand)
+    #now i have results of parameters NER model
+    #now i have to check if the parameters are valid or not
+    correctMessage,errorMessage,=preEditVideoNER(result,reqCommand,clip)
+    return Response({'confirmationMessage': str(correctMessage),'errorMessage':str(errorMessage),'parameters':str(result)})
 
 @api_view(['GET'])
 def edit(request):
     video = Video.objects.last()
-    # serializer=VideoSerializer(video,many=True)
     reqCommand = request.data['command']
     id = Video.objects.last().id
-    print(reqCommand)
-    # Get Parameters 
-    # result =getParams(reqCommand)
     result= getParamsNER(reqCommand)
     clip= video.media_file
     print("clip",clip)

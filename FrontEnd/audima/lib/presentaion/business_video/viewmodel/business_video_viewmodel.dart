@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:audima/app/constants.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
+import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
@@ -21,7 +22,9 @@ class BusinessVideoViewModel extends BaseViewModel
   bool isVideoUploaded = false;
   final UploadVideoUseCase _uploadVideoUseCase;
   final EditVideoUseCase _editVideoUseCase;
-  BusinessVideoViewModel(this._uploadVideoUseCase, this._editVideoUseCase);
+  final PreEditVideoUseCase _preEditVideoUseCase;
+  BusinessVideoViewModel(this._uploadVideoUseCase, this._editVideoUseCase,
+      this._preEditVideoUseCase);
   //------------------------------------------------------------------------------stream controllers
   final StreamController _videoPlayerControllerStreamController =
       StreamController<bool>.broadcast();
