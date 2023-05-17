@@ -39,7 +39,7 @@ class BusinessVideoViewModel extends BaseViewModel
   @override
   void start() {
     inputIsAnyVideoUploaded.add(false);
-    inputState.add(ContentState());
+    // inputState.add(ContentState());
   }
 
   @override
@@ -79,6 +79,7 @@ class BusinessVideoViewModel extends BaseViewModel
         //left means failure
       }, (data) async {
         //right means success
+        inputState.add(ContentState());
         controller = VideoPlayerController.file(file);
         await Future.wait([controller.initialize()]);
         chewieController = ChewieController(
@@ -90,10 +91,40 @@ class BusinessVideoViewModel extends BaseViewModel
         );
         inputIsVideoPlayerControllerInitialized.add(true);
         inputIsAnyVideoUploaded.add(true);
-        inputState.add(ContentState());
+
         isVideoUploaded = true;
       });
     }
+  }
+
+  @override
+  Future<void> preEditVideo(TextEditingController textEditingController) async {
+    controller.pause();
+    inputState.add(LoadingState(
+        stateRendererType: StateRendererType.popUpLoadingState,
+        message: "Processing your Edit Command"));
+    (await _preEditVideoUseCase
+            .execute(PreEditVideoUseCaseInput(textEditingController.text)))
+        .fold((failure) {
+      inputState
+          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
+
+      //left means failure
+    }, (data) {
+      if (data.errorMessage == "") {
+        inputState.add(ConfirmationMessageState(
+            stateRendererType: StateRendererType.popUpConfirmationMessageState,
+            message: data.confirmationMessage,
+            confirmationActionFunction: () {
+              editVideo(textEditingController);
+            }));
+      } else {
+        inputState.add(
+            ErrorState(StateRendererType.popUpErrorState, data.errorMessage));
+      }
+      print(data);
+      //right means success
+    });
   }
 
   @override
@@ -120,6 +151,7 @@ class BusinessVideoViewModel extends BaseViewModel
       //left means failure
     }, (data) async {
       //right means success
+      inputState.add(ContentState());
       controller.dispose();
       chewieController.dispose();
       textEditingController.clear();
@@ -135,12 +167,12 @@ class BusinessVideoViewModel extends BaseViewModel
       );
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
-      inputState.add(ContentState());
     });
   }
 
   @override
   void updateVideoEdits(String videoEdits) {
+    print("text controller listener");
     videoEditsObject = videoEditsObject.copyWith(videoEdits: videoEdits);
     videoEditsObject.videoEdits == ""
         ? inputVideoEditsState.add(false)
@@ -171,48 +203,6 @@ class BusinessVideoViewModel extends BaseViewModel
       _videoEditsStateStreamController.stream.map((cond) => cond);
 
   //------------------------------------------------------------------------------------------helper functions
-  Future<void> _uploadVideo(File video, String caption) async {}
-
-  Future<void> _editVideo(
-      String command, TextEditingController textEditingController) async {
-    controller.pause();
-    (await _editVideoUseCase.execute(EditVideoUseCaseInput(command))).fold(
-        (failure) {
-      controller.play();
-      inputState
-          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
-
-      //left means failure
-    }, (data) {
-      //right means success
-      controller.pause();
-      controller.dispose();
-      textEditingController.clear();
-      controller = VideoPlayerController.network(
-          "${Constants.videoManipulationUrl}${data.videoUrl}")
-        ..initialize().then((_) {})
-        ..addListener(() {
-          _updateVideoPlayerController();
-        })
-        ..play()
-        ..setLooping(true);
-      chewieController = ChewieController(
-        videoPlayerController: controller,
-        autoPlay: true,
-        looping: true,
-        showControls: true,
-        allowFullScreen: true,
-        allowPlaybackSpeedChanging: false,
-        allowMuting: false,
-        showOptions: false,
-        showControlsOnInitialize: false,
-        aspectRatio: 16 / 9,
-        autoInitialize: true,
-      );
-      inputState.add(ContentState());
-      inputIsAnyVideoUploaded.add(true);
-    });
-  }
 
   void _updateVideoPlayerController() {
     chewieController.videoPlayerController.value.isInitialized
@@ -225,8 +215,9 @@ class BusinessVideoViewModel extends BaseViewModel
 abstract class BusinessVideoViewModelInputs {
   //orders
   Future<void> pickVideo();
-  void updateVideoEdits(String videoEdits);
-  void editVideo(TextEditingController textEditingController);
+  Future<void> editVideo(TextEditingController textEditingController);
+  Future<void> preEditVideo(TextEditingController textEditingController);
+  updateVideoEdits(String videoEdits);
 
   //stream inputs
   Sink get inputIsVideoPlayerControllerInitialized;

@@ -91,6 +91,6 @@ void initVideoUploadModule() {
         () => PreEditVideoUseCase(instance()));
     //register mission statement viewmodel
     instance.registerFactory<BusinessVideoViewModel>(
-        () => BusinessVideoViewModel(instance(), instance()));
+        () => BusinessVideoViewModel(instance(), instance(), instance()));
   }
 }

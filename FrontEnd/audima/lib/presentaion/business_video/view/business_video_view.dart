@@ -25,13 +25,12 @@ class _BusinessVideoState extends State<BusinessVideo> {
   bool _isListening = false;
   final TextEditingController _videoEditsTextController =
       TextEditingController();
-
   @override
   void initState() {
+    super.initState();
     _videoEditsTextController.addListener(() {
       _viewModel.updateVideoEdits(_videoEditsTextController.text);
     });
-    super.initState();
   }
 
   @override
@@ -39,9 +38,13 @@ class _BusinessVideoState extends State<BusinessVideo> {
     return StreamBuilder<FlowState>(
         stream: _viewModel.outputState,
         builder: (context, snapshot) {
-          return snapshot.data
-                  ?.getScreenWidget(context, _getContentWidget(), () {}) ??
-              _getContentWidget();
+          if (snapshot.connectionState == ConnectionState.active) {
+            return snapshot.data
+                    ?.getScreenWidget(context, _getContentWidget(), () {}) ??
+                _getContentWidget();
+          } else {
+            return _getContentWidget();
+          }
         });
   }
 
@@ -134,7 +137,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                     return ReactiveElevatedButton(
                                       text: 'Edit',
                                       onPressed: () {
-                                        _viewModel.editVideo(
+                                        _viewModel.preEditVideo(
                                             _videoEditsTextController);
                                       },
                                       buttonColorCondition:

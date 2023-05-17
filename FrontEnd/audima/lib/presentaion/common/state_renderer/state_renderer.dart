@@ -1,11 +1,13 @@
 import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:audima/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 enum StateRendererType {
   //POP UP STATES (DIALOG)
   popUpLoadingState,
+  popUpConfirmationMessageState,
   popUpErrorState,
   //FULL SCREEN STATES (FULL SCREEN)
   fullScreenLoadingState,
@@ -21,11 +23,14 @@ class StateRenderer extends StatelessWidget {
   String message;
   String title;
   Function retryActionFunction;
-  StateRenderer(
-      {required this.stateRendererType,
-      this.message = "Loading...",
-      this.title = "",
-      required this.retryActionFunction});
+  VoidCallback? confirmationActionFunction;
+  StateRenderer({
+    required this.stateRendererType,
+    this.message = "Loading...",
+    this.title = "",
+    required this.retryActionFunction,
+    this.confirmationActionFunction,
+  });
   @override
   Widget build(BuildContext context) {
     return _getStateWidget(context);
@@ -45,6 +50,22 @@ class StateRenderer extends StatelessWidget {
           _getMessage(message, context),
           SizedBox(height: 10),
           _getRetryButton("Ok", context)
+        ]);
+      case StateRendererType.popUpConfirmationMessageState:
+        return _getPopUpDialog(context, [
+          _getAnimatedImage(JsonAssets.confirmation),
+          SizedBox(height: 10),
+          _getMessage(message, context),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              _getConfirmCancelButton(
+                  "Confirm", context, confirmationActionFunction!),
+              _getConfirmCancelButton(
+                  "Cancel", context, Navigator.of(context).pop)
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
         ]);
       case StateRendererType.fullScreenLoadingState:
         return _getColumnItems([
@@ -130,7 +151,39 @@ class StateRenderer extends StatelessWidget {
   Widget _getRetryButton(String buttonTitle, BuildContext context) {
     return SizedBox(
       height: 40,
-      width: 200,
+      width: 100,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all(Colors.white),
+        ),
+        onPressed: () {
+          if (stateRendererType == StateRendererType.fullScreenErrorState) {
+            retryActionFunction.call();
+          } else //means it is popup error state
+          {
+            Navigator.of(context, rootNavigator: true).pop(true);
+          }
+        },
+        child: Center(
+          child: Text(
+            buttonTitle,
+            style: ResponsiveTextStyles.startYourBusinessJourney(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _getConfirmCancelButton(
+      String buttonTitle, BuildContext context, Function function) {
+    return SizedBox(
+      height: 40,
+      width: 100,
       child: ElevatedButton(
           style: ButtonStyle(
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -145,7 +198,7 @@ class StateRenderer extends StatelessWidget {
               retryActionFunction.call();
             } else //means it is popup error state
             {
-              Navigator.of(context).pop();
+              function;
             }
           },
           child: Text(buttonTitle)),

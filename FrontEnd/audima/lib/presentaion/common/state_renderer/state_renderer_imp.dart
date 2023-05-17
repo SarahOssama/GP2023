@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart';
 abstract class FlowState {
   StateRendererType getStateRendererType();
   String getMessage();
+  VoidCallback getConfirmationActionFunction() => () {};
 }
 
 //Loading State (Pop Up, Full Screen)
@@ -34,6 +35,25 @@ class ErrorState extends FlowState {
 
   ErrorState(this.stateRendererType, this.message);
 
+  @override
+  StateRendererType getStateRendererType() => stateRendererType;
+
+  @override
+  String getMessage() => message;
+}
+
+//confirmation message state
+class ConfirmationMessageState extends FlowState {
+  StateRendererType stateRendererType;
+  String message;
+  String title;
+  VoidCallback confirmationActionFunction;
+  ConfirmationMessageState({
+    required this.stateRendererType,
+    this.message = "Loading...",
+    this.title = "",
+    required this.confirmationActionFunction,
+  });
   @override
   StateRendererType getStateRendererType() => stateRendererType;
 
@@ -73,7 +93,23 @@ extension FlowStateExtension on FlowState {
         {
           //show pop up
           showPopUp(context, getStateRendererType(), getMessage());
-          LoadingState.popUp = true;
+          //show content screen
+          return contentScreenWidget;
+        } else {
+          //full screen loading state
+          return StateRenderer(
+              stateRendererType: getStateRendererType(),
+              message: getMessage(),
+              retryActionFunction: retryActionFunction);
+        }
+      case ConfirmationMessageState:
+        dismissDialog(context);
+        if (getStateRendererType() ==
+            StateRendererType
+                .popUpConfirmationMessageState) //pop up loading screen
+        {
+          //show pop up
+          showPopUp(context, getStateRendererType(), getMessage());
           //show content screen
           return contentScreenWidget;
         } else {
@@ -84,11 +120,7 @@ extension FlowStateExtension on FlowState {
               retryActionFunction: retryActionFunction);
         }
       case ErrorState:
-        if (LoadingState.popUp) {
-          dismissDialog(context);
-          LoadingState.popUp = false;
-        }
-
+        dismissDialog(context);
         if (getStateRendererType() ==
             StateRendererType.popUpErrorState) //pop up error screen
         {
@@ -109,29 +141,43 @@ extension FlowStateExtension on FlowState {
             retryActionFunction: retryActionFunction,
             message: getMessage());
       case ContentState:
-        if (LoadingState.popUp) {
-          dismissDialog(context);
-          LoadingState.popUp = false;
-        }
+        dismissDialog(context);
         return contentScreenWidget;
       default:
         dismissDialog(context);
-
         return contentScreenWidget;
     }
   }
 
+  _isCurrentDialogShowing(BuildContext context) {
+    // print(ModalRoute.of(context)?.isCurrent != true);
+    return ModalRoute.of(context)?.isCurrent != true;
+  }
+
   dismissDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop(true);
+    if (_isCurrentDialogShowing(context)) {
+      // print(
+      //     "dismissing1--------------------------------------------------------------------------");
+      Navigator.of(context, rootNavigator: true).pop(true);
+      // print(
+      //     "dismissing2--------------------------------------------------------------------------");
+    }
   }
 
   showPopUp(BuildContext context, StateRendererType stateRendererType,
       String message) {
+    // print(
+    //     "a7aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    if (_isCurrentDialogShowing(context)) {
+      return; // Pop-up is already showing, so don't show it again
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
-        context: context,
-        builder: (context) => StateRenderer(
-            stateRendererType: stateRendererType,
-            message: message,
-            retryActionFunction: () {})));
+          context: context,
+          builder: (context) => StateRenderer(
+              stateRendererType: stateRendererType,
+              message: message,
+              retryActionFunction: () {},
+              confirmationActionFunction: getConfirmationActionFunction()),
+        ));
   }
 }
