@@ -17,7 +17,7 @@ from .forms import Video_Form
 from .views_functions import check_existence_of_media_file,upload_video
 from .serializers import VideoSerializer
 from .parameters import getParams
-from .edits import editVideo,editVideoNER, preEditVideoNER
+from .edits import editVideoNER, preEditVideoNER
 from .NER import getParamsNER
 
 # Create your views here.
