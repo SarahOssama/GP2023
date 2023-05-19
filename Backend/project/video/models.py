@@ -23,3 +23,14 @@ class Video(models.Model):
     # command=models.CharField(max_length=1000,null=True,blank=True)
     def __str__(self):
         return self.caption
+    
+# class Video(models.Model):
+#     title = models.CharField(max_length=200)
+#     media_file=models.FileField(upload_to=f'video/{upload_to}',validators=[file_size])
+#     versions = models.ManyToManyField('self', blank=True)
+#     height = models.IntegerField()
+#     width = models.IntegerField()
+#     new_insert = models.FileField(upload_to='inserts/', null=True, blank=True)
+
+#     def __str__(self):
+#         return self.title

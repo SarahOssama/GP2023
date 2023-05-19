@@ -237,12 +237,12 @@ def createClip(path):
 
 def trim(clip, start, end):
     return clip.subclip(start, end)
-
+ 
 def addText(clip, watermark,text='Hello Test', position='center', color='black', size=75,starttime=0,duration=5):
     if watermark :
         starttime=0
         duration=5
-        txt_clip=TextClip(text, font ='cursive' ,fontsize=size, color=color).set_position(position)
+        txt_clip=TextClip(text, font ='Aldhabi' ,fontsize=size, color=color).set_position((position,'bottom'))
         txt_clip = txt_clip.set_start(int(starttime))
         txt_clip = txt_clip.set_duration(duration)
     else:  
