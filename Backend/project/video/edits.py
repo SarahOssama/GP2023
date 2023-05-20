@@ -111,7 +111,7 @@ def preEditVideoNER(entities,reqCommand,clip):
         errorMessage="Please enter a valid command"
         return correctMessage,errorMessage
     
-def editVideoNER(clip,entities,reqCommand,id=0):
+def editVideoNER(clip,entities,reqCommand,id=0,edited_versions_count=0):
     # Create a Clip with video
     clip="media/"+str(clip)
     clip=createClip(clip)
@@ -158,7 +158,7 @@ def editVideoNER(clip,entities,reqCommand,id=0):
             # Handle Trim
             extractedtime=[entity.text for entity in entities if entity.label_ == 'TIME']
             start= min(extractedtime) if len(extractedtime) > 0 else start
-            duration= max(extractedtime) if max(extractedtime) != start else end
+            duration= max(extractedtime) if max(extractedtime) != start else duration
 
             extractedColour=[entity.text for entity in entities if entity.label_ == 'COLOR']
             colour= extractedColour[0] if len(extractedColour) > 0 else colour
@@ -222,7 +222,7 @@ def editVideoNER(clip,entities,reqCommand,id=0):
         pass
 
 
-    if finalFit(clip,id) : return True
+    if finalFit(clip,id,edited_versions_count) : return True
 
 
     
@@ -240,14 +240,12 @@ def trim(clip, start, end):
  
 def addText(clip, watermark,text='Hello Test', position='center', color='black', size=75,starttime=0,duration=5):
     if watermark :
-        starttime=0
-        duration=5
+
         txt_clip=TextClip(text, font ='Aldhabi' ,fontsize=size, color=color).set_position((position,'bottom'))
         txt_clip = txt_clip.set_start(int(starttime))
         txt_clip = txt_clip.set_duration(duration)
     else:  
-        starttime=0
-        duration=5
+
         # duration=int(duration) if int(duration) < clip.duration else clip.duration
         # print(position,color,size,int(starttime),duration)
         txt_clip=TextClip(text, fontsize=size, color=color).set_position(position)
@@ -255,8 +253,8 @@ def addText(clip, watermark,text='Hello Test', position='center', color='black',
         txt_clip = txt_clip.set_duration(duration)
     return CompositeVideoClip([clip, txt_clip]) 
 
-def finalFit(clip,id):
-    clip.write_videofile(f'media/videos/Out{id}.mp4')
+def finalFit(clip,id,edited_versions_count):
+    clip.write_videofile(f'media/videos/Out_{id}_{edited_versions_count}.mp4')
     return True
     
     

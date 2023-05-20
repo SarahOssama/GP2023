@@ -4,4 +4,4 @@ from .models import Video
 class Video_Form(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ['caption','media_file']
+        fields = ['title','media_file','height','width','new_insert','versions']

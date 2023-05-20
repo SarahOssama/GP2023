@@ -14,7 +14,7 @@ from moviepy.editor import *
 
 from .models import Video
 from .forms import Video_Form
-from .views_functions import check_existence_of_media_file,upload_video
+from .views_functions import *
 from .serializers import VideoSerializer
 from .parameters import getParams
 from .edits import editVideoNER, preEditVideoNER
@@ -47,7 +47,8 @@ def upload(request):
         file_field = request.FILES['media_file']
         message,response,success= upload_video(file_field)
         if success:
-            serializer.save()
+            
+            video = serializer.save()
             # increment the count of media 
             return Response({'message': str(message)},status=response)
         else:
@@ -77,19 +78,52 @@ def preEditConfirmation(request):
     correctMessage,errorMessage,=preEditVideoNER(result,reqCommand,clip)
     return Response({'confirmationMessage': str(correctMessage),'errorMessage':str(errorMessage),'parameters':str(result)})
 
+
+@api_view(['POST'])
+def editInsert(request):
+    #upload video one at a time
+    empty,msg,response = check_existence_of_media_file_insert(request.data)
+    video = Video.objects.last()
+    if empty :
+        return Response( {'message': str(msg)}, status=response)
+    
+    if True:
+        added_file_field = request.FILES['new_insert']
+        message,response,success= upload_video_insert(added_file_field)
+        if success:
+            video.new_insert = added_file_field
+            video.save()
+            serializer=VideoSerializer(video)
+
+            # increment the count of media 
+            return Response({'message': str(message)},status=response)
+        else:
+            return Response({'message': str(message)}, status=response)  
+    else:
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    reqCommand = request.data['command']
+    id = Video.objects.last().id
+    print(reqCommand)
+
+  
+
 @api_view(['GET'])
 def edit(request):
     video = Video.objects.last()
     reqCommand = request.data['command']
     id = Video.objects.last().id
+    edited_versions_count = video.get_versions_stack_count()+1
+
     result= getParamsNER(reqCommand)
     clip= video.media_file
+    video.push_to_versions_stack(clip.name)
     print("clip",clip)
     # Edit Video
     ## Pass parameters 
-    flag=editVideoNER(clip,result,reqCommand,id)
+    flag=editVideoNER(clip,result,reqCommand,id,edited_versions_count)
     if( flag):
-        video.media_file=f'videos/Out{id}.mp4'
+        video.media_file=f'videos/Out_{id}_{edited_versions_count}.mp4'
         video.save()
         serializer=VideoSerializer(video)
         return Response(serializer.data)
@@ -105,3 +139,20 @@ def edit(request):
     # return Response("Processing")
 
     ## return output video
+
+
+@api_view(['GET'])
+def revert(request):
+    video = Video.objects.last()
+    # if the stack is emplty give an error msg that no more revers are viable else revert
+    if video.get_versions_stack_count() == 0 :
+        message=  'No More Reverts are available '
+        response = status.HTTP_400_BAD_REQUEST
+
+        return Response({'message': str(message)}, status=response)
+
+    previous =video.pop_from_versions_stack()
+    video.media_file=previous
+    video.save()
+    serializer=VideoSerializer(video)
+    return Response(serializer.data)

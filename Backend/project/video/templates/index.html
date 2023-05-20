@@ -22,7 +22,7 @@
     <div class="container">
         {% csrf_token %}
         {% for x in video%}
-        <h3 class="text-center ">{{x.caption}}</h3>
+        <!-- <h3 class="text-center ">{{x.caption}}</h3> -->
         <video class="embed-responsive embed-responsive-16by9" controls="controls">
             <source src="{{x.media_file.url}}" type="video/mp4" />
         </video>
