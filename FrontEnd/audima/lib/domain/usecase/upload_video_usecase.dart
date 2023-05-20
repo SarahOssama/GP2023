@@ -8,21 +8,17 @@ import 'package:audima/domain/usecase/base_usecase.dart';
 import 'package:dartz/dartz.dart';
 
 class UploadVideoUseCase
-    implements
-        BaseUseCase<UploadVideoUseCaseInput, Video> {
+    implements BaseUseCase<UploadVideoUseCaseInput, Video> {
   final Repository _repository;
   UploadVideoUseCase(this._repository);
   @override
-  Future<Either<Failure, Video>> execute(
-      UploadVideoUseCaseInput input) async {
-    return await _repository
-        .uploadVideo(UploadVideoRequest(input.video, input.caption));
+  Future<Either<Failure, Video>> execute(UploadVideoUseCaseInput input) async {
+    return await _repository.uploadVideo(UploadVideoRequest(input.video));
   }
 }
 
 class UploadVideoUseCaseInput {
   File video;
-  String caption;
 
-  UploadVideoUseCaseInput(this.video, this.caption);
+  UploadVideoUseCaseInput(this.video);
 }

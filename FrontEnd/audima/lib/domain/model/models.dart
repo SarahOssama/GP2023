@@ -100,8 +100,7 @@ class MissionStatement {
 class Video {
   int id;
   String videoUrl;
-  String caption;
-  Video(this.id, this.videoUrl, this.caption);
+  Video(this.id, this.videoUrl);
 }
 
 class ConfirmEdit {

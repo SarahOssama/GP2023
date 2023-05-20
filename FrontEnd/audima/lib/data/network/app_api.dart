@@ -34,18 +34,20 @@ abstract class VideoServiceClient {
   @MultiPart()
   Future<VideoResponse> uploadVideo(
     @Part(name: 'media_file') File file,
-    @Part(name: 'caption') String caption,
   );
-
+  //pre edit video api
+  @GET("/video/preEditConfirmation/")
+  @MultiPart()
+  Future<ConfirmEditResponse> preEditVideo(
+    @Part(name: 'command') String command,
+  );
   //edit video api
   @GET("/video/edit/")
   Future<VideoResponse> editVideo(
     @Field("action") String action,
     @Field("features") Map<String, dynamic> features,
   );
-  @GET("/video/preEditConfirmation/")
-  @MultiPart()
-  Future<ConfirmEditResponse> preEditVideo(
-    @Part(name: 'command') String command,
-  );
+  //revert video edit api
+  @GET("/video/revert/")
+  Future<VideoResponse> revertVideoEdit();
 }

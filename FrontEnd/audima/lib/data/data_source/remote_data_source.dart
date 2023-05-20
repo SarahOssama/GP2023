@@ -17,10 +17,13 @@ abstract class RemoteDataSource {
       BusinessInfoRequest businessInfoRequest);
   //video
   Future<VideoResponse> uploadVideo(UploadVideoRequest videoRequest);
-  //edit video
-  Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest);
+  //pre edit video
   Future<ConfirmEditResponse> preEditVideo(
       PreEditVideoRequest preEditVideoRequest);
+  //edit video
+  Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest);
+  //revert video edit
+  Future<VideoResponse> revertVideoEdit();
 }
 
 //create the class which implements the remote data source abstract class
@@ -58,8 +61,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<VideoResponse> uploadVideo(UploadVideoRequest videoRequest) {
-    return _videoServiceClient.uploadVideo(
-        videoRequest.file, videoRequest.caption);
+    return _videoServiceClient.uploadVideo(videoRequest.file);
+  }
+
+  @override
+  Future<ConfirmEditResponse> preEditVideo(
+      PreEditVideoRequest preEditVideoRequest) {
+    return _videoServiceClient.preEditVideo(preEditVideoRequest.command);
   }
 
   @override
@@ -69,8 +77,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<ConfirmEditResponse> preEditVideo(
-      PreEditVideoRequest preEditVideoRequest) {
-    return _videoServiceClient.preEditVideo(preEditVideoRequest.command);
+  Future<VideoResponse> revertVideoEdit() {
+    return _videoServiceClient.revertVideoEdit();
   }
 }

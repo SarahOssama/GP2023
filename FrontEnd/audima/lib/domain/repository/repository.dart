@@ -25,10 +25,11 @@ abstract class Repository {
 
   //upload video
   Future<Either<Failure, Video>> uploadVideo(UploadVideoRequest videoRequest);
-
-  //edit video
-  Future<Either<Failure, Video>> editVideo(EditVideoRequest editVideoRequest);
   //pre edit video
   Future<Either<Failure, ConfirmEdit>> preEditVideo(
       PreEditVideoRequest preEditVideoRequest);
+  //edit video
+  Future<Either<Failure, Video>> editVideo(EditVideoRequest editVideoRequest);
+  //revert video edit
+  Future<Either<Failure, Video>> revertVideoEdit();
 }

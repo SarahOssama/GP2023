@@ -13,8 +13,7 @@ class BusinessInfoRequest {
 
 class UploadVideoRequest {
   File file;
-  String caption;
-  UploadVideoRequest(this.file, this.caption);
+  UploadVideoRequest(this.file);
 }
 
 class EditVideoRequest {

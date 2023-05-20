@@ -86,7 +86,6 @@ VideoResponse _$VideoResponseFromJson(Map<String, dynamic> json) =>
     VideoResponse(
       json['id'] as int?,
       json['media_file'] as String?,
-      json['caption'] as String?,
     )
       ..status = json['statuscode'] as int?
       ..message = json['message'] as String?;
@@ -97,7 +96,6 @@ Map<String, dynamic> _$VideoResponseToJson(VideoResponse instance) =>
       'message': instance.message,
       'id': instance.id,
       'media_file': instance.videoPath,
-      'caption': instance.caption,
     };
 
 ConfirmEditResponse _$ConfirmEditResponseFromJson(Map<String, dynamic> json) =>

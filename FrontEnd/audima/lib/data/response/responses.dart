@@ -86,9 +86,8 @@ class VideoResponse extends BaseResponse {
   int? id;
   @JsonKey(name: "media_file")
   String? videoPath;
-  @JsonKey(name: "caption")
-  String? caption;
-  VideoResponse(this.id, this.videoPath, this.caption);
+
+  VideoResponse(this.id, this.videoPath);
 
   //from json
   factory VideoResponse.fromJson(Map<String, dynamic> json) =>

@@ -18,7 +18,7 @@ class BusinessVideo extends StatefulWidget {
 }
 
 final BusinessVideoViewModel _viewModel =
-    BusinessVideoViewModel(instance(), instance(), instance());
+    BusinessVideoViewModel(instance(), instance(), instance(), instance());
 
 class _BusinessVideoState extends State<BusinessVideo> {
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -153,6 +153,23 @@ class _BusinessVideoState extends State<BusinessVideo> {
                             ),
                           ],
                         ),
+                      )
+                    : SizedBox.shrink();
+              }),
+          SizedBox(height: 20),
+          StreamBuilder<bool>(
+              stream: _viewModel.outputIsVideoEdited,
+              builder: (context, snapshot) {
+                return snapshot.data == true
+                    ? ReactiveElevatedButton(
+                        text: 'Revert',
+                        onPressed: () {
+                          _viewModel.revertVideoEdit();
+                        },
+                        buttonColorCondition:
+                            (snapshot.data ?? false) ? false : true,
+                        buttonPressedCondition:
+                            (snapshot.data ?? false) ? false : true,
                       )
                     : SizedBox.shrink();
               }),

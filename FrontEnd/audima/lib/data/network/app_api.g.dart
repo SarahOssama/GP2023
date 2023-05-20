@@ -102,10 +102,7 @@ class _VideoServiceClient implements VideoServiceClient {
   String? baseUrl;
 
   @override
-  Future<VideoResponse> uploadVideo(
-    file,
-    caption,
-  ) async {
+  Future<VideoResponse> uploadVideo(file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -117,10 +114,6 @@ class _VideoServiceClient implements VideoServiceClient {
         filename: file.path.split(Platform.pathSeparator).last,
       ),
     ));
-    _data.fields.add(MapEntry(
-      'caption',
-      caption,
-    ));
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
       method: 'POST',
@@ -131,35 +124,6 @@ class _VideoServiceClient implements VideoServiceClient {
             .compose(
               _dio.options,
               '/video/upload/',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = VideoResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<VideoResponse> editVideo(
-    action,
-    features,
-  ) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = {
-      'action': action,
-      'features': features,
-    };
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/video/edit/',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -193,6 +157,58 @@ class _VideoServiceClient implements VideoServiceClient {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ConfirmEditResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<VideoResponse> editVideo(
+    action,
+    features,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'action': action,
+      'features': features,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/video/edit/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = VideoResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<VideoResponse> revertVideoEdit() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/video/revert/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = VideoResponse.fromJson(_result.data!);
     return value;
   }
 

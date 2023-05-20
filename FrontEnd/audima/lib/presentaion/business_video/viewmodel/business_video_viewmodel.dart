@@ -5,6 +5,7 @@ import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
+import 'package:audima/domain/usecase/revert_video_edit_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
 import 'package:audima/presentaion/business_video/viewmodel/pre_edit_confirmation_helper.dart';
@@ -27,14 +28,16 @@ class BusinessVideoViewModel extends BaseViewModel
   final UploadVideoUseCase _uploadVideoUseCase;
   final EditVideoUseCase _editVideoUseCase;
   final PreEditVideoUseCase _preEditVideoUseCase;
+  final RevertVideoEditUseCase _revertVideoEditUseCase;
   BusinessVideoViewModel(this._uploadVideoUseCase, this._editVideoUseCase,
-      this._preEditVideoUseCase);
+      this._preEditVideoUseCase, this._revertVideoEditUseCase);
   //------------------------------------------------------------------------------stream controllers
   final StreamController _videoPlayerControllerStreamController =
       StreamController<bool>.broadcast();
   final StreamController _isAnyVideoUploadedStreamController =
       StreamController<bool>.broadcast();
-
+  final StreamController _isVideoEditedStreamController =
+      StreamController<bool>.broadcast();
   final StreamController _videoEditsStateStreamController =
       StreamController<bool>.broadcast();
 
@@ -85,13 +88,15 @@ class BusinessVideoViewModel extends BaseViewModel
           stateRendererType: StateRendererType.popUpLoadingState,
           message: "Uploading your Video"));
       File file = File(result.files.single.path!);
-      (await _uploadVideoUseCase.execute(UploadVideoUseCaseInput(file, "ss")))
-          .fold((failure) {
+      (await _uploadVideoUseCase.execute(UploadVideoUseCaseInput(file))).fold(
+          (failure) {
         inputState.add(
             ErrorState(StateRendererType.popUpErrorState, failure.message));
 
         //left means failure
       }, (data) async {
+        //remove revert video edit button as it is the first video upload
+        inputIsVideoEdited.add(false);
         //right means success
         inputState.add(ContentState());
         controller = VideoPlayerController.file(file);
@@ -320,6 +325,51 @@ class BusinessVideoViewModel extends BaseViewModel
       );
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
+      inputIsVideoEdited.add(true);
+    });
+  }
+
+  @override
+  Future<void> revertVideoEdit() async {
+    inputState.add(
+      LoadingState(
+        stateRendererType: StateRendererType.popUpLoadingState,
+        message: "Reverting your Video Edit",
+      ),
+    );
+    controller.pause();
+    (await _revertVideoEditUseCase.execute(RevertVideoEditUseCaseInput())).fold(
+        (failure) {
+      controller.play();
+      //remove revert video edit button as no more reverts can be done
+      inputIsVideoEdited.add(false);
+
+      inputState.add(
+        ErrorState(
+          StateRendererType.popUpErrorState,
+          failure.message,
+        ),
+      );
+
+      //left means failure
+    }, (data) async {
+      //right means success
+      inputState.add(ContentState());
+      controller.dispose();
+      chewieController.dispose();
+      controller = VideoPlayerController.network(
+          "${Constants.videoManipulationUrl}${data.videoUrl}");
+      await Future.wait([controller.initialize()]);
+      chewieController = ChewieController(
+        autoInitialize: true,
+        videoPlayerController: controller,
+        autoPlay: true,
+        looping: true,
+        aspectRatio: controller.value.aspectRatio,
+      );
+      inputIsVideoPlayerControllerInitialized.add(true);
+      inputIsAnyVideoUploaded.add(true);
+      inputIsVideoEdited.add(true);
     });
   }
 
@@ -355,6 +405,13 @@ class BusinessVideoViewModel extends BaseViewModel
   Stream<bool> get outputVideoEditsState =>
       _videoEditsStateStreamController.stream.map((cond) => cond);
 
+  @override
+  Sink get inputIsVideoEdited => _isVideoEditedStreamController.sink;
+
+  @override
+  Stream<bool> get outputIsVideoEdited =>
+      _isVideoEditedStreamController.stream.map((cond) => cond);
+
   //------------------------------------------------------------------------------------------helper functions
 
   void _updateVideoPlayerController() {
@@ -371,12 +428,14 @@ abstract class BusinessVideoViewModelInputs {
   Future<void> editVideo(TextEditingController textEditingController,
       String action, Map<String, dynamic> features);
   Future<void> preEditVideo(TextEditingController textEditingController);
+  Future<void> revertVideoEdit();
   updateVideoEdits(String videoEdits);
 
   //stream inputs
   Sink get inputIsVideoPlayerControllerInitialized;
   Sink get inputIsAnyVideoUploaded;
   Sink get inputVideoEditsState;
+  Sink get inputIsVideoEdited;
 }
 
 //------------------------------------------------------------------------------outputs
@@ -385,4 +444,5 @@ abstract class BusinessVideoViewModelOutputs {
   Stream<bool> get outputIsVideoPlayerControllerInitialized;
   Stream<bool> get outputIsAnyVideoUploaded;
   Stream<bool> get outputVideoEditsState;
+  Stream<bool> get outputIsVideoEdited;
 }

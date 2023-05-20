@@ -137,9 +137,8 @@ def revert(request):
     # if the stack is emplty give an error msg that no more revers are viable else revert
     if video.get_versions_stack_count() == 0 :
         message=  'No More Reverts are available '
-        response = status.HTTP_400_BAD_REQUEST
-
-        return Response({'message': str(message)}, status=response)
+    
+        return Response({'message': str(message)})
 
     previous =video.pop_from_versions_stack()
     video.media_file=previous

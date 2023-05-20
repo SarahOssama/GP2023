@@ -54,7 +54,6 @@ extension VideoResponseMapper on VideoResponse? {
     return Video(
       this?.id.orZero() ?? Constants.zero,
       this?.videoPath.orEmpty() ?? Constants.empty,
-      this?.caption.orEmpty() ?? Constants.empty,
     );
   }
 }
