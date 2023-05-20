@@ -10,12 +10,13 @@ class EditVideoUseCase implements BaseUseCase<EditVideoUseCaseInput, Video> {
   EditVideoUseCase(this._repository);
   @override
   Future<Either<Failure, Video>> execute(EditVideoUseCaseInput input) async {
-    return await _repository.editVideo(EditVideoRequest(input.command));
+    return await _repository
+        .editVideo(EditVideoRequest(input.action, input.features));
   }
 }
 
 class EditVideoUseCaseInput {
-  String command;
-
-  EditVideoUseCaseInput(this.command);
+  String action;
+  Map<String, dynamic> features;
+  EditVideoUseCaseInput(this.action, this.features);
 }

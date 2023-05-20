@@ -21,3 +21,23 @@ extension NonNullInteger on int? {
     }
   }
 }
+
+extension NonNullDouble on double? {
+  double orZero() {
+    if (this == null) {
+      return Constants.zeroDouble;
+    } else {
+      return this!;
+    }
+  }
+}
+
+extension NonNullMap on Map<String, dynamic>? {
+  Map<String, dynamic> orZero() {
+    if (this == null) {
+      return Constants.zeroMap;
+    } else {
+      return this!;
+    }
+  }
+}

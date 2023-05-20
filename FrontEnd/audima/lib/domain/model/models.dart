@@ -105,8 +105,9 @@ class Video {
 }
 
 class ConfirmEdit {
-  String confirmationMessage;
-  String errorMessage;
-  String parameters;
-  ConfirmEdit(this.confirmationMessage, this.errorMessage, this.parameters);
+  String message;
+  String action;
+  double videoDuration;
+  Map<String, dynamic> features;
+  ConfirmEdit(this.message, this.action, this.videoDuration, this.features);
 }

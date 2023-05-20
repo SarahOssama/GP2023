@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "50.0.0"
+  adaptive_scrollbar:
+    dependency: "direct main"
+    description:
+      name: adaptive_scrollbar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.2"
   analyzer:
     dependency: "direct main"
     description:
@@ -807,6 +814,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.27.7"
   scroll_app_bar:
     dependency: "direct main"
     description:

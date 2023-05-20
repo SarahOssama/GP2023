@@ -64,7 +64,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest) {
-    return _videoServiceClient.editVideo(editVideoRequest.command);
+    return _videoServiceClient.editVideo(
+        editVideoRequest.action, editVideoRequest.features);
   }
 
   @override

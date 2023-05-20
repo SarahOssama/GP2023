@@ -18,8 +18,9 @@ class UploadVideoRequest {
 }
 
 class EditVideoRequest {
-  String command;
-  EditVideoRequest(this.command);
+  String action;
+  Map<String, dynamic> features;
+  EditVideoRequest(this.action, this.features);
 }
 
 class PreEditVideoRequest {

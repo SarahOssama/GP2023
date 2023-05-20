@@ -3,19 +3,21 @@ import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:http/http.dart';
 
 //interact between view and state renderer
 abstract class FlowState {
   StateRendererType getStateRendererType();
   String getMessage();
-  VoidCallback getConfirmationActionFunction() => () {};
+  //these next 2 functions are optional because they are only used in the confirmation edit  state
+  VoidCallback? getConfirmationActionFunction() => () {};
+  Widget? getListView() => const SizedBox.shrink();
 }
 
 //Loading State (Pop Up, Full Screen)
 class LoadingState extends FlowState {
   StateRendererType stateRendererType;
   String message;
-  static bool popUp = false;
   LoadingState({
     required this.stateRendererType,
     this.message = "Loading...",
@@ -31,7 +33,6 @@ class LoadingState extends FlowState {
 class ErrorState extends FlowState {
   StateRendererType stateRendererType;
   String message;
-  static bool popUp = false;
 
   ErrorState(this.stateRendererType, this.message);
 
@@ -43,22 +44,25 @@ class ErrorState extends FlowState {
 }
 
 //confirmation message state
-class ConfirmationMessageState extends FlowState {
+class VideoEditConfirmationState extends FlowState {
   StateRendererType stateRendererType;
   String message;
-  String title;
   VoidCallback confirmationActionFunction;
-  ConfirmationMessageState({
-    required this.stateRendererType,
-    this.message = "Loading...",
-    this.title = "",
-    required this.confirmationActionFunction,
-  });
+  Widget? listView = const SizedBox.shrink();
+  VideoEditConfirmationState(
+      {required this.stateRendererType,
+      this.message = "Loading...",
+      required this.confirmationActionFunction,
+      this.listView});
   @override
   StateRendererType getStateRendererType() => stateRendererType;
 
   @override
   String getMessage() => message;
+  @override
+  VoidCallback getConfirmationActionFunction() => confirmationActionFunction;
+  @override
+  Widget? getListView() => listView;
 }
 
 //Content State
@@ -88,6 +92,7 @@ extension FlowStateExtension on FlowState {
       Function retryActionFunction) {
     switch (runtimeType) {
       case LoadingState:
+        dismissDialog(context);
         if (getStateRendererType() ==
             StateRendererType.popUpLoadingState) //pop up loading screen
         {
@@ -102,11 +107,11 @@ extension FlowStateExtension on FlowState {
               message: getMessage(),
               retryActionFunction: retryActionFunction);
         }
-      case ConfirmationMessageState:
+      case VideoEditConfirmationState:
         dismissDialog(context);
         if (getStateRendererType() ==
             StateRendererType
-                .popUpConfirmationMessageState) //pop up loading screen
+                .popUpVideoEditConfirmationState) //pop up loading screen
         {
           //show pop up
           showPopUp(context, getStateRendererType(), getMessage());
@@ -166,8 +171,6 @@ extension FlowStateExtension on FlowState {
 
   showPopUp(BuildContext context, StateRendererType stateRendererType,
       String message) {
-    // print(
-    //     "a7aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     if (_isCurrentDialogShowing(context)) {
       return; // Pop-up is already showing, so don't show it again
     }
@@ -177,7 +180,8 @@ extension FlowStateExtension on FlowState {
               stateRendererType: stateRendererType,
               message: message,
               retryActionFunction: () {},
-              confirmationActionFunction: getConfirmationActionFunction()),
+              confirmationActionFunction: getConfirmationActionFunction(),
+              listView: getListView()),
         ));
   }
 }

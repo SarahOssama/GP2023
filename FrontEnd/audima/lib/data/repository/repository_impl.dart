@@ -164,7 +164,7 @@ class RepositoryImpl implements Repository {
             await _remoteDataSource.preEditVideo(preEditVideoRequest);
 
         //then i need to check if the response is success or failure
-        if (response.parameters != null) {
+        if (response.message == "Confirm your Edit Command") {
           //it is success so i need to return a success
           //return the data
           return Right(response.toDomain());

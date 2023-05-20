@@ -9,6 +9,7 @@ class JsonAssets {
   static const String error = "$jsonPath/error.json";
   static const String empty = "$jsonPath/empty.json";
   static const String confirmation = "$jsonPath/confirmation.json";
+  static const String edit = "$jsonPath/edit.json";
 }
 
 //images pathes used allover the application

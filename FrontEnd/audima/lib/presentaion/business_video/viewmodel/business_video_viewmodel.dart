@@ -1,18 +1,22 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
-import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/base/baseviewmodel.dart';
+import 'package:audima/presentaion/business_video/viewmodel/pre_edit_confirmation_helper.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
+import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:chewie/chewie.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
 
 class BusinessVideoViewModel extends BaseViewModel
@@ -33,8 +37,18 @@ class BusinessVideoViewModel extends BaseViewModel
 
   final StreamController _videoEditsStateStreamController =
       StreamController<bool>.broadcast();
+
+  final StreamController<bool> _isFeatureChangedStreamController =
+      StreamController<bool>.broadcast();
   //------------------------------------------------------------------------------objects
   var videoEditsObject = VideoEditsObject("");
+  //------------------------------------------------------------------------------private controllers
+  final preEditInnerMenuScrollController =
+      ScrollController(initialScrollOffset: 0.0);
+  final preEditMenuScrollController =
+      ScrollController(initialScrollOffset: 0.0);
+  //------------------------------------------------------------------------------add Text Edit Controller
+  final editUserTextController = TextEditingController();
 
   @override
   void start() {
@@ -108,27 +122,166 @@ class BusinessVideoViewModel extends BaseViewModel
         .fold((failure) {
       inputState
           .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
-
       //left means failure
     }, (data) {
-      if (data.errorMessage == "") {
-        inputState.add(ConfirmationMessageState(
-            stateRendererType: StateRendererType.popUpConfirmationMessageState,
-            message: data.confirmationMessage,
-            confirmationActionFunction: () {
-              editVideo(textEditingController);
-            }));
-      } else {
-        inputState.add(
-            ErrorState(StateRendererType.popUpErrorState, data.errorMessage));
+      //case add text feature->remove the lists from the data.features
+      List<dynamic> listOfAvailableColors = [];
+      List<dynamic> listOfAvailableSizes = [];
+      List<dynamic> listOfAvailablePositions = [];
+      if (data.action == "Add Text") {
+        editUserTextController.text = data.features["text"];
+        listOfAvailableColors = data.features.remove("listOfAvailableColors");
+        listOfAvailableSizes = data.features.remove("listOfAvailableSizes");
+        listOfAvailablePositions =
+            data.features.remove("listOfAvailablePositions");
       }
-      print(data);
-      //right means success
+      inputState.add(
+        VideoEditConfirmationState(
+            stateRendererType:
+                StateRendererType.popUpVideoEditConfirmationState,
+            message: data.message,
+            confirmationActionFunction: () {
+              data.action == "Add Text"
+                  ? data.features["text"] = editUserTextController.text
+                  : null;
+              editVideo(textEditingController, data.action, data.features);
+            },
+            listView: Column(
+              children: [
+                ListTile(
+                  title: Text("action"),
+                  subtitle: Text(data.action.toString()),
+                ),
+                Container(
+                  height: 200,
+                  child: AdaptiveScrollbar(
+                    sliderSpacing: const EdgeInsets.all(5.0),
+                    width: 15,
+                    sliderDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey,
+                    ),
+                    controller: preEditMenuScrollController,
+                    child: ListView.builder(
+                      controller: preEditMenuScrollController,
+                      shrinkWrap: true,
+                      itemCount: data.features.entries.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                            title: Text(
+                                data.features.entries.elementAt(index).key),
+                            subtitle: data.features.entries
+                                        .elementAt(index)
+                                        .key !=
+                                    "text"
+                                ? StreamBuilder<bool>(
+                                    stream: _isFeatureChangedStreamController
+                                        .stream,
+                                    builder: (context, snapshot) {
+                                      return Text(data.features.entries
+                                                  .elementAt(index)
+                                                  .value
+                                                  .runtimeType !=
+                                              String
+                                          ? data.features.entries
+                                              .elementAt(index)
+                                              .value
+                                              .toStringAsFixed(1)
+                                          : data.features.entries
+                                              .elementAt(index)
+                                              .value);
+                                    })
+                                : TextField(
+                                    controller: editUserTextController,
+                                  ),
+                            trailing:
+                                data.features.entries.elementAt(index).key !=
+                                        "text"
+                                    ? DropdownButtonHideUnderline(
+                                        child: PopupMenuButton(
+                                          padding: EdgeInsets.zero,
+                                          icon: null,
+                                          iconSize: 0,
+                                          itemBuilder: (BuildContext context) {
+                                            return [
+                                              PopupMenuItem(
+                                                padding: EdgeInsets.zero,
+                                                child: Container(
+                                                  height:
+                                                      130, // Set the desired height for the menu
+                                                  child: Column(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Scrollbar(
+                                                          controller:
+                                                              preEditInnerMenuScrollController,
+                                                          thumbVisibility: true,
+                                                          child:
+                                                              SingleChildScrollView(
+                                                            controller:
+                                                                preEditInnerMenuScrollController,
+                                                            physics:
+                                                                AlwaysScrollableScrollPhysics(),
+                                                            child: Column(
+                                                                children: [
+                                                                  ActiobEditMenuItems(
+                                                                      videoDuration:
+                                                                          data
+                                                                              .videoDuration,
+                                                                      index:
+                                                                          index,
+                                                                      features: data
+                                                                          .features,
+                                                                      listOfAvailableColors:
+                                                                          listOfAvailableColors.cast<
+                                                                              String>(),
+                                                                      listOfAvailableSizes:
+                                                                          listOfAvailableSizes.cast<
+                                                                              String>(),
+                                                                      listOfAvailablePositions:
+                                                                          listOfAvailablePositions
+                                                                              .cast<String>())
+                                                                ]),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ];
+                                          },
+                                          child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            child: Lottie.asset(
+                                              JsonAssets.edit,
+                                            ),
+                                          ),
+                                          onSelected: (value) {
+                                            //check if end time choosen is equal to start time//then decrease start time by 1
+                                            data.features[data.features.entries
+                                                .elementAt(index)
+                                                .key] = value;
+                                            _isFeatureChangedStreamController
+                                                .add(true);
+                                          },
+                                        ),
+                                      )
+                                    : SizedBox.shrink());
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            )),
+      );
     });
   }
 
   @override
-  Future<void> editVideo(TextEditingController textEditingController) async {
+  Future<void> editVideo(TextEditingController textEditingController,
+      String action, Map<String, dynamic> features) async {
     inputState.add(
       LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
@@ -137,7 +290,7 @@ class BusinessVideoViewModel extends BaseViewModel
     );
     controller.pause();
     (await _editVideoUseCase.execute(
-      EditVideoUseCaseInput(videoEditsObject.videoEdits),
+      EditVideoUseCaseInput(action, features),
     ))
         .fold((failure) {
       controller.play();
@@ -215,7 +368,8 @@ class BusinessVideoViewModel extends BaseViewModel
 abstract class BusinessVideoViewModelInputs {
   //orders
   Future<void> pickVideo();
-  Future<void> editVideo(TextEditingController textEditingController);
+  Future<void> editVideo(TextEditingController textEditingController,
+      String action, Map<String, dynamic> features);
   Future<void> preEditVideo(TextEditingController textEditingController);
   updateVideoEdits(String videoEdits);
 

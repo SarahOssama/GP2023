@@ -62,9 +62,10 @@ extension VideoResponseMapper on VideoResponse? {
 extension ConfirmEditResponseMapper on ConfirmEditResponse? {
   ConfirmEdit toDomain() {
     return ConfirmEdit(
-      this?.confirmationMessage.orEmpty() ?? Constants.empty,
-      this?.errorMessage.orEmpty() ?? Constants.empty,
-      this?.parameters.orEmpty() ?? Constants.empty,
+      this?.message.orEmpty() ?? Constants.empty,
+      this?.action.orEmpty() ?? Constants.empty,
+      this?.videoDuration.orZero() ?? Constants.zeroDouble,
+      this?.features.orZero() ?? Constants.zeroMap,
     );
   }
 }

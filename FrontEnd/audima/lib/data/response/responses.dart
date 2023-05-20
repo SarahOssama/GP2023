@@ -101,14 +101,13 @@ class VideoResponse extends BaseResponse {
 //ConfirmEdit response
 @JsonSerializable()
 class ConfirmEditResponse extends BaseResponse {
-  @JsonKey(name: "confirmationMessage")
-  String? confirmationMessage;
-  @JsonKey(name: "errorMessage")
-  String? errorMessage;
-  @JsonKey(name: "parameters")
-  String? parameters;
-  ConfirmEditResponse(
-      this.confirmationMessage, this.errorMessage, this.parameters);
+  @JsonKey(name: "action")
+  String? action;
+  @JsonKey(name: "videoDuration")
+  double? videoDuration;
+  @JsonKey(name: "features")
+  Map<String, dynamic>? features;
+  ConfirmEditResponse(this.action, this.features);
 
   //from json
   factory ConfirmEditResponse.fromJson(Map<String, dynamic> json) =>

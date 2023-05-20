@@ -94,7 +94,7 @@ class _VideoServiceClient implements VideoServiceClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.32:8000';
+    baseUrl ??= 'http://192.168.1.100:8000';
   }
 
   final Dio _dio;
@@ -140,21 +140,22 @@ class _VideoServiceClient implements VideoServiceClient {
   }
 
   @override
-  Future<VideoResponse> editVideo(command) async {
+  Future<VideoResponse> editVideo(
+    action,
+    features,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = FormData();
-    _data.fields.add(MapEntry(
-      'command',
-      command,
-    ));
+    final _data = {
+      'action': action,
+      'features': features,
+    };
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
-      contentType: 'multipart/form-data',
     )
             .compose(
               _dio.options,

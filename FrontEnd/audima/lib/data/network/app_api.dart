@@ -39,9 +39,9 @@ abstract class VideoServiceClient {
 
   //edit video api
   @GET("/video/edit/")
-  @MultiPart()
   Future<VideoResponse> editVideo(
-    @Part(name: 'command') String command,
+    @Field("action") String action,
+    @Field("features") Map<String, dynamic> features,
   );
   @GET("/video/preEditConfirmation/")
   @MultiPart()

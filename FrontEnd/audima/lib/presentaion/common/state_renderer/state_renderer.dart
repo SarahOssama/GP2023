@@ -7,7 +7,7 @@ import 'package:lottie/lottie.dart';
 enum StateRendererType {
   //POP UP STATES (DIALOG)
   popUpLoadingState,
-  popUpConfirmationMessageState,
+  popUpVideoEditConfirmationState,
   popUpErrorState,
   //FULL SCREEN STATES (FULL SCREEN)
   fullScreenLoadingState,
@@ -21,15 +21,16 @@ enum StateRendererType {
 class StateRenderer extends StatelessWidget {
   StateRendererType stateRendererType;
   String message;
-  String title;
   Function retryActionFunction;
+  //these next 2 variables are optional because they are only used in the confirmation edit  state
   VoidCallback? confirmationActionFunction;
+  Widget? listView = const SizedBox.shrink();
   StateRenderer({
     required this.stateRendererType,
     this.message = "Loading...",
-    this.title = "",
     required this.retryActionFunction,
     this.confirmationActionFunction,
+    this.listView,
   });
   @override
   Widget build(BuildContext context) {
@@ -51,11 +52,13 @@ class StateRenderer extends StatelessWidget {
           SizedBox(height: 10),
           _getRetryButton("Ok", context)
         ]);
-      case StateRendererType.popUpConfirmationMessageState:
+      case StateRendererType.popUpVideoEditConfirmationState:
         return _getPopUpDialog(context, [
           _getAnimatedImage(JsonAssets.confirmation),
           SizedBox(height: 10),
           _getMessage(message, context),
+          SizedBox(height: 10),
+          listView!,
           SizedBox(height: 10),
           Row(
             children: [
@@ -65,8 +68,10 @@ class StateRenderer extends StatelessWidget {
                   "Cancel", context, Navigator.of(context).pop)
             ],
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          )
+          ),
+          SizedBox(height: 10),
         ]);
+
       case StateRendererType.fullScreenLoadingState:
         return _getColumnItems([
           _getAnimatedImage(JsonAssets.loading),
@@ -108,7 +113,8 @@ class StateRenderer extends StatelessWidget {
             shape: BoxShape.rectangle,
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5))],
             borderRadius: BorderRadius.all(Radius.circular(18))),
-        child: _getDialogContent(context, children),
+        child:
+            SingleChildScrollView(child: _getDialogContent(context, children)),
       ),
     );
   }
@@ -180,7 +186,7 @@ class StateRenderer extends StatelessWidget {
   }
 
   Widget _getConfirmCancelButton(
-      String buttonTitle, BuildContext context, Function function) {
+      String buttonTitle, BuildContext context, VoidCallback function) {
     return SizedBox(
       height: 40,
       width: 100,
@@ -194,14 +200,14 @@ class StateRenderer extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),
           onPressed: () {
-            if (stateRendererType == StateRendererType.fullScreenErrorState) {
-              retryActionFunction.call();
-            } else //means it is popup error state
-            {
-              function;
-            }
+            buttonTitle == "Confirm"
+                ? confirmationActionFunction!.call()
+                : Navigator.of(context, rootNavigator: true).pop(true);
           },
-          child: Text(buttonTitle)),
+          child: Text(
+            buttonTitle,
+            style: ResponsiveTextStyles.startYourBusinessJourney(context),
+          )),
     );
   }
 }
