@@ -16,11 +16,11 @@
 						{
 							"key": "media_file",
 							"type": "file",
-							"src": []
+							"src": "/D:/Uni/Graduation-Project/Models/Video_Handling/Attempt1/Model/test1.mp4"
 						},
 						{
-							"key": "caption",
-							"value": "Test 1",
+							"key": "title",
+							"value": "Attempt1",
 							"type": "text"
 						},
 						{
@@ -84,7 +84,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{   \r\n\"action\": \"fadein\",\r\n\"features\": {}\r\n}",
+					"raw": "{   \r\n    \"action\": \"monoc\",\r\n    \"features\": {\r\n        \"startTime\": 0.0,\r\n        \"endTime\": 21.99\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -123,7 +123,7 @@
 					"formdata": [
 						{
 							"key": "command",
-							"value": "blur from 1 to 3",
+							"value": "blur this video from 3 to 8",
 							"type": "text"
 						}
 					]
@@ -165,11 +165,11 @@
 						{
 							"key": "new_insert",
 							"type": "file",
-							"src": "/D:/Uni/Graduation-Project/Models/Video_Handling/Attempt1/Test2.mp4"
+							"src": "/D:/Uni/Graduation-Project/Models/Video_Handling/Attempt1/Model/test2.mp4"
 						},
 						{
 							"key": "command",
-							"value": "fadein",
+							"value": "fadein this video",
 							"type": "text"
 						}
 					]
