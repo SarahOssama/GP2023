@@ -22,8 +22,6 @@ import 'package:video_player/video_player.dart';
 
 class BusinessVideoViewModel extends BaseViewModel
     with BusinessVideoViewModelInputs, BusinessVideoViewModelOutputs {
-  late VideoPlayerController controller;
-  late ChewieController chewieController;
   bool isVideoUploaded = false;
   final UploadVideoUseCase _uploadVideoUseCase;
   final EditVideoUseCase _editVideoUseCase;
@@ -40,16 +38,25 @@ class BusinessVideoViewModel extends BaseViewModel
       StreamController<bool>.broadcast();
   final StreamController _videoEditsStateStreamController =
       StreamController<bool>.broadcast();
-
   final StreamController<bool> _isFeatureChangedStreamController =
+      StreamController<bool>.broadcast();
+
+  final StreamController<bool> _isAnotherVideoAddedStreamController =
+      StreamController<bool>.broadcast();
+  final StreamController<bool> _canAddAnotherVideoStreamController =
       StreamController<bool>.broadcast();
   //------------------------------------------------------------------------------objects
   var videoEditsObject = VideoEditsObject("");
   //------------------------------------------------------------------------------private controllers
+  late VideoPlayerController mainVideoController;
+  late ChewieController mainChewieController;
+  late VideoPlayerController secondryVideoController;
+  late ChewieController secondryChewieController;
   final preEditInnerMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
   final preEditMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
+
   //------------------------------------------------------------------------------add Text Edit Controller
   final editUserTextController = TextEditingController();
 
@@ -64,8 +71,15 @@ class BusinessVideoViewModel extends BaseViewModel
     _videoPlayerControllerStreamController.close();
     _isAnyVideoUploadedStreamController.close();
     _videoEditsStateStreamController.close();
-    controller.dispose();
-    chewieController.dispose();
+    _isVideoEditedStreamController.close();
+    _isFeatureChangedStreamController.close();
+    _isAnotherVideoAddedStreamController.close();
+    _canAddAnotherVideoStreamController.close();
+    mainVideoController.dispose();
+    mainChewieController.dispose();
+    secondryVideoController.dispose();
+    secondryChewieController.dispose();
+    editUserTextController.dispose();
 
     super.dispose();
   }
@@ -79,8 +93,6 @@ class BusinessVideoViewModel extends BaseViewModel
 
     if (result != null) {
       if (isVideoUploaded) {
-        // controller.dispose();
-        // chewieController.dispose();
         inputIsVideoPlayerControllerInitialized.add(false);
       }
 
@@ -98,27 +110,71 @@ class BusinessVideoViewModel extends BaseViewModel
         //remove revert video edit button as it is the first video upload
         inputIsVideoEdited.add(false);
         //right means success
-        inputState.add(ContentState());
-        controller = VideoPlayerController.file(file);
-        await Future.wait([controller.initialize()]);
-        chewieController = ChewieController(
+        mainVideoController = VideoPlayerController.file(file);
+        await Future.wait([mainVideoController.initialize()]);
+        mainChewieController = ChewieController(
           autoInitialize: true,
-          videoPlayerController: controller,
+          videoPlayerController: mainVideoController,
           autoPlay: true,
           looping: true,
-          aspectRatio: controller.value.aspectRatio,
+          aspectRatio: mainVideoController.value.aspectRatio,
         );
         inputIsVideoPlayerControllerInitialized.add(true);
         inputIsAnyVideoUploaded.add(true);
-
+        inputCanAddAnotherVideo.add(true);
         isVideoUploaded = true;
+        inputState.add(ContentState());
       });
     }
   }
 
   @override
+  Future<void> pickAnotherVideo() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.video,
+    );
+
+    if (result != null) {
+      inputState.add(ConfirmationState(
+          message: "Add Another Video",
+          listView: const SizedBox.shrink(),
+          stateRendererType: StateRendererType.popUpConfirmationState,
+          confirmationActionFunction: () async {
+            File file = File(result.files.single.path!);
+            secondryVideoController = VideoPlayerController.file(file);
+            await Future.wait([secondryVideoController.initialize()]);
+            secondryChewieController = ChewieController(
+              autoInitialize: true,
+              videoPlayerController: secondryVideoController,
+              autoPlay: true,
+              looping: true,
+              aspectRatio: secondryVideoController.value.aspectRatio,
+            );
+            inputState.add(ContentState());
+            inputCanAddAnotherVideo.add(false);
+            inputIsAnotherVideoAdded.add(true);
+          }));
+    }
+  }
+
+  @override
+  void discardSecondVideo() {
+    inputState.add(ConfirmationState(
+        listView: const SizedBox.shrink(),
+        message: "Discard Second Added Video",
+        stateRendererType: StateRendererType.popUpConfirmationState,
+        confirmationActionFunction: () {
+          secondryVideoController.dispose();
+          secondryChewieController.dispose();
+          inputIsAnotherVideoAdded.add(false);
+          inputCanAddAnotherVideo.add(true);
+          inputState.add(ContentState());
+        }));
+  }
+
+  @override
   Future<void> preEditVideo(TextEditingController textEditingController) async {
-    controller.pause();
+    mainVideoController.pause();
     inputState.add(LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
         message: "Processing your Edit Command"));
@@ -141,9 +197,8 @@ class BusinessVideoViewModel extends BaseViewModel
             data.features.remove("listOfAvailablePositions");
       }
       inputState.add(
-        VideoEditConfirmationState(
-            stateRendererType:
-                StateRendererType.popUpVideoEditConfirmationState,
+        ConfirmationState(
+            stateRendererType: StateRendererType.popUpConfirmationState,
             message: data.message,
             confirmationActionFunction: () {
               data.action == "Add Text"
@@ -293,12 +348,12 @@ class BusinessVideoViewModel extends BaseViewModel
         message: "Editing your Video",
       ),
     );
-    controller.pause();
+    mainVideoController.pause();
     (await _editVideoUseCase.execute(
       EditVideoUseCaseInput(action, features),
     ))
         .fold((failure) {
-      controller.play();
+      mainVideoController.play();
       inputState.add(
         ErrorState(
           StateRendererType.popUpErrorState,
@@ -309,23 +364,23 @@ class BusinessVideoViewModel extends BaseViewModel
       //left means failure
     }, (data) async {
       //right means success
-      inputState.add(ContentState());
-      controller.dispose();
-      chewieController.dispose();
+      mainVideoController.dispose();
+      mainChewieController.dispose();
       textEditingController.clear();
-      controller = VideoPlayerController.network(
+      mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
-      await Future.wait([controller.initialize()]);
-      chewieController = ChewieController(
+      await Future.wait([mainVideoController.initialize()]);
+      mainChewieController = ChewieController(
         autoInitialize: true,
-        videoPlayerController: controller,
+        videoPlayerController: mainVideoController,
         autoPlay: true,
         looping: true,
-        aspectRatio: controller.value.aspectRatio,
+        aspectRatio: mainVideoController.value.aspectRatio,
       );
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
+      inputState.add(ContentState());
     });
   }
 
@@ -337,10 +392,10 @@ class BusinessVideoViewModel extends BaseViewModel
         message: "Reverting your Video Edit",
       ),
     );
-    controller.pause();
+    mainVideoController.pause();
     (await _revertVideoEditUseCase.execute(RevertVideoEditUseCaseInput())).fold(
         (failure) {
-      controller.play();
+      mainVideoController.play();
       //remove revert video edit button as no more reverts can be done
       inputIsVideoEdited.add(false);
 
@@ -355,17 +410,17 @@ class BusinessVideoViewModel extends BaseViewModel
     }, (data) async {
       //right means success
       inputState.add(ContentState());
-      controller.dispose();
-      chewieController.dispose();
-      controller = VideoPlayerController.network(
+      mainVideoController.dispose();
+      mainChewieController.dispose();
+      mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
-      await Future.wait([controller.initialize()]);
-      chewieController = ChewieController(
+      await Future.wait([mainVideoController.initialize()]);
+      mainChewieController = ChewieController(
         autoInitialize: true,
-        videoPlayerController: controller,
+        videoPlayerController: mainVideoController,
         autoPlay: true,
         looping: true,
-        aspectRatio: controller.value.aspectRatio,
+        aspectRatio: mainVideoController.value.aspectRatio,
       );
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
@@ -411,11 +466,26 @@ class BusinessVideoViewModel extends BaseViewModel
   @override
   Stream<bool> get outputIsVideoEdited =>
       _isVideoEditedStreamController.stream.map((cond) => cond);
+  //------------------------------------------------------------------------------add another video streams
 
+  @override
+  Sink get inputCanAddAnotherVideo => _canAddAnotherVideoStreamController.sink;
+
+  @override
+  Sink get inputIsAnotherVideoAdded =>
+      _isAnotherVideoAddedStreamController.sink;
+
+  @override
+  Stream<bool> get outputCanAddAnotherVideo =>
+      _canAddAnotherVideoStreamController.stream.map((cond) => cond);
+
+  @override
+  Stream<bool> get outputIsAnotherVideoAdded =>
+      _isAnotherVideoAddedStreamController.stream.map((cond) => cond);
   //------------------------------------------------------------------------------------------helper functions
 
   void _updateVideoPlayerController() {
-    chewieController.videoPlayerController.value.isInitialized
+    mainChewieController.videoPlayerController.value.isInitialized
         ? inputIsVideoPlayerControllerInitialized.add(true)
         : inputIsVideoPlayerControllerInitialized.add(false);
   }
@@ -425,6 +495,8 @@ class BusinessVideoViewModel extends BaseViewModel
 abstract class BusinessVideoViewModelInputs {
   //orders
   Future<void> pickVideo();
+  Future<void> pickAnotherVideo();
+  void discardSecondVideo();
   Future<void> editVideo(TextEditingController textEditingController,
       String action, Map<String, dynamic> features);
   Future<void> preEditVideo(TextEditingController textEditingController);
@@ -436,6 +508,8 @@ abstract class BusinessVideoViewModelInputs {
   Sink get inputIsAnyVideoUploaded;
   Sink get inputVideoEditsState;
   Sink get inputIsVideoEdited;
+  Sink get inputIsAnotherVideoAdded;
+  Sink get inputCanAddAnotherVideo;
 }
 
 //------------------------------------------------------------------------------outputs
@@ -445,4 +519,6 @@ abstract class BusinessVideoViewModelOutputs {
   Stream<bool> get outputIsAnyVideoUploaded;
   Stream<bool> get outputVideoEditsState;
   Stream<bool> get outputIsVideoEdited;
+  Stream<bool> get outputIsAnotherVideoAdded;
+  Stream<bool> get outputCanAddAnotherVideo;
 }

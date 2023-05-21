@@ -44,12 +44,12 @@ class ErrorState extends FlowState {
 }
 
 //confirmation message state
-class VideoEditConfirmationState extends FlowState {
+class ConfirmationState extends FlowState {
   StateRendererType stateRendererType;
   String message;
   VoidCallback confirmationActionFunction;
   Widget? listView = const SizedBox.shrink();
-  VideoEditConfirmationState(
+  ConfirmationState(
       {required this.stateRendererType,
       this.message = "Loading...",
       required this.confirmationActionFunction,
@@ -107,11 +107,10 @@ extension FlowStateExtension on FlowState {
               message: getMessage(),
               retryActionFunction: retryActionFunction);
         }
-      case VideoEditConfirmationState:
+      case ConfirmationState:
         dismissDialog(context);
         if (getStateRendererType() ==
-            StateRendererType
-                .popUpVideoEditConfirmationState) //pop up loading screen
+            StateRendererType.popUpConfirmationState) //pop up loading screen
         {
           //show pop up
           showPopUp(context, getStateRendererType(), getMessage());

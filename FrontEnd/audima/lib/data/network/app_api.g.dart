@@ -94,7 +94,7 @@ class _VideoServiceClient implements VideoServiceClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.100:8000';
+    baseUrl ??= 'http://192.168.1.134:8000';
   }
 
   final Dio _dio;

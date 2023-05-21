@@ -7,7 +7,7 @@ import 'package:lottie/lottie.dart';
 enum StateRendererType {
   //POP UP STATES (DIALOG)
   popUpLoadingState,
-  popUpVideoEditConfirmationState,
+  popUpConfirmationState,
   popUpErrorState,
   //FULL SCREEN STATES (FULL SCREEN)
   fullScreenLoadingState,
@@ -52,7 +52,7 @@ class StateRenderer extends StatelessWidget {
           SizedBox(height: 10),
           _getRetryButton("Ok", context)
         ]);
-      case StateRendererType.popUpVideoEditConfirmationState:
+      case StateRendererType.popUpConfirmationState:
         return _getPopUpDialog(context, [
           _getAnimatedImage(JsonAssets.confirmation),
           SizedBox(height: 10),

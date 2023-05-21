@@ -10,6 +10,8 @@ class JsonAssets {
   static const String empty = "$jsonPath/empty.json";
   static const String confirmation = "$jsonPath/confirmation.json";
   static const String edit = "$jsonPath/edit.json";
+  static const String addAnotherVideo = "$jsonPath/addAnotherVideo.json";
+  static const String discard = "$jsonPath/discard.json";
 }
 
 //images pathes used allover the application

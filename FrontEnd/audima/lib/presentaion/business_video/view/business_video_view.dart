@@ -5,9 +5,11 @@ import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/business_info/viewModel/business_info_viewModel.dart';
 import 'package:audima/presentaion/business_video/viewModel/business_video_viewModel.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
+import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -54,19 +56,111 @@ class _BusinessVideoState extends State<BusinessVideo> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BlackedShadowContainer(
-            width: MediaQuery.of(context).size.width / 1.2,
+          Container(
             height: MediaQuery.of(context).size.height / 2.5,
-            child: StreamBuilder<bool>(
-                stream: _viewModel.outputIsVideoPlayerControllerInitialized,
-                builder: (context, snapshot) {
-                  return Center(
-                      child: snapshot.data == true
-                          ? Chewie(
-                              controller: _viewModel.chewieController,
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 4),
+              scrollDirection: Axis.horizontal,
+              children: [
+                //the main video which will be uploaded first by the user
+                BlackedShadowContainer(
+                  width: MediaQuery.of(context).size.width / 1.2,
+                  height: MediaQuery.of(context).size.height / 2.5,
+                  child: StreamBuilder<bool>(
+                      stream:
+                          _viewModel.outputIsVideoPlayerControllerInitialized,
+                      builder: (context, snapshot) {
+                        return Center(
+                            child: snapshot.data == true
+                                ? Chewie(
+                                    controller: _viewModel.mainChewieController,
+                                  )
+                                : SizedBox.shrink());
+                      }),
+                ),
+                //the add button feature which will allow the user to add another video so that he can merge them together as he wants and produce another video                //after the user adds another video, this video will be displayed
+                StreamBuilder<bool>(
+                    stream: _viewModel.outputIsAnotherVideoAdded,
+                    builder: (context, snapshot) {
+                      return snapshot.data == true
+                          ? Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                BlackedShadowContainer(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.2,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2.5,
+                                  child: Chewie(
+                                    controller:
+                                        _viewModel.secondryChewieController,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+
+                                //the discard button feature which will allow the user to discard the second video he added
+                                GestureDetector(
+                                  onTap: () {
+                                    _viewModel.discardSecondVideo();
+                                  },
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Lottie.asset(
+                                      JsonAssets.discard,
+                                    ),
+                                  ),
+                                )
+                              ],
                             )
-                          : SizedBox.shrink());
-                }),
+                          : SizedBox.shrink();
+                    }),
+                //the add button feature which will allow the user to add another video so that he can merge them together as he wants and produce another video
+                StreamBuilder<bool>(
+                    stream: _viewModel.outputCanAddAnotherVideo,
+                    builder: (context, snapshot) {
+                      return snapshot.data == true
+                          ? GestureDetector(
+                              onTap: () {
+                                _viewModel.pickAnotherVideo();
+                              },
+                              child: Container(
+                                width: 60,
+                                height: 80,
+                                child: Lottie.asset(
+                                  JsonAssets.addAnotherVideo,
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink();
+                    }),
+                //the discard button feature which will allow the user to discard the second video he added
+
+                // StreamBuilder<bool>(
+                //     stream: _viewModel.outputIsAnotherVideoAdded,
+                //     builder: (context, snapshot) {
+                //       return snapshot.data == true
+                //           ? GestureDetector(
+                //               onTap: () {
+                //                 _viewModel.discardSecondVideo();
+                //               },
+                //               child: Container(
+                //                 width: 60,
+                //                 height: 80,
+                //                 child: Lottie.asset(
+                //                   JsonAssets.discard,
+                //                 ),
+                //               ),
+                //             )
+                //           : SizedBox.shrink();
+                //     }),
+              ],
+            ),
           ),
           SizedBox(
             height: 40,
