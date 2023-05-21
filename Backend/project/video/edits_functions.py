@@ -5,16 +5,40 @@ from skimage.filters import gaussian
 
 
 def restoreClipSize(clip):
-    # rotation = clip.rotation
-    # width = clip.w
-    # height = clip.h
-    # if rotation in [90, 270]:
-    #     width, height = height, width
-    # restoredClip = clip.fx(vfx.resize, (width, height))
-    # return restoredClip
-    combine = clips_array([[clip]])
-    cambiado = combine.fx(vfx.resize, (848, 1280), width=848)
-    return cambiado
+    rotation = clip.rotation
+    width = clip.w
+    height = clip.h
+    if rotation in [90, 270]:
+        width, height = height, width
+    restoredClip = clip.fx(vfx.resize, (width, height))
+    return restoredClip
+    # combine = clips_array([[clip]])
+    # cambiado = combine.fx(vfx.resize, (848, 1280), width=848)
+    # return cambiado
+
+
+def fitSizePadding(clip1, clip2):
+    # print(clip1.size,clip2.size)
+    # Compare the widths of the two clips
+    if clip1.w == clip2.w and clip1.h == clip2.h:
+        return clip1, clip2
+    if clip1.w > clip2.w:
+        # Resize clip2 to match the width of clip1 and add black padding
+        # clip2_resized = resize(clip2, width=clip1.w)
+        padding_size_W = (clip1.w - clip2.w) // 2
+        padding_size_H = (clip1.h - clip2.h) // 2
+        # print(padding_size_W,padding_size_H)
+        clip2 = clip2.fx(vfx.margin, left=padding_size_W, right=padding_size_W,
+                         top=padding_size_H, bottom=padding_size_H, color=(0, 0, 0))
+    else:
+        # Resize clip1 to match the width of clip2 and add black padding
+        # clip1_resized = resize(clip1, width=clip2.w)
+        padding_size_W = (clip2.w - clip1.w) // 2
+        padding_size_H = (clip2.h - clip1.h) // 2
+        # print(padding_size_W,padding_size_H)
+        clip1 = clip1.fx(vfx.margin, left=padding_size_W, right=padding_size_W,
+                         top=padding_size_H, bottom=padding_size_H, color=(0, 0, 0))
+    return clip1, clip2
 
 
 def edit_video_duration(clip, start_time, end_time, effect_type):

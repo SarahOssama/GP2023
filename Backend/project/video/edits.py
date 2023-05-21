@@ -317,6 +317,7 @@ def speedx(clip, factor):
 
 
 def fadein(clip1, clip2, padding=-1, duration=2):
+    clip1, clip2 = fitSizePadding(clip1, clip2)
     clips = [clip1, clip2]
 
     faded_clips = [CompositeVideoClip(
@@ -327,6 +328,7 @@ def fadein(clip1, clip2, padding=-1, duration=2):
 
 
 def fadeout(clip1, clip2, padding=-1, duration=2):
+    clip1, clip2 = fitSizePadding(clip1, clip2)
     clips = [clip1, clip2]
 
     faded_clips = [CompositeVideoClip(
@@ -337,6 +339,7 @@ def fadeout(clip1, clip2, padding=-1, duration=2):
 
 
 def slidein(clip1, clip2, padding=-1, duration=2, side="left"):
+    clip1, clip2 = fitSizePadding(clip1, clip2)
     clips = [clip1, clip2]
     slided_clips = [CompositeVideoClip(
         [clip.fx(transfx.slide_in, duration=duration, side=side)])for clip in clips]
@@ -345,6 +348,7 @@ def slidein(clip1, clip2, padding=-1, duration=2, side="left"):
 
 
 def slideout(clip1, clip2, padding=-1, duration=2, side="left"):
+    clip1, clip2 = fitSizePadding(clip1, clip2)
     clips = [clip1, clip2]
     slided_clips = [CompositeVideoClip(
         [clip.fx(transfx.slide_out, duration=duration, side=side)])for clip in clips]
