@@ -198,7 +198,7 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
     clip = createClip(clip)
     clip = restoreClipSize(clip)
     # Create new Clip
-    if new_clip is not None:
+    if new_clip:
         new_clip = "media/"+str(new_clip)
         new_clip = createClip(new_clip)
         new_clip = restoreClipSize(new_clip)
