@@ -43,7 +43,7 @@ Please remove the part where I accidentally hit the camera.,remove
 Can you trim the video from second 2 to 5 for me?,trim
 I need to trim this clip from second 10 to 15.,trim
 Please cut out the middle section of the video from second 5 to 10.,cut
-Can you crop the video to just show the top half?,crop
+Can you crop the video to just show the right half?,crop
 I want to trim this footage from second 30 to 45.,trim
 Please trim the beginning of the video until second 10.,trim
 Can you shorten the video by cutting out the last 10 seconds?,cut
@@ -58,7 +58,7 @@ Please trim the video to fit the duration of the music track.,trim
 Can you cut out the credits at the end of the video?,cut
 I want to trim this clip from second 20 to 30.,trim
 Please remove the shaky camera footage from the video.,remove
-Can you crop the video to just show the bottom half?,crop
+Can you crop the video to just show the left half?,crop
 I need to trim this clip to only show the dialogue scene.,trim
 Can you speed up the video by 2x?,Speed
 Please increase the speed of the clip by 3x.,Speed
@@ -196,16 +196,16 @@ Can you slow down the video by x0.8 and add some subtitles?,slow
 "Place the text ""hello world"" with red color and small font size in the center of the clip for the duration of second 2 to 4.",Text
 "I need you to insert the text ""hello world"" in the middle of the clip with red color and small font size for the duration of second 2 to 4.",Text
 "Can you add a text ""hello world"" in red color and small size in the center of the clip from second 2 to 4?",Text
-"Can you insert the sentence ""hello world"" in green with a small size at the top of the clip from second 2 to 4?",Sentence
-"Add the sentence ""hello world"" in green with a small size at the top of the video between second 2 and 4.",Sentence
-"Place the sentence ""hello world"" in the top of the video between the 2nd and 4th second in green color and small size.",Sentence
-"Can you please add a sentence that says ""hello world"" with a green color and small font size at the top of the clip from second 2 to 4?",Sentence
-"Insert the sentence ""hello world"" at the top of the video between second 2 and 4 in green color and small size.",Sentence
-"Can you put a sentence that says ""hello world"" in green color and small font size at the top of the clip from second 2 to 4?",Sentence
-"Add the sentence ""hello world"" in green color and small size at the top of the video between second 2 to 4.",Sentence
-"Could you please insert the sentence ""hello world"" in blue color and small font size at the top of the clip between second 2 to 4?",Sentence
-"Place a sentence that says ""hello world"" with a red color and small size at the top of the clip from second 2 to 4.",Sentence
-"I would like to add a sentence ""hello world"" in red color and small font size at the top of the video between second 2 to 4.",Sentence
+"Can you insert the sentence ""hello world"" in green with a small size at the right of the clip from second 2 to 4?",Sentence
+"Add the sentence ""hello world"" in green with a small size at the right of the video between second 2 and 4.",Sentence
+"Place the sentence ""hello world"" in the right of the video between the 2nd and 4th second in green color and small size.",Sentence
+"Can you please add a sentence that says ""hello world"" with a green color and small font size at the right of the clip from second 2 to 4?",Sentence
+"Insert the sentence ""hello world"" at the right of the video between second 2 and 4 in green color and small size.",Sentence
+"Can you put a sentence that says ""hello world"" in green color and small font size at the right of the clip from second 2 to 4?",Sentence
+"Add the sentence ""hello world"" in green color and small size at the right of the video between second 2 to 4.",Sentence
+"Could you please insert the sentence ""hello world"" in blue color and small font size at the right of the clip between second 2 to 4?",Sentence
+"Place a sentence that says ""hello world"" with a red color and small size at the right of the clip from second 2 to 4.",Sentence
+"I would like to add a sentence ""hello world"" in red color and small font size at the right of the video between second 2 to 4.",Sentence
 "Can you put the sentence ""hello world"" in red with small font size at the top of the clip from second 2 to 4?",Sentence
 "Add the sentence ""hello world"" at the top of the video between second 2 and 4 in red color and small size.",Sentence
 "Could you please insert the sentence ""hello world"" in red color and small font size at the top of the clip from second 2 to 4?",Sentence
@@ -328,16 +328,16 @@ Can you slow down the video by x0.8 and add some subtitles?,slow
 "Place the phrase ""hello world"" with red color and small font size in the center of the clip for the duration of second 2 to 4.",Phrase
 "I need you to insert the phrase ""hello world"" in the middle of the clip with red color and small font size for the duration of second 2 to 4.",Phrase
 "Can you add a phrase ""hello world"" in red color and small size in the center of the clip from second 2 to 4?",Phrase
-"Can you insert the quote ""hello world"" in red with a small size at the bottom  of the clip from second 2 to 4?",Quote
-"Add the quote ""hello world"" in red with a small size at the bottom  of the video between second 2 and 4.",Quote
-"Place the quote ""hello world"" in the bottom  of the video between the 2nd and 4th second in red color and small size.",Quote
-"Can you please add a quote that says ""hello world"" with a red color and small font size at the bottom  of the clip from second 2 to 4?",Quote
-"Insert the quote ""hello world"" at the bottom  of the video between second 2 and 4 in red color and small size.",Quote
-"Can you put a quote that says ""hello world"" in red color and small font size at the bottom  of the clip from second 2 to 4?",Quote
-"Add the quote ""hello world"" in red color and small size at the bottom  of the video between second 2 to 4.",Quote
-"Could you please insert the quote ""hello world"" in red color and small font size at the bottom  of the clip between second 2 to 4?",Quote
-"Place a quote that says ""hello world"" with a red color and small size at the bottom  of the clip from second 2 to 4.",Quote
-"I would like to add a quote ""hello world"" in red color and small font size at the bottom  of the video between second 2 to 4.",Quote
+"Can you insert the quote ""hello world"" in red with a small size at the left  of the clip from second 2 to 4?",Quote
+"Add the quote ""hello world"" in red with a small size at the left  of the video between second 2 and 4.",Quote
+"Place the quote ""hello world"" in the left  of the video between the 2nd and 4th second in red color and small size.",Quote
+"Can you please add a quote that says ""hello world"" with a red color and small font size at the left  of the clip from second 2 to 4?",Quote
+"Insert the quote ""hello world"" at the left  of the video between second 2 and 4 in red color and small size.",Quote
+"Can you put a quote that says ""hello world"" in red color and small font size at the left  of the clip from second 2 to 4?",Quote
+"Add the quote ""hello world"" in red color and small size at the left  of the video between second 2 to 4.",Quote
+"Could you please insert the quote ""hello world"" in red color and small font size at the left  of the clip between second 2 to 4?",Quote
+"Place a quote that says ""hello world"" with a red color and small size at the left  of the clip from second 2 to 4.",Quote
+"I would like to add a quote ""hello world"" in red color and small font size at the left  of the video between second 2 to 4.",Quote
 "Can you put the quote ""hello world"" in red with small font size at the bottom  of the clip from second 2 to 4?",Quote
 "Add the quote ""hello world"" at the bottom  of the video between second 2 and 4 in yellow color and small size.",Quote
 "Could you please insert the quote ""hello world"" in yellow color and small font size at the bottom  of the clip from second 2 to 4?",Quote
@@ -602,3 +602,122 @@ Lower the level of radiance in the video.,
 Bring the luminance level of the video down.,
 Bring the brightness of the video down a bit.,
 Take the brightness level of the video down slightly.,
+Apply a monochrome filter to the entire video.,
+Convert the video to a monochrome color palette.,
+Enhance the monochrome effect in this video.,
+Make the video appear monochromatic.,
+Adjust the brightness of the monochrome video.,
+Add a subtle monochrome tint to the footage.,
+Experiment with different monochrome settings for this clip.,
+Create a vintage monochrome look for the video.,
+Blend the monochrome effect with a subtle vignette.,
+Transition from color to monochrome gradually.,
+Apply a stylish monochrome overlay to the video.,
+Add a touch of sepia to the monochrome footage.,
+Customize the intensity of the monochrome filter.,
+Give the video a classic monochrome appearance.,
+Experiment with different monochrome color tones.,
+Fade the video into monochrome at the beginning.,
+Apply a monochrome effect to specific scenes.,
+Fine-tune the contrast in the monochrome footage.,
+Create a monochrome silhouette effect in the video.,
+Mix monochrome and color elements in this edit.,
+Add animated text to the video.,
+Make the video elements come alive with animation.,
+Create smooth transitions between animated scenes.,
+Apply a dynamic animation effect to the video.,
+Add motion graphics to animate specific elements.,
+Bring static images to life with animation.,
+Customize the speed and direction of the animation.,
+Apply keyframe animation to create visual interest.,
+Animate the logo at the beginning of the video.,
+Create a mesmerizing animated background.,
+Add animated overlays to enhance the video.,
+Make the text animate in a creative way.,
+Sync the animation with the video's soundtrack.,
+Animate the transitions between video clips.,
+Use animated effects to emphasize important moments.,
+Apply a subtle parallax animation to the footage.,
+Make the characters in the video animate.,
+Add animated particles for a magical touch.,
+Create an animated intro for the video.,
+Experiment with different animation styles for this edit.,
+Apply a fade-in effect to the video.,
+Make the video gradually appear with a fade-in.,
+Create a smooth transition by fading in the next scene.,
+Add a subtle fade-in to enhance the video's opening.,
+Apply a fade-in effect to the text elements in the video.,
+Make the video elements fade in one by one.,
+Use a fade-in transition to reveal a new layer of content.,
+Add a fade-in effect to the video's background music.,
+Create a dramatic entrance by fading in the main subject.,
+Apply a fade-in effect to the video's title or logo.,
+Gradually reveal the video with a gentle fade-in.,
+Make the video fade in from black.,
+Use a fade-in effect to transition between different shots.,
+Create an engaging effect by fading in the video's overlays.,
+Apply a fade-in effect to the video's visual effects.,
+Make the video smoothly fade in from a blurred background.,
+Use a fade-in transition to introduce a new scene or location.,
+Apply a gradual fade-in effect to highlight a specific element.,
+Add a subtle fade-in to enhance the video's overall tone.,
+Make the video elements fade in and synchronize with the music.,
+Apply a fade-out effect to smoothly end the video.,
+Make the video gradually disappear with a fade-out.,
+Create a seamless transition by fading out the current scene.,
+Add a subtle fade-out to gracefully conclude the video.,
+Apply a fade-out effect to the text elements in the video.,
+Make the video elements fade out one by one.,
+Use a fade-out transition to gradually remove a layer of content.,
+Add a fade-out effect to the video's background music.,
+Create a dramatic exit by fading out the main subject.,
+Apply a fade-out effect to the video's closing credits.,
+Gradually fade out the video for a smooth ending.,
+Make the video fade out to black.,
+Use a fade-out effect to transition between different shots.,
+Create an engaging effect by fading out the video's overlays.,
+Apply a fade-out effect to the video's visual effects.,
+Make the video smoothly fade out to reveal a blurred background.,
+Use a fade-out transition to conclude a scene or location.,
+Apply a gradual fade-out effect to gradually dim a specific element.,
+Add a subtle fade-out to create an atmospheric ending for the video.,
+Make the video elements fade out synchronized with the music.,
+Slide in the next scene to introduce a new visual element.,
+Make the video elements slide in from the side for added impact.,
+Create a dynamic entrance by sliding in the main subject.,
+Add a slide-in effect to enhance the video's opening sequence.,
+Apply a sliding transition to smoothly reveal the next shot.,
+Use a slide-in effect to introduce text or captions in the video.,
+Make the video elements slide in from different directions.,
+Create a sense of motion by sliding in background elements.,
+Add a slide-in effect to bring attention to a specific element in the video.,
+Apply a slide-in transition to transition between different scenes.,
+Slide in the video's overlays for a visually engaging effect.,
+Make the video elements slide in synchronized with the music.,
+Use a slide-in effect to reveal additional content or information.,
+Apply a sliding motion to enhance the video's visual storytelling.,
+Make the video elements slide in smoothly for a polished look.,
+Create an impactful entrance by sliding in the video's title or logo.,
+Use a slide-in transition to introduce a new location or setting.,
+Apply a slide-in effect to gradually reveal a hidden element in the video.,
+Make the video elements slide in with varying speeds for a dynamic effect.,
+Use a slide-in transition to create a seamless connection between shots.,
+Slide out the current scene to smoothly transition to the next shot.,
+Make the video elements slide out to create a sense of closure.,
+Create a gradual exit by sliding out the main subject.,
+Add a slide-out effect to gracefully conclude a specific scene.,
+Apply a sliding transition to smoothly remove text or captions from the video.,
+Use a slide-out effect to transition between different shots or scenes.,
+Make the video elements slide out of the frame for a visually dynamic effect.,
+Create a sense of motion by sliding out background elements.,
+Add a slide-out effect to fade away a specific element in the video.,
+Apply a slide-out transition to conclude a specific visual element.,
+Slide out the video's overlays for a smooth transition to the next scene.,
+Use a slide-out effect to gradually remove visual effects from the video.,
+Apply a sliding motion to smoothly slide out a specific element in the video.,
+Make the video elements slide out in a cascading manner for an engaging exit.,
+Create a seamless transition by sliding out the current scene with elegance.,
+Add a slide-out effect to transition from a focused view to a wider perspective.,
+Apply a slide-out transition to reveal a new layer of content in the video.,
+Make the video elements slide out while revealing a background image.,
+Use a slide-out effect to create a gradual disappearance of the video's elements.,

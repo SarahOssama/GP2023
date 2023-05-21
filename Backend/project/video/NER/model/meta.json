@@ -18,12 +18,18 @@
   },
   "labels":{
     "ner":[
+      "ANIMATE",
       "BLUR",
       "BRIGHT",
       "COLOR",
       "DARK",
+      "FADEIN",
+      "FADEOUT",
+      "MONOC",
       "POSITION",
       "SIZE",
+      "SLIDEIN",
+      "SLIDEOUT",
       "SPEED",
       "TEXT",
       "TIME",
