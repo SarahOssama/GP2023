@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
+import 'package:audima/domain/usecase/pre_edit_insert_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/revert_video_edit_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
@@ -14,7 +15,6 @@ import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:chewie/chewie.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -26,9 +26,14 @@ class BusinessVideoViewModel extends BaseViewModel
   final UploadVideoUseCase _uploadVideoUseCase;
   final EditVideoUseCase _editVideoUseCase;
   final PreEditVideoUseCase _preEditVideoUseCase;
+  final PreEditInsertVideoUseCase _preEditInsertVideoUseCase;
   final RevertVideoEditUseCase _revertVideoEditUseCase;
-  BusinessVideoViewModel(this._uploadVideoUseCase, this._editVideoUseCase,
-      this._preEditVideoUseCase, this._revertVideoEditUseCase);
+  BusinessVideoViewModel(
+      this._uploadVideoUseCase,
+      this._editVideoUseCase,
+      this._preEditVideoUseCase,
+      this._preEditInsertVideoUseCase,
+      this._revertVideoEditUseCase);
   //------------------------------------------------------------------------------stream controllers
   final StreamController _videoPlayerControllerStreamController =
       StreamController<bool>.broadcast();
@@ -52,6 +57,7 @@ class BusinessVideoViewModel extends BaseViewModel
   late ChewieController mainChewieController;
   late VideoPlayerController secondryVideoController;
   late ChewieController secondryChewieController;
+  late File secondryFile;
   final preEditInnerMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
   final preEditMenuScrollController =
@@ -141,7 +147,8 @@ class BusinessVideoViewModel extends BaseViewModel
           stateRendererType: StateRendererType.popUpConfirmationState,
           confirmationActionFunction: () async {
             File file = File(result.files.single.path!);
-            secondryVideoController = VideoPlayerController.file(file);
+            secondryFile = file;
+            secondryVideoController = VideoPlayerController.file(secondryFile);
             await Future.wait([secondryVideoController.initialize()]);
             secondryChewieController = ChewieController(
               autoInitialize: true,
@@ -178,8 +185,13 @@ class BusinessVideoViewModel extends BaseViewModel
     inputState.add(LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
         message: "Processing your Edit Command"));
-    (await _preEditVideoUseCase
-            .execute(PreEditVideoUseCaseInput(textEditingController.text)))
+    //if another video is added then call pre edit insert api else call pre edit api
+    (secondryChewieController.videoPlayerController.value.isInitialized
+            ? await _preEditInsertVideoUseCase.execute(
+                PreEditInsertVideoUseCaseInput(
+                    textEditingController.text, secondryFile))
+            : await _preEditVideoUseCase
+                .execute(PreEditVideoUseCaseInput(textEditingController.text)))
         .fold((failure) {
       inputState
           .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
@@ -200,11 +212,12 @@ class BusinessVideoViewModel extends BaseViewModel
         ConfirmationState(
             stateRendererType: StateRendererType.popUpConfirmationState,
             message: data.message,
-            confirmationActionFunction: () {
+            confirmationActionFunction: () async {
               data.action == "Add Text"
                   ? data.features["text"] = editUserTextController.text
                   : null;
-              editVideo(textEditingController, data.action, data.features);
+              await editVideo(
+                  textEditingController, data.action, data.features);
             },
             listView: Column(
               children: [
@@ -212,8 +225,8 @@ class BusinessVideoViewModel extends BaseViewModel
                   title: Text("action"),
                   subtitle: Text(data.action.toString()),
                 ),
-                Container(
-                  height: 200,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 200),
                   child: AdaptiveScrollbar(
                     sliderSpacing: const EdgeInsets.all(5.0),
                     width: 15,
@@ -392,7 +405,6 @@ class BusinessVideoViewModel extends BaseViewModel
         message: "Reverting your Video Edit",
       ),
     );
-    mainVideoController.pause();
     (await _revertVideoEditUseCase.execute(RevertVideoEditUseCaseInput())).fold(
         (failure) {
       mainVideoController.play();

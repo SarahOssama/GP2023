@@ -94,7 +94,7 @@ class _VideoServiceClient implements VideoServiceClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.134:8000';
+    baseUrl ??= 'http://192.168.1.32:8000';
   }
 
   final Dio _dio;
@@ -152,6 +152,44 @@ class _VideoServiceClient implements VideoServiceClient {
             .compose(
               _dio.options,
               '/video/preEditConfirmation/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ConfirmEditResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ConfirmEditResponse> preEditInsertVideo(
+    command,
+    file,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'command',
+      command,
+    ));
+    _data.files.add(MapEntry(
+      'new_insert',
+      MultipartFile.fromFileSync(
+        file.path,
+        filename: file.path.split(Platform.pathSeparator).last,
+      ),
+    ));
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ConfirmEditResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+            .compose(
+              _dio.options,
+              '/video/editInsert/',
               queryParameters: queryParameters,
               data: _data,
             )

@@ -62,6 +62,7 @@ extension ConfirmEditResponseMapper on ConfirmEditResponse? {
   ConfirmEdit toDomain() {
     return ConfirmEdit(
       this?.message.orEmpty() ?? Constants.empty,
+      this?.messageUpdate.orEmpty() ?? Constants.empty,
       this?.action.orEmpty() ?? Constants.empty,
       this?.videoDuration.orZero() ?? Constants.zeroDouble,
       this?.features.orZero() ?? Constants.zeroMap,

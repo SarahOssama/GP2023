@@ -106,7 +106,10 @@ class ConfirmEditResponse extends BaseResponse {
   double? videoDuration;
   @JsonKey(name: "features")
   Map<String, dynamic>? features;
-  ConfirmEditResponse(this.action, this.features);
+  @JsonKey(name: "messageUpdate")
+  String? messageUpdate;
+  ConfirmEditResponse(
+      this.action, this.videoDuration, this.features, this.messageUpdate);
 
   //from json
   factory ConfirmEditResponse.fromJson(Map<String, dynamic> json) =>

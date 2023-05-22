@@ -101,11 +101,12 @@ Map<String, dynamic> _$VideoResponseToJson(VideoResponse instance) =>
 ConfirmEditResponse _$ConfirmEditResponseFromJson(Map<String, dynamic> json) =>
     ConfirmEditResponse(
       json['action'] as String?,
+      (json['videoDuration'] as num?)?.toDouble(),
       json['features'] as Map<String, dynamic>?,
+      json['messageUpdate'] as String?,
     )
       ..status = json['statuscode'] as int?
-      ..message = json['message'] as String?
-      ..videoDuration = (json['videoDuration'] as num?)?.toDouble();
+      ..message = json['message'] as String?;
 
 Map<String, dynamic> _$ConfirmEditResponseToJson(
         ConfirmEditResponse instance) =>
@@ -115,4 +116,5 @@ Map<String, dynamic> _$ConfirmEditResponseToJson(
       'action': instance.action,
       'videoDuration': instance.videoDuration,
       'features': instance.features,
+      'messageUpdate': instance.messageUpdate,
     };
