@@ -104,8 +104,8 @@ def editInsert(request):
         video.new_insert = added_file_field
         video.save()
         serializer = VideoSerializer(video)
-
-        return Response({'message': str(message), "EditInfo": edit_features}, status=response)
+        edit_features['messageUpdate']=str(message)
+        return Response(edit_features, status=response)
     else:
         return Response({'message': str(message)}, status=response)
 
