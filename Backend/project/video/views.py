@@ -26,10 +26,6 @@ from .NER import getParamsNER
 
 
 def index(request):
-    # api_urls = {
-    #     'upload':'/upload/',
-    # }
-    # return Response(api_urls)
     video = Video.objects.all()
 
     return render(request, 'index.html', {"video": video})

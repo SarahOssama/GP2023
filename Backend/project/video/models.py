@@ -17,14 +17,6 @@ def upload_to(instance, filename):
     milliseconds = now.microsecond // 1000
     return f"video/{now:%Y%m%d%H%M%S}{milliseconds}{extension}"
 
-# class Video(models.Model):
-#     caption=models.CharField(max_length=100)
-
-#     media_file=models.FileField(upload_to=upload_to,validators=[file_size])
-#     # command=models.CharField(max_length=1000,null=True,blank=True)
-#     def __str__(self):
-#         return self.caption
-    
 class Video(models.Model):
     title = models.CharField(max_length=200,null=True,blank=True)
     media_file=models.FileField(upload_to=upload_to,validators=[file_size])
