@@ -189,7 +189,7 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
     if new_clip:
         new_clip = "media/"+str(new_clip)
         new_clip = createClip(new_clip)
-        new_clip = restoreClipSize(new_clip)
+        new_clip =new_clip if isinstance(new_clip, ImageClip) else restoreClipSize(new_clip)
     if features != {}:
         if action == 'trim':
             clip = trim(clip, features["startTime"], features["endTime"])
@@ -238,7 +238,12 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
 
 
 def createClip(path):
-    return VideoFileClip(path)
+    content_type = path.split('.')[-1]
+    valid_extensions =  ['mp4', 'mov', 'avi']  
+    if content_type in valid_extensions:
+        return VideoFileClip(path)
+    else :
+        return ImageClip(path,duration=5)
 
 
 def trim(clip, start, end):
