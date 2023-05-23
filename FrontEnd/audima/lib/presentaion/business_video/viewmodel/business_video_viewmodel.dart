@@ -19,6 +19,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class BusinessVideoViewModel extends BaseViewModel
     with BusinessVideoViewModelInputs, BusinessVideoViewModelOutputs {
@@ -50,14 +51,20 @@ class BusinessVideoViewModel extends BaseViewModel
       StreamController<bool>.broadcast();
   final StreamController<bool> _canAddAnotherVideoStreamController =
       StreamController<bool>.broadcast();
+  final StreamController<List<bool>> _audioRecognitionStateStreamController =
+      StreamController<List<bool>>.broadcast();
   //------------------------------------------------------------------------------objects
   var videoEditsObject = VideoEditsObject("");
   //------------------------------------------------------------------------------private controllers
+  //main video variables
   late VideoPlayerController mainVideoController;
   late ChewieController mainChewieController;
+  //secondry video variables
   late VideoPlayerController secondryVideoController;
   late ChewieController secondryChewieController;
   late File secondryFile;
+  bool isSecondVideoAdded = false;
+  //------------------------------------------------------------------------------scroll controllers
   final preEditInnerMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
   final preEditMenuScrollController =
@@ -65,6 +72,9 @@ class BusinessVideoViewModel extends BaseViewModel
 
   //------------------------------------------------------------------------------add Text Edit Controller
   final editUserTextController = TextEditingController();
+  //------------------------------------------------------------------------------audio recognition variables
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool isListeningToSpeech = false;
 
   @override
   void start() {
@@ -127,6 +137,10 @@ class BusinessVideoViewModel extends BaseViewModel
         );
         inputIsVideoPlayerControllerInitialized.add(true);
         inputIsAnyVideoUploaded.add(true);
+        inputAudioRecognitionState.add([
+          true,
+          isListeningToSpeech,
+        ]);
         inputCanAddAnotherVideo.add(true);
         isVideoUploaded = true;
         inputState.add(ContentState());
@@ -139,7 +153,6 @@ class BusinessVideoViewModel extends BaseViewModel
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.video,
     );
-
     if (result != null) {
       inputState.add(ConfirmationState(
           message: "Add Another Video",
@@ -148,6 +161,7 @@ class BusinessVideoViewModel extends BaseViewModel
           confirmationActionFunction: () async {
             File file = File(result.files.single.path!);
             secondryFile = file;
+            isSecondVideoAdded = true;
             secondryVideoController = VideoPlayerController.file(secondryFile);
             await Future.wait([secondryVideoController.initialize()]);
             secondryChewieController = ChewieController(
@@ -157,9 +171,9 @@ class BusinessVideoViewModel extends BaseViewModel
               looping: true,
               aspectRatio: secondryVideoController.value.aspectRatio,
             );
-            inputState.add(ContentState());
             inputCanAddAnotherVideo.add(false);
             inputIsAnotherVideoAdded.add(true);
+            inputState.add(ContentState());
           }));
     }
   }
@@ -173,20 +187,25 @@ class BusinessVideoViewModel extends BaseViewModel
         confirmationActionFunction: () {
           secondryVideoController.dispose();
           secondryChewieController.dispose();
-          inputIsAnotherVideoAdded.add(false);
           inputCanAddAnotherVideo.add(true);
+          inputIsAnotherVideoAdded.add(false);
+          isSecondVideoAdded = false;
           inputState.add(ContentState());
         }));
   }
 
   @override
   Future<void> preEditVideo(TextEditingController textEditingController) async {
+    //pause the main video
     mainVideoController.pause();
+    //if there is another video pause it too
+    isSecondVideoAdded ? secondryVideoController.pause() : null;
+    //show loading state of processing the edit command
     inputState.add(LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
         message: "Processing your Edit Command"));
     //if another video is added then call pre edit insert api else call pre edit api
-    (secondryChewieController.videoPlayerController.value.isInitialized
+    (isSecondVideoAdded
             ? await _preEditInsertVideoUseCase.execute(
                 PreEditInsertVideoUseCaseInput(
                     textEditingController.text, secondryFile))
@@ -355,13 +374,16 @@ class BusinessVideoViewModel extends BaseViewModel
   @override
   Future<void> editVideo(TextEditingController textEditingController,
       String action, Map<String, dynamic> features) async {
+    //pause the main video
+    mainVideoController.pause();
+    //if there is another video pause it too
+    isSecondVideoAdded ? secondryVideoController.pause() : null;
     inputState.add(
       LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
         message: "Editing your Video",
       ),
     );
-    mainVideoController.pause();
     (await _editVideoUseCase.execute(
       EditVideoUseCaseInput(action, features),
     ))
@@ -393,6 +415,7 @@ class BusinessVideoViewModel extends BaseViewModel
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
+      isSecondVideoAdded ? removeSecondVideo() : null;
       inputState.add(ContentState());
     });
   }
@@ -420,8 +443,6 @@ class BusinessVideoViewModel extends BaseViewModel
 
       //left means failure
     }, (data) async {
-      //right means success
-      inputState.add(ContentState());
       mainVideoController.dispose();
       mainChewieController.dispose();
       mainVideoController = VideoPlayerController.network(
@@ -437,16 +458,72 @@ class BusinessVideoViewModel extends BaseViewModel
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
+      //right means success
+      inputState.add(ContentState());
     });
   }
 
   @override
   void updateVideoEdits(String videoEdits) {
-    print("text controller listener");
     videoEditsObject = videoEditsObject.copyWith(videoEdits: videoEdits);
     videoEditsObject.videoEdits == ""
         ? inputVideoEditsState.add(false)
         : inputVideoEditsState.add(true);
+  }
+  //------------------------------------------------------------------------------audio recognition orders
+
+  @override
+  void listenToSpeech(TextEditingController textEditingController) async {
+    if (!isListeningToSpeech) {
+      bool available = await _speech.initialize(
+        onStatus: (val) {
+          if ("${val}" == "done") {
+            isListeningToSpeech = false;
+            inputAudioRecognitionState.add([
+              true,
+              isListeningToSpeech,
+            ]);
+            _speech.stop();
+          }
+        },
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        isListeningToSpeech = true;
+        inputAudioRecognitionState.add([
+          true,
+          isListeningToSpeech,
+        ]);
+        _speech.listen(
+          onResult: (val) {
+            textEditingController.text = val.recognizedWords;
+            updateVideoEdits(textEditingController.text);
+          },
+          // onSoundLevelChange: (val) {
+          //   if (val == 0) {
+          //     setState(() => _isListening = false);
+          //     _speech.stop();
+          //   }
+          // },
+        );
+      }
+    } else {
+      isListeningToSpeech = false;
+      inputAudioRecognitionState.add([
+        true,
+        isListeningToSpeech,
+      ]);
+      _speech.stop();
+    }
+  }
+
+  //------------------------------------------------------------------------------------------helper functions
+  void removeSecondVideo() {
+    secondryVideoController.dispose();
+    secondryChewieController.dispose();
+    inputCanAddAnotherVideo.add(true);
+    inputIsAnotherVideoAdded.add(false);
+    isSecondVideoAdded = false;
   }
 
   //------------------------------------------------------------------------------video player streams
@@ -494,6 +571,15 @@ class BusinessVideoViewModel extends BaseViewModel
   @override
   Stream<bool> get outputIsAnotherVideoAdded =>
       _isAnotherVideoAddedStreamController.stream.map((cond) => cond);
+
+  //------------------------------------------------------------------------------audio recognition streams
+  @override
+  Sink get inputAudioRecognitionState =>
+      _audioRecognitionStateStreamController.sink;
+
+  @override
+  Stream<List<bool>> get outputAudioRecognitionState =>
+      _audioRecognitionStateStreamController.stream.map((cond) => cond);
   //------------------------------------------------------------------------------------------helper functions
 
   void _updateVideoPlayerController() {
@@ -514,6 +600,8 @@ abstract class BusinessVideoViewModelInputs {
   Future<void> preEditVideo(TextEditingController textEditingController);
   Future<void> revertVideoEdit();
   updateVideoEdits(String videoEdits);
+  //audio listner
+  void listenToSpeech(TextEditingController textEditingController);
 
   //stream inputs
   Sink get inputIsVideoPlayerControllerInitialized;
@@ -522,6 +610,7 @@ abstract class BusinessVideoViewModelInputs {
   Sink get inputIsVideoEdited;
   Sink get inputIsAnotherVideoAdded;
   Sink get inputCanAddAnotherVideo;
+  Sink get inputAudioRecognitionState;
 }
 
 //------------------------------------------------------------------------------outputs
@@ -533,4 +622,5 @@ abstract class BusinessVideoViewModelOutputs {
   Stream<bool> get outputIsVideoEdited;
   Stream<bool> get outputIsAnotherVideoAdded;
   Stream<bool> get outputCanAddAnotherVideo;
+  Stream<List<bool>> get outputAudioRecognitionState;
 }

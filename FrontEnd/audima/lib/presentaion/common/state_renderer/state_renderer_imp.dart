@@ -174,6 +174,7 @@ extension FlowStateExtension on FlowState {
       return; // Pop-up is already showing, so don't show it again
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (context) => StateRenderer(
               stateRendererType: stateRendererType,
