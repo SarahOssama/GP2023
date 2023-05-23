@@ -105,8 +105,10 @@ class Video {
 
 class ConfirmEdit {
   String message;
+  String messageUpdate;
   String action;
   double videoDuration;
   Map<String, dynamic> features;
-  ConfirmEdit(this.message, this.action, this.videoDuration, this.features);
+  ConfirmEdit(this.message, this.messageUpdate, this.action, this.videoDuration,
+      this.features);
 }

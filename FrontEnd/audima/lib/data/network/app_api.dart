@@ -41,6 +41,13 @@ abstract class VideoServiceClient {
   Future<ConfirmEditResponse> preEditVideo(
     @Part(name: 'command') String command,
   );
+  //pre edit  insert video api
+  @POST("/video/editInsert/")
+  @MultiPart()
+  Future<ConfirmEditResponse> preEditInsertVideo(
+    @Part(name: 'command') String command,
+    @Part(name: 'new_insert') File file,
+  );
   //edit video api
   @GET("/video/edit/")
   Future<VideoResponse> editVideo(

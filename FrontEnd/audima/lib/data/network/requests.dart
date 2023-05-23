@@ -26,3 +26,9 @@ class PreEditVideoRequest {
   String command;
   PreEditVideoRequest(this.command);
 }
+
+class PreEditInsertVideoRequest {
+  String command;
+  File file;
+  PreEditInsertVideoRequest(this.command, this.file);
+}

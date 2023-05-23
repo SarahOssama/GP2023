@@ -8,6 +8,7 @@ import 'package:audima/domain/repository/repository.dart';
 import 'package:audima/domain/usecase/businessInfo_usecase.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/login_usecase.dart';
+import 'package:audima/domain/usecase/pre_edit_insert_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/revert_video_edit_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
@@ -90,13 +91,17 @@ void initVideoUploadModule() {
     //register pre edit video usecase
     instance.registerFactory<PreEditVideoUseCase>(
         () => PreEditVideoUseCase(instance()));
+    //register pre edit insert video usecase
+    instance.registerFactory<PreEditInsertVideoUseCase>(
+        () => PreEditInsertVideoUseCase(instance()));
     //register revert video edit usecase
     instance.registerFactory<RevertVideoEditUseCase>(
         () => RevertVideoEditUseCase(instance()));
+
     //register mission statement viewmodel
     instance.registerFactory<BusinessVideoViewModel>(
       () => BusinessVideoViewModel(
-          instance(), instance(), instance(), instance()),
+          instance(), instance(), instance(), instance(), instance()),
     );
   }
 }

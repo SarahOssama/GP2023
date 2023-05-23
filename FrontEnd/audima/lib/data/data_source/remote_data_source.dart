@@ -20,6 +20,9 @@ abstract class RemoteDataSource {
   //pre edit video
   Future<ConfirmEditResponse> preEditVideo(
       PreEditVideoRequest preEditVideoRequest);
+  //pre edit insert video
+  Future<ConfirmEditResponse> preEditInsertVideo(
+      PreEditInsertVideoRequest preEditInsertVideoRequest);
   //edit video
   Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest);
   //revert video edit
@@ -68,6 +71,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<ConfirmEditResponse> preEditVideo(
       PreEditVideoRequest preEditVideoRequest) {
     return _videoServiceClient.preEditVideo(preEditVideoRequest.command);
+  }
+
+  @override
+  Future<ConfirmEditResponse> preEditInsertVideo(
+      PreEditInsertVideoRequest preEditInsertVideoRequest) {
+    return _videoServiceClient.preEditInsertVideo(
+        preEditInsertVideoRequest.command, preEditInsertVideoRequest.file);
   }
 
   @override
