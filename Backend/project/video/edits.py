@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from video.serializers import VideoSerializer
 from .models import Video
 from .edits_functions import *
+from .edits_applied import *
 
 
 def preEditVideoNER(entities, reqCommand, clip):
@@ -158,24 +159,48 @@ def preEditVideoNER(entities, reqCommand, clip):
             return edit_features
 
         if 'FADEIN' in extractedLabels:
+            extractedtime = [
+                entity.text for entity in entities if entity.label_ == 'TIME']
+
+            startTime, endTime = getVideoStartAndEndTime(
+                extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            return getEditFeatures("fadein", {})
+            features = {"startTime": startTime, "endTime": endTime}            
+            return getEditFeatures("fadein", features)
 
         if 'FADEOUT' in extractedLabels:
+            extractedtime = [
+                entity.text for entity in entities if entity.label_ == 'TIME']
+
+            startTime, endTime = getVideoStartAndEndTime(
+                extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            return getEditFeatures("fadeout", {})
+            features = {"startTime": startTime, "endTime": endTime}     
+            return getEditFeatures("fadeout", features)
 
         if 'SLIDEIN' in extractedLabels:
+            extractedtime = [
+                entity.text for entity in entities if entity.label_ == 'TIME']
+
+            startTime, endTime = getVideoStartAndEndTime(
+                extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            return getEditFeatures("slidein", {})
+            features = {"startTime": startTime, "endTime": endTime}                 
+            return getEditFeatures("slidein", features)
 
         if 'SLIDEOUT' in extractedLabels:
+            extractedtime = [
+                entity.text for entity in entities if entity.label_ == 'TIME']
+
+            startTime, endTime = getVideoStartAndEndTime(
+                extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            return getEditFeatures("slideout", {})
+            features = {"startTime": startTime, "endTime": endTime}                 
+            return getEditFeatures("slideout", features)
 
     return edit_features
 
@@ -220,6 +245,13 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
             clip = addText(clip, features["text"], features["textPosition"], features["color"],
                            features["fontSize"], features["startTime"], features["endTime"], True)
             pass
+        if action == 'fadein' or action == 'fadeout':
+            clip = fade(clip,new_clip,features["startTime"])
+            pass
+        if action == 'slidein' or action == 'slideout':
+            clip = slide(clip,new_clip,features["startTime"])
+            pass
+
     else:
         if action == 'fadein':
             clip = fadein(clip, new_clip)
@@ -246,104 +278,7 @@ def createClip(path):
         return ImageClip(path,duration=5)
 
 
-def trim(clip, start, end):
-    return clip.subclip(start, end)
-
-
-def addText(clip, text, position, color, size, startTime, endTime, watermark=False):
-    # first map font size string to values
-    size_map = {
-        'small': 50,
-        'medium': 75,
-        'large': 100
-    }
-    size = size_map.get(size, None)
-    if watermark:
-
-        txt_clip = TextClip(text, font='Aldhabi', fontsize=size,
-                            color=color).set_position((position, 'bottom'))
-        txt_clip = txt_clip.set_start(int(startTime))
-        txt_clip = txt_clip.set_duration(endTime)
-    else:
-
-        # duration=int(duration) if int(duration) < clip.duration else clip.duration
-        # print(position,color,size,int(starttime),duration)
-        txt_clip = TextClip(text, fontsize=size,
-                            color=color).set_position(position)
-        txt_clip = txt_clip.set_start(int(startTime))
-        txt_clip = txt_clip.set_duration(endTime)
-    return CompositeVideoClip([clip, txt_clip])
-
-
 def finalFit(clip, id, edited_versions_count):
     clip.write_videofile(f'media/videos/Out_{id}_{edited_versions_count}.mp4')
     return True
 
-
-def blur_helper(image):
-    """ Returns a blurred (radius=2 pixels) version of the image """
-    return gaussian(image.astype(float), sigma=6)
-
-
-def blur(clip):
-    return clip.fl_image(blur_helper)
-
-
-def Brighten(clip):
-    return clip.fx(vfx.gamma_corr, 0.5)
-
-
-def Darken(clip):
-    return clip.fx(vfx.gamma_corr, 1.5)
-
-
-def animate(clip):
-    return clip.fx(vfx.painting, saturation=1.6, black=0.006)
-
-
-def monochrome(clip):
-    return clip.fx(vfx.blackwhite)
-
-
-def speedx(clip, factor):
-    return clip.speedx(factor)
-
-
-def fadein(clip1, clip2, padding=-1, duration=2):
-    clip1, clip2 = fitSizePadding(clip1, clip2)
-    clips = [clip1, clip2]
-
-    faded_clips = [CompositeVideoClip(
-        [clip.fx(transfx.crossfadein, duration=duration)])for clip in clips]
-    final_clip = concatenate_videoclips(faded_clips, padding=padding)
-
-    return final_clip
-
-
-def fadeout(clip1, clip2, padding=-1, duration=2):
-    clip1, clip2 = fitSizePadding(clip1, clip2)
-    clips = [clip1, clip2]
-
-    faded_clips = [CompositeVideoClip(
-        [clip.fx(transfx.crossfadeout, duration=duration)])for clip in clips]
-    final_clip = concatenate_videoclips(faded_clips, padding=padding)
-
-    return final_clip
-
-
-def slidein(clip1, clip2, padding=-1, duration=2, side="left"):
-    clip1, clip2 = fitSizePadding(clip1, clip2)
-    clips = [clip1, clip2]
-    slided_clips = [CompositeVideoClip(
-        [clip.fx(transfx.slide_in, duration=duration, side=side)])for clip in clips]
-    final_clip = concatenate_videoclips(slided_clips, padding=padding)
-    return final_clip
-
-
-def slideout(clip1, clip2, padding=-1, duration=2, side="left"):
-    clip1, clip2 = fitSizePadding(clip1, clip2)
-    clips = [clip1, clip2]
-    slided_clips = [CompositeVideoClip(
-        [clip.fx(transfx.slide_out, duration=duration, side=side)])for clip in clips]
-    final_clip = concatenate_videoclips(slided_clips, padding=padding)
-    return final_clip
