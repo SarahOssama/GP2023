@@ -104,7 +104,7 @@ def fade(main_clip,new_clip,startTime):
     main_clip, new_clip = fitSizePadding(main_clip, new_clip)
 
     # Specify the fade duration in seconds
-    fade_duration = 3
+    fade_duration = 1
 
     # Split the main video into two parts at the desired point where you want to insert the new video
     start_time = startTime  # Specify the start time in seconds

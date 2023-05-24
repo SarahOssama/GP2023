@@ -49,7 +49,9 @@ class BusinessVideoViewModel extends BaseViewModel
 
   final StreamController<bool> _isAnotherVideoAddedStreamController =
       StreamController<bool>.broadcast();
-  final StreamController<bool> _canAddAnotherVideoStreamController =
+  final StreamController<bool> _isAnotherImageAddedStreamController =
+      StreamController<bool>.broadcast();
+  final StreamController<bool> _canAddAnotherVideoOrImageStreamController =
       StreamController<bool>.broadcast();
   final StreamController<List<bool>> _audioRecognitionStateStreamController =
       StreamController<List<bool>>.broadcast();
@@ -64,6 +66,7 @@ class BusinessVideoViewModel extends BaseViewModel
   late ChewieController secondryChewieController;
   late File secondryFile;
   bool isSecondVideoAdded = false;
+  bool isSecondImageAdded = false;
   //------------------------------------------------------------------------------scroll controllers
   final preEditInnerMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
@@ -90,7 +93,7 @@ class BusinessVideoViewModel extends BaseViewModel
     _isVideoEditedStreamController.close();
     _isFeatureChangedStreamController.close();
     _isAnotherVideoAddedStreamController.close();
-    _canAddAnotherVideoStreamController.close();
+    _canAddAnotherVideoOrImageStreamController.close();
     mainVideoController.dispose();
     mainChewieController.dispose();
     secondryVideoController.dispose();
@@ -132,16 +135,17 @@ class BusinessVideoViewModel extends BaseViewModel
           autoInitialize: true,
           videoPlayerController: mainVideoController,
           autoPlay: true,
-          looping: true,
           aspectRatio: mainVideoController.value.aspectRatio,
         );
+        if (isVideoUploaded == false) {
+          inputCanAddAnotherVideoOrImage.add(true);
+        }
         inputIsVideoPlayerControllerInitialized.add(true);
         inputIsAnyVideoUploaded.add(true);
         inputAudioRecognitionState.add([
           true,
           isListeningToSpeech,
         ]);
-        inputCanAddAnotherVideo.add(true);
         isVideoUploaded = true;
         inputState.add(ContentState());
       });
@@ -149,32 +153,35 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   @override
-  Future<void> pickAnotherVideo() async {
+  Future<void> pickAnotherVideoImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.video,
+      type: FileType.custom,
+      allowedExtensions: ['mp4', 'jpg', 'png', 'jpeg'],
     );
     if (result != null) {
-      inputState.add(ConfirmationState(
-          message: "Add Another Video",
+      inputState.add(
+        ConfirmationState(
+          message: result.files.single.extension == 'mp4'
+              ? "Adding video for further Merges"
+              : "Adding Image for further Merges",
           listView: const SizedBox.shrink(),
           stateRendererType: StateRendererType.popUpConfirmationState,
           confirmationActionFunction: () async {
             File file = File(result.files.single.path!);
             secondryFile = file;
-            isSecondVideoAdded = true;
-            secondryVideoController = VideoPlayerController.file(secondryFile);
-            await Future.wait([secondryVideoController.initialize()]);
-            secondryChewieController = ChewieController(
-              autoInitialize: true,
-              videoPlayerController: secondryVideoController,
-              autoPlay: true,
-              looping: true,
-              aspectRatio: secondryVideoController.value.aspectRatio,
-            );
-            inputCanAddAnotherVideo.add(false);
-            inputIsAnotherVideoAdded.add(true);
+            result.files.single.extension == 'mp4'
+                ? isSecondVideoAdded = true
+                : isSecondImageAdded = true;
+            //if the file is a video then do the follwing
+            result.files.single.extension == 'mp4'
+                ? initializeSecondVideo()
+                : inputIsAnotherImageAdded.add(true);
+
+            inputCanAddAnotherVideoOrImage.add(false);
             inputState.add(ContentState());
-          }));
+          },
+        ),
+      );
     }
   }
 
@@ -185,11 +192,7 @@ class BusinessVideoViewModel extends BaseViewModel
         message: "Discard Second Added Video",
         stateRendererType: StateRendererType.popUpConfirmationState,
         confirmationActionFunction: () {
-          secondryVideoController.dispose();
-          secondryChewieController.dispose();
-          inputCanAddAnotherVideo.add(true);
-          inputIsAnotherVideoAdded.add(false);
-          isSecondVideoAdded = false;
+          removeSecondVideoOrImage();
           inputState.add(ContentState());
         }));
   }
@@ -205,7 +208,7 @@ class BusinessVideoViewModel extends BaseViewModel
         stateRendererType: StateRendererType.popUpLoadingState,
         message: "Processing your Edit Command"));
     //if another video is added then call pre edit insert api else call pre edit api
-    (isSecondVideoAdded
+    (isSecondVideoAdded || isSecondImageAdded
             ? await _preEditInsertVideoUseCase.execute(
                 PreEditInsertVideoUseCaseInput(
                     textEditingController.text, secondryFile))
@@ -286,81 +289,23 @@ class BusinessVideoViewModel extends BaseViewModel
                                 : TextField(
                                     controller: editUserTextController,
                                   ),
-                            trailing:
-                                data.features.entries.elementAt(index).key !=
-                                        "text"
-                                    ? DropdownButtonHideUnderline(
-                                        child: PopupMenuButton(
-                                          padding: EdgeInsets.zero,
-                                          icon: null,
-                                          iconSize: 0,
-                                          itemBuilder: (BuildContext context) {
-                                            return [
-                                              PopupMenuItem(
-                                                padding: EdgeInsets.zero,
-                                                child: Container(
-                                                  height:
-                                                      130, // Set the desired height for the menu
-                                                  child: Column(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Scrollbar(
-                                                          controller:
-                                                              preEditInnerMenuScrollController,
-                                                          thumbVisibility: true,
-                                                          child:
-                                                              SingleChildScrollView(
-                                                            controller:
-                                                                preEditInnerMenuScrollController,
-                                                            physics:
-                                                                AlwaysScrollableScrollPhysics(),
-                                                            child: Column(
-                                                                children: [
-                                                                  ActiobEditMenuItems(
-                                                                      videoDuration:
-                                                                          data
-                                                                              .videoDuration,
-                                                                      index:
-                                                                          index,
-                                                                      features: data
-                                                                          .features,
-                                                                      listOfAvailableColors:
-                                                                          listOfAvailableColors.cast<
-                                                                              String>(),
-                                                                      listOfAvailableSizes:
-                                                                          listOfAvailableSizes.cast<
-                                                                              String>(),
-                                                                      listOfAvailablePositions:
-                                                                          listOfAvailablePositions
-                                                                              .cast<String>())
-                                                                ]),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ];
-                                          },
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            child: Lottie.asset(
-                                              JsonAssets.edit,
-                                            ),
-                                          ),
-                                          onSelected: (value) {
-                                            //check if end time choosen is equal to start time//then decrease start time by 1
-                                            data.features[data.features.entries
-                                                .elementAt(index)
-                                                .key] = value;
-                                            _isFeatureChangedStreamController
-                                                .add(true);
-                                          },
-                                        ),
-                                      )
-                                    : SizedBox.shrink());
+                            trailing: FeatureTrailing(
+                                action: data.action,
+                                featureKey:
+                                    data.features.entries.elementAt(index).key,
+                                features: data.features,
+                                videoDuration: data.videoDuration,
+                                objectIndex: index,
+                                editUserTextController: editUserTextController,
+                                listOfAvailableColors:
+                                    listOfAvailableColors.cast<String>(),
+                                listOfAvailableSizes:
+                                    listOfAvailableSizes.cast<String>(),
+                                listOfAvailablePositions:
+                                    listOfAvailablePositions.cast<String>(),
+                                onFteaureChanged: () {
+                                  _isFeatureChangedStreamController.add(true);
+                                }));
                       },
                     ),
                   ),
@@ -399,23 +344,36 @@ class BusinessVideoViewModel extends BaseViewModel
       //left means failure
     }, (data) async {
       //right means success
+      print(
+          "trial1-----------------------------------------------------------------");
+      mainVideoController.removeListener(() {});
       mainVideoController.dispose();
       mainChewieController.dispose();
       textEditingController.clear();
       mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
+      print(
+          "trial2-----------------------------------------------------------------");
       await Future.wait([mainVideoController.initialize()]);
+      print(
+          "trial3-----------------------------------------------------------------");
       mainChewieController = ChewieController(
         autoInitialize: true,
         videoPlayerController: mainVideoController,
         autoPlay: true,
-        looping: true,
         aspectRatio: mainVideoController.value.aspectRatio,
       );
+      print(
+          "trial4-----------------------------------------------------------------");
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
-      isSecondVideoAdded ? removeSecondVideo() : null;
+      //remove second video added if any or second image added if any
+      (isSecondVideoAdded || isSecondImageAdded)
+          ? removeSecondVideoOrImage()
+          : null;
+      print(
+          "trial5-----------------------------------------------------------------");
       inputState.add(ContentState());
     });
   }
@@ -443,21 +401,31 @@ class BusinessVideoViewModel extends BaseViewModel
 
       //left means failure
     }, (data) async {
+      print(
+          "trial1-----------------------------------------------------------------");
+      mainVideoController.removeListener(() {});
       mainVideoController.dispose();
       mainChewieController.dispose();
+      print(
+          "trial2-----------------------------------------------------------------");
       mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
+      print(
+          "trial3-----------------------------------------------------------------");
       await Future.wait([mainVideoController.initialize()]);
+      print(
+          "trial4-----------------------------------------------------------------");
       mainChewieController = ChewieController(
         autoInitialize: true,
         videoPlayerController: mainVideoController,
         autoPlay: true,
-        looping: true,
         aspectRatio: mainVideoController.value.aspectRatio,
       );
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
+      print(
+          "trial5-----------------------------------------------------------------");
       //right means success
       inputState.add(ContentState());
     });
@@ -499,12 +467,6 @@ class BusinessVideoViewModel extends BaseViewModel
             textEditingController.text = val.recognizedWords;
             updateVideoEdits(textEditingController.text);
           },
-          // onSoundLevelChange: (val) {
-          //   if (val == 0) {
-          //     setState(() => _isListening = false);
-          //     _speech.stop();
-          //   }
-          // },
         );
       }
     } else {
@@ -518,12 +480,27 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   //------------------------------------------------------------------------------------------helper functions
-  void removeSecondVideo() {
-    secondryVideoController.dispose();
-    secondryChewieController.dispose();
-    inputCanAddAnotherVideo.add(true);
+  void removeSecondVideoOrImage() {
+    isSecondVideoAdded ? secondryVideoController.dispose() : null;
+    isSecondVideoAdded ? secondryChewieController.dispose() : null;
+    inputCanAddAnotherVideoOrImage.add(true);
     inputIsAnotherVideoAdded.add(false);
+    inputIsAnotherImageAdded.add(false);
     isSecondVideoAdded = false;
+    isSecondImageAdded = false;
+  }
+
+  void initializeSecondVideo() async {
+    secondryVideoController = VideoPlayerController.file(secondryFile);
+    await Future.wait([secondryVideoController.initialize()]);
+    secondryChewieController = ChewieController(
+      autoInitialize: true,
+      videoPlayerController: secondryVideoController,
+      autoPlay: true,
+      aspectRatio: secondryVideoController.value.aspectRatio,
+    );
+
+    inputIsAnotherVideoAdded.add(true);
   }
 
   //------------------------------------------------------------------------------video player streams
@@ -555,18 +532,25 @@ class BusinessVideoViewModel extends BaseViewModel
   @override
   Stream<bool> get outputIsVideoEdited =>
       _isVideoEditedStreamController.stream.map((cond) => cond);
-  //------------------------------------------------------------------------------add another video streams
+  //------------------------------------------------------------------------------add another video or image streams
 
   @override
-  Sink get inputCanAddAnotherVideo => _canAddAnotherVideoStreamController.sink;
+  Sink get inputCanAddAnotherVideoOrImage =>
+      _canAddAnotherVideoOrImageStreamController.sink;
 
   @override
   Sink get inputIsAnotherVideoAdded =>
       _isAnotherVideoAddedStreamController.sink;
+  @override
+  Sink get inputIsAnotherImageAdded =>
+      _isAnotherImageAddedStreamController.sink;
 
   @override
-  Stream<bool> get outputCanAddAnotherVideo =>
-      _canAddAnotherVideoStreamController.stream.map((cond) => cond);
+  Stream<bool> get outputIsAnotherImageAdded =>
+      _isAnotherImageAddedStreamController.stream.map((cond) => cond);
+  @override
+  Stream<bool> get outputCanAddAnotherVideoOrImage =>
+      _canAddAnotherVideoOrImageStreamController.stream.map((cond) => cond);
 
   @override
   Stream<bool> get outputIsAnotherVideoAdded =>
@@ -593,7 +577,7 @@ class BusinessVideoViewModel extends BaseViewModel
 abstract class BusinessVideoViewModelInputs {
   //orders
   Future<void> pickVideo();
-  Future<void> pickAnotherVideo();
+  Future<void> pickAnotherVideoImage();
   void discardSecondVideo();
   Future<void> editVideo(TextEditingController textEditingController,
       String action, Map<String, dynamic> features);
@@ -609,7 +593,8 @@ abstract class BusinessVideoViewModelInputs {
   Sink get inputVideoEditsState;
   Sink get inputIsVideoEdited;
   Sink get inputIsAnotherVideoAdded;
-  Sink get inputCanAddAnotherVideo;
+  Sink get inputIsAnotherImageAdded;
+  Sink get inputCanAddAnotherVideoOrImage;
   Sink get inputAudioRecognitionState;
 }
 
@@ -621,6 +606,7 @@ abstract class BusinessVideoViewModelOutputs {
   Stream<bool> get outputVideoEditsState;
   Stream<bool> get outputIsVideoEdited;
   Stream<bool> get outputIsAnotherVideoAdded;
-  Stream<bool> get outputCanAddAnotherVideo;
+  Stream<bool> get outputIsAnotherImageAdded;
+  Stream<bool> get outputCanAddAnotherVideoOrImage;
   Stream<List<bool>> get outputAudioRecognitionState;
 }

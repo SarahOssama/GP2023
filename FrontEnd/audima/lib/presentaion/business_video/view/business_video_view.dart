@@ -4,6 +4,7 @@ import 'package:audima/presentaion/business_video/viewModel/business_video_viewM
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
 import 'package:lottie/lottie.dart';
@@ -81,14 +82,14 @@ class _BusinessVideoState extends State<BusinessVideo> {
                   ),
                   //the add button feature which will allow the user to add another video so that he can merge them together as he wants and produce another video
                   StreamBuilder<bool>(
-                      stream: _viewModel.outputCanAddAnotherVideo,
+                      stream: _viewModel.outputCanAddAnotherVideoOrImage,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return snapshot.data == true
                               ? GestureDetector(
                                   onTap: () {
-                                    _viewModel.pickAnotherVideo();
+                                    _viewModel.pickAnotherVideoImage();
                                   },
                                   child: Container(
                                     width: 60,
@@ -105,45 +106,83 @@ class _BusinessVideoState extends State<BusinessVideo> {
                       }),
                   //the add button feature which will allow the user to add another video so that he can merge them together as he wants and produce another video                //after the user adds another video, this video will be displayed
                   StreamBuilder<bool>(
-                      stream: _viewModel.outputIsAnotherVideoAdded,
-                      builder: (context, snapshot) {
-                        return snapshot.data == true
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    width: 20,
+                    stream: _viewModel.outputIsAnotherVideoAdded,
+                    builder: (context, snapshot) {
+                      return snapshot.data == true
+                          ? Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                BlackedShadowContainer(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.2,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2.5,
+                                  child: Chewie(
+                                    controller:
+                                        _viewModel.secondryChewieController,
                                   ),
-                                  BlackedShadowContainer(
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+
+                                //the discard button feature which will allow the user to discard the second video he added
+                                GestureDetector(
+                                  onTap: () {
+                                    _viewModel.discardSecondVideo();
+                                  },
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Lottie.asset(
+                                      JsonAssets.discard,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : SizedBox.shrink();
+                    },
+                  ),
+                  StreamBuilder<bool>(
+                    stream: _viewModel.outputIsAnotherImageAdded,
+                    builder: (context, snapshot) {
+                      return snapshot.data == true
+                          ? Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                BlackedShadowContainer(
                                     width:
                                         MediaQuery.of(context).size.width / 1.2,
                                     height: MediaQuery.of(context).size.height /
                                         2.5,
-                                    child: Chewie(
-                                      controller:
-                                          _viewModel.secondryChewieController,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
+                                    child: Image.file(_viewModel.secondryFile)),
+                                SizedBox(
+                                  width: 10,
+                                ),
 
-                                  //the discard button feature which will allow the user to discard the second video he added
-                                  GestureDetector(
-                                    onTap: () {
-                                      _viewModel.discardSecondVideo();
-                                    },
-                                    child: Container(
-                                      width: 100,
-                                      height: 100,
-                                      child: Lottie.asset(
-                                        JsonAssets.discard,
-                                      ),
+                                //the discard button feature which will allow the user to discard the second video he added
+                                GestureDetector(
+                                  onTap: () {
+                                    _viewModel.discardSecondVideo();
+                                  },
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Lottie.asset(
+                                      JsonAssets.discard,
                                     ),
-                                  )
-                                ],
-                              )
-                            : SizedBox.shrink();
-                      }),
+                                  ),
+                                )
+                              ],
+                            )
+                          : SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
             ),

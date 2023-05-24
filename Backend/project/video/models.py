@@ -25,7 +25,7 @@ class Video(models.Model):
     new_insert = models.FileField(upload_to='inserts/', null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return self.media_file.name
     versions = models.CharField(max_length=200,null=True, blank=True)
 
     def push_to_versions_stack(self, value):

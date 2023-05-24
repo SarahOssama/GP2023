@@ -166,7 +166,7 @@ def preEditVideoNER(entities, reqCommand, clip):
                 extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": startTime, "endTime": endTime}            
+            features = {"startTime": endTime}            
             return getEditFeatures("fadein", features)
 
         if 'FADEOUT' in extractedLabels:
@@ -275,10 +275,10 @@ def createClip(path):
     if content_type in valid_extensions:
         return VideoFileClip(path)
     else :
-        return ImageClip(path,duration=5)
+        return ImageClip(path,duration=1)
 
 
 def finalFit(clip, id, edited_versions_count):
-    clip.write_videofile(f'media/videos/Out_{id}_{edited_versions_count}.mp4')
+    clip.write_videofile(f'media/videos/Out_{id}_{edited_versions_count}.mp4',codec="libx264")
     return True
 
