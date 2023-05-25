@@ -18,7 +18,7 @@ from .views_functions import *
 from .serializers import VideoSerializer
 from .parameters import getParams
 from .edits import editConfirmedVideo, preEditVideoNER
-from .NER import getParamsNER
+from .NER import getParamsNER,getParamsNER_NEW
 
 # Create your views here.
 
@@ -69,7 +69,7 @@ def preEditConfirmation(request):
     video = Video.objects.last()
     clip = video.media_file
     reqCommand = request.data['command']
-    result = getParamsNER(reqCommand)
+    result = getParamsNER_NEW(reqCommand)
     # now i have results of parameters NER model
     # now i have to check if the parameters are valid or not
     edit_features = preEditVideoNER(result, reqCommand, clip)
