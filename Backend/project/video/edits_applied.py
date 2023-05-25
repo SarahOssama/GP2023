@@ -62,7 +62,17 @@ def speedx(clip, factor):
 
 
 def fadein(main_clip, new_clip, padding=-1, duration=2):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
+
     clips = [main_clip, new_clip]
 
     faded_clips = [CompositeVideoClip(
@@ -73,7 +83,17 @@ def fadein(main_clip, new_clip, padding=-1, duration=2):
 
 
 def fadeout(main_clip, new_clip, padding=-1, duration=2):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
+
     clips = [main_clip, new_clip]
 
     faded_clips = [CompositeVideoClip(
@@ -84,7 +104,17 @@ def fadeout(main_clip, new_clip, padding=-1, duration=2):
 
 
 def slidein(main_clip, new_clip, padding=-1, duration=2, side="left"):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
+
     clips = [main_clip, new_clip]
     slided_clips = [CompositeVideoClip(
         [clip.fx(transfx.slide_in, duration=duration, side=side)])for clip in clips]
@@ -93,15 +123,35 @@ def slidein(main_clip, new_clip, padding=-1, duration=2, side="left"):
 
 
 def slideout(main_clip, new_clip, padding=-1, duration=2, side="left"):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
+
     clips = [main_clip, new_clip]
     slided_clips = [CompositeVideoClip(
         [clip.fx(transfx.slide_out, duration=duration, side=side)])for clip in clips]
     final_clip = concatenate_videoclips(slided_clips, padding=padding)
     return final_clip
 
-def fade(main_clip,new_clip,startTime):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+
+def fade(main_clip, new_clip, startTime):
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
 
     # Specify the fade duration in seconds
     fade_duration = 1
@@ -114,17 +164,28 @@ def fade(main_clip,new_clip,startTime):
     part2 = main_clip.subclip(end_time, main_clip.duration)
 
     # Apply fade-in effect to the new video
-    new_clip_fadein = new_clip.fx(transfx.crossfadein,fade_duration)
+    new_clip_fadein = new_clip.fx(transfx.crossfadein, fade_duration)
 
     # Apply fade-out effect to the second part of the main video
-    part2_fadeout = part2.fx(transfx.crossfadeout,fade_duration)
+    part2_fadeout = part2.fx(transfx.crossfadeout, fade_duration)
 
     # Concatenate the clips with fade effects
-    final_video = concatenate_videoclips([part1, new_clip_fadein, part2_fadeout])
+    final_video = concatenate_videoclips(
+        [part1, new_clip_fadein, part2_fadeout])
     return final_video
 
-def slide(main_clip,new_clip,startTime,side="left"):
-    main_clip, new_clip = fitSizePadding(main_clip, new_clip)
+
+def slide(main_clip, new_clip, startTime, side="left"):
+    if main_clip.h < new_clip.h:
+        default_width = main_clip.w
+        default_height = main_clip.h
+    else:
+        default_height = new_clip.h
+        default_width = new_clip.w
+    main_clip = fitSizePadding(
+        main_clip, height_default=default_height, width_default=default_width)
+    new_clip = fitSizePadding(
+        new_clip, height_default=default_height, width_default=default_width)
 
     # Specify the slide duration in seconds
     slide_duration = 3
@@ -137,11 +198,12 @@ def slide(main_clip,new_clip,startTime,side="left"):
     part2 = main_clip.subclip(end_time, main_clip.duration)
 
     # Apply slide-in effect to the new video
-    new_clip_slidein = new_clip.fx(transfx.slide_in,slide_duration,side)
+    new_clip_slidein = new_clip.fx(transfx.slide_in, slide_duration, side)
 
     # Apply slide-out effect to the second part of the main video
-    part2_slideout = part2.fx(transfx.slide_out,slide_duration,side)
+    part2_slideout = part2.fx(transfx.slide_out, slide_duration, side)
 
     # Concatenate the clips with slide effects
-    final_video = concatenate_videoclips([part1, new_clip_slidein, part2_slideout])
+    final_video = concatenate_videoclips(
+        [part1, new_clip_slidein, part2_slideout])
     return final_video
