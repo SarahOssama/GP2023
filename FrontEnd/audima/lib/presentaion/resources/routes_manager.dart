@@ -11,6 +11,34 @@ import 'package:go_router/go_router.dart';
 import '../business_info/view/business_info_view.dart';
 import '../home/home_view.dart';
 
+// class Routes {
+//   static const String splash = "/";
+//   static const String home = "/home";
+//   static const String businessInfo = "/business-info";
+//   static const String missionStatement = "/mission-statement";
+//   static const String businessVideo = "/business-video";
+// }
+
+// class RoutesGenerator {
+//   static Route<dynamic> getRoute(RouteSettings settings) {
+//     switch (settings.name) {
+//       case Routes.splash:
+//         return MaterialPageRoute(builder: (_) => SplashView());
+//       case Routes.home:
+//         return MaterialPageRoute(builder: (_) => HomeView());
+//       case Routes.businessInfo:
+//         return MaterialPageRoute(builder: (_) => BusinessInfo());
+//       case Routes.missionStatement:
+//         return MaterialPageRoute(builder: (_) => MissionStatementView());
+//       case Routes.businessVideo:
+
+//         return MaterialPageRoute(builder: (_) => BusinessVideo());
+//       default:
+//         return MaterialPageRoute(builder: (_) => LoginView());
+//     }
+//   }
+// }
+
 GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 class RoutesManager {

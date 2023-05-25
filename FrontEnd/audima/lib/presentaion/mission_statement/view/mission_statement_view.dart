@@ -43,6 +43,9 @@ class _MissionStatementViewState extends State<MissionStatementView> {
 
   @override
   void dispose() {
+    _missionStatementStreamController.close();
+    _missionStatementTextController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -51,11 +54,26 @@ class _MissionStatementViewState extends State<MissionStatementView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: StreamBuilder<FlowState>(
-          stream: _missionStatementStreamController.stream,
+          stream: _viewModel.outputState,
           builder: (context, snapshot) {
-            return snapshot.data
-                    ?.getScreenWidget(context, _getContentWidget(), () {}) ??
-                _getContentWidget();
+            print("mission");
+            return snapshot.data?.getScreenWidget(
+                    context,
+                    ReactiveElevatedButton(
+                        text: "Proceed with Video",
+                        onPressed: () {
+                          context.go("/business-video");
+                        },
+                        buttonColorCondition: false,
+                        buttonPressedCondition: false),
+                    () {}) ??
+                ReactiveElevatedButton(
+                    text: "Proceed with Video",
+                    onPressed: () {
+                      context.go("/business-video");
+                    },
+                    buttonColorCondition: false,
+                    buttonPressedCondition: false);
           }),
     );
   }
@@ -147,7 +165,9 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                   children: [
                     ReactiveElevatedButton(
                         text: "Proceed with Video",
-                        onPressed: () => context.push("/business-video"),
+                        onPressed: () {
+                          context.push("/business-video");
+                        },
                         buttonColorCondition: false,
                         buttonPressedCondition: false),
                   ],

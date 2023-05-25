@@ -1,5 +1,6 @@
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/base/baseview.dart';
+import 'package:audima/presentaion/business_video/view/business_video_view_helper.dart';
 import 'package:audima/presentaion/business_video/viewModel/business_video_viewModel.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
@@ -27,6 +28,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
       TextEditingController();
   @override
   void initState() {
+    print("dfwquehqw");
     super.initState();
     _speech = stt.SpeechToText();
     _videoEditsTextController.addListener(() {
@@ -39,6 +41,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
     return StreamBuilder<FlowState>(
         stream: _viewModel.outputState,
         builder: (context, snapshot) {
+          print("video");
           if (snapshot.connectionState == ConnectionState.active) {
             return snapshot.data
                     ?.getScreenWidget(context, _getContentWidget(), () {}) ??
@@ -226,23 +229,9 @@ class _BusinessVideoState extends State<BusinessVideo> {
                           children: [
                             Expanded(
                               flex: 3,
-                              child: TextField(
-                                textInputAction: TextInputAction.done,
-                                showCursor: true,
-                                controller: _videoEditsTextController,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  hintText: 'Type in your video edits',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(color: Colors.blue),
-                                  ),
-                                ),
+                              child: ExpandableTextField(
+                                textEditingController:
+                                    _videoEditsTextController,
                               ),
                             ),
                             SizedBox(

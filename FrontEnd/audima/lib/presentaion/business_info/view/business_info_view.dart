@@ -45,7 +45,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           _appPreferences.setBusinessInfoViewed();
           Constants.BusinessInfoScreenViewStatus = true;
-          context.go('/mission-statement',
+          context.replace('/mission-statement',
               extra: businessInfoWholeData.businessInfoObject);
         });
       }

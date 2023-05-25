@@ -16,6 +16,7 @@ class MissionStatementViewModel extends BaseViewModel
       StreamController<EditOrSaveButtonData>.broadcast();
   final StreamController _isEditingEnabledStreamController =
       StreamController<List<bool>>.broadcast();
+
   var missionStatementObject = MissionStatementObject("");
 
   // ---------------------------------------------------------------------------initialization phase
@@ -41,7 +42,6 @@ class MissionStatementViewModel extends BaseViewModel
     inputState.add(ContentState());
     _generateMissionStatement();
   }
-
 
   @override
   void doEditOrSaveFunction() {
@@ -92,8 +92,8 @@ class MissionStatementViewModel extends BaseViewModel
       message: 'Generating Mission Statement',
     ));
 
-    (await _missionStatementUseCase.execute(MissionStatementUseCaseInput(
-            missionStatementBasicStatement)))
+    (await _missionStatementUseCase.execute(
+            MissionStatementUseCaseInput(missionStatementBasicStatement)))
         .fold((failure) {
       inputState
           .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
@@ -107,6 +107,7 @@ class MissionStatementViewModel extends BaseViewModel
           missionStatement: data.missionStatement);
     });
   }
+
   bool _checkIfMissionStatementIsEmpty() {
     if (missionStatementObject.missionStatement == "") {
       return true;

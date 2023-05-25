@@ -160,11 +160,12 @@ extension FlowStateExtension on FlowState {
 
   dismissDialog(BuildContext context) {
     if (_isCurrentDialogShowing(context)) {
-      // print(
-      //     "dismissing1--------------------------------------------------------------------------");
+      print(getStateRendererType());
+      print(
+          "dismissing1--------------------------------------------------------------------------");
       Navigator.of(context, rootNavigator: true).pop(true);
-      // print(
-      //     "dismissing2--------------------------------------------------------------------------");
+      print(
+          "dismissing2--------------------------------------------------------------------------");
     }
   }
 
