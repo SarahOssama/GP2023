@@ -15,6 +15,18 @@ abstract class RemoteDataSource {
   //business info
   Future<MissionStatementResponse> getMissionStatement(
       BusinessInfoRequest businessInfoRequest);
+  //video
+  Future<VideoResponse> uploadVideo(UploadVideoRequest videoRequest);
+  //pre edit video
+  Future<ConfirmEditResponse> preEditVideo(
+      PreEditVideoRequest preEditVideoRequest);
+  //pre edit insert video
+  Future<ConfirmEditResponse> preEditInsertVideo(
+      PreEditInsertVideoRequest preEditInsertVideoRequest);
+  //edit video
+  Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest);
+  //revert video edit
+  Future<VideoResponse> revertVideoEdit();
 }
 
 //create the class which implements the remote data source abstract class
@@ -24,7 +36,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   //so i need to create a constructor
   //then i need to create an instance from the appserviceclient
   final AppServiceClient _appServiceClient;
-  RemoteDataSourceImpl(this._appServiceClient);
+  final VideoServiceClient _videoServiceClient;
+  RemoteDataSourceImpl(this._appServiceClient, this._videoServiceClient);
   @override
   Future<AuthenticationResponse> login(LoginRequest loginRequest) async {
     //here i need to call the login function from the appserviceclient
@@ -47,5 +60,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       BusinessInfoRequest businessInfoRequest) async {
     return await _appServiceClient
         .getMissionStatement(businessInfoRequest.bussinesInfoTextElements);
+  }
+
+  @override
+  Future<VideoResponse> uploadVideo(UploadVideoRequest videoRequest) {
+    return _videoServiceClient.uploadVideo(videoRequest.file);
+  }
+
+  @override
+  Future<ConfirmEditResponse> preEditVideo(
+      PreEditVideoRequest preEditVideoRequest) {
+    return _videoServiceClient.preEditVideo(preEditVideoRequest.command);
+  }
+
+  @override
+  Future<ConfirmEditResponse> preEditInsertVideo(
+      PreEditInsertVideoRequest preEditInsertVideoRequest) {
+    return _videoServiceClient.preEditInsertVideo(
+        preEditInsertVideoRequest.command, preEditInsertVideoRequest.file);
+  }
+
+  @override
+  Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest) {
+    return _videoServiceClient.editVideo(
+        editVideoRequest.action, editVideoRequest.features);
+  }
+
+  @override
+  Future<VideoResponse> revertVideoEdit() {
+    return _videoServiceClient.revertVideoEdit();
   }
 }

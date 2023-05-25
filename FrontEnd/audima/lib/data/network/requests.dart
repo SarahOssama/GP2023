@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class LoginRequest {
   String email;
   String password;
@@ -7,4 +9,26 @@ class LoginRequest {
 class BusinessInfoRequest {
   String bussinesInfoTextElements;
   BusinessInfoRequest(this.bussinesInfoTextElements);
+}
+
+class UploadVideoRequest {
+  File file;
+  UploadVideoRequest(this.file);
+}
+
+class EditVideoRequest {
+  String action;
+  Map<String, dynamic> features;
+  EditVideoRequest(this.action, this.features);
+}
+
+class PreEditVideoRequest {
+  String command;
+  PreEditVideoRequest(this.command);
+}
+
+class PreEditInsertVideoRequest {
+  String command;
+  File file;
+  PreEditInsertVideoRequest(this.command, this.file);
 }

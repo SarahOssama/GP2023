@@ -17,16 +17,17 @@ class DioFactory {
   Future<Dio> getDio() async {
     Dio dio = Dio();
     String language = await _appPrefrences.getAppLanguage();
-    Map<String, String> headers = {
-      CONTENT_TYPE: APPLICATION_JSON,
-      API_KEY: Constants.missionStatementApiKey,
-      // ACCEPT: APPLICATION_JSON,
-      // DEFAULT_LANGUAGE: language, //TODO get lang from app prefrences
-      // AUTHORIZATION: Constants.token,
-    };
+    // Map<String, String> headers = {
+    //   CONTENT_TYPE: APPLICATION_JSON,
+    //   API_KEY: Constants.missionStatementApiKey,
+    //   // ACCEPT: APPLICATION_JSON,
+    //   // DEFAULT_LANGUAGE: language, //TODO get lang from app prefrences
+    //   // AUTHORIZATION: Constants.token,
+    // };
     dio.options = BaseOptions(
-      baseUrl: Constants.baseUrl2,
-      headers: headers,
+      baseUrl: Constants.baseUrl,
+      connectTimeout: Duration(minutes: 10),
+      receiveTimeout: Duration(minutes: 10),
     );
 
     if (!kReleaseMode) {

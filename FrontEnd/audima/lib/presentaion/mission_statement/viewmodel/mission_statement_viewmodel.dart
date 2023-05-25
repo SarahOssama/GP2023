@@ -16,6 +16,7 @@ class MissionStatementViewModel extends BaseViewModel
       StreamController<EditOrSaveButtonData>.broadcast();
   final StreamController _isEditingEnabledStreamController =
       StreamController<List<bool>>.broadcast();
+
   var missionStatementObject = MissionStatementObject("");
 
   // ---------------------------------------------------------------------------initialization phase
@@ -40,28 +41,6 @@ class MissionStatementViewModel extends BaseViewModel
   void start() {
     inputState.add(ContentState());
     _generateMissionStatement();
-  }
-
-  void _generateMissionStatement() async {
-    inputState.add(LoadingState(
-      stateRendererType: StateRendererType.popUpLoadingState,
-      message: 'Generating Mission Statement',
-    ));
-
-    (await _missionStatementUseCase.execute(MissionStatementUseCaseUseCaseInput(
-            missionStatementBasicStatement)))
-        .fold((failure) {
-      inputState
-          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
-
-      //left means failure
-    }, (data) {
-      //right means success
-      inputState.add(ContentState());
-      inputMissionStatement.add(data.missionStatement);
-      missionStatementObject = missionStatementObject.copyWith(
-          missionStatement: data.missionStatement!);
-    });
   }
 
   @override
@@ -107,6 +86,28 @@ class MissionStatementViewModel extends BaseViewModel
   }
 
   //------------------------------------------------------------------------------helper functions
+  void _generateMissionStatement() async {
+    inputState.add(LoadingState(
+      stateRendererType: StateRendererType.popUpLoadingState,
+      message: 'Generating Mission Statement',
+    ));
+
+    (await _missionStatementUseCase.execute(
+            MissionStatementUseCaseInput(missionStatementBasicStatement)))
+        .fold((failure) {
+      inputState
+          .add(ErrorState(StateRendererType.popUpErrorState, failure.message));
+
+      //left means failure
+    }, (data) {
+      //right means success
+      inputState.add(ContentState());
+      inputMissionStatement.add(data.missionStatement);
+      missionStatementObject = missionStatementObject.copyWith(
+          missionStatement: data.missionStatement);
+    });
+  }
+
   bool _checkIfMissionStatementIsEmpty() {
     if (missionStatementObject.missionStatement == "") {
       return true;

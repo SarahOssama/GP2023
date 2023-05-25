@@ -11,27 +11,56 @@ import 'package:go_router/go_router.dart';
 import '../business_info/view/business_info_view.dart';
 import '../home/home_view.dart';
 
+// class Routes {
+//   static const String splash = "/";
+//   static const String home = "/home";
+//   static const String businessInfo = "/business-info";
+//   static const String missionStatement = "/mission-statement";
+//   static const String businessVideo = "/business-video";
+// }
+
+// class RoutesGenerator {
+//   static Route<dynamic> getRoute(RouteSettings settings) {
+//     switch (settings.name) {
+//       case Routes.splash:
+//         return MaterialPageRoute(builder: (_) => SplashView());
+//       case Routes.home:
+//         return MaterialPageRoute(builder: (_) => HomeView());
+//       case Routes.businessInfo:
+//         return MaterialPageRoute(builder: (_) => BusinessInfo());
+//       case Routes.missionStatement:
+//         return MaterialPageRoute(builder: (_) => MissionStatementView());
+//       case Routes.businessVideo:
+
+//         return MaterialPageRoute(builder: (_) => BusinessVideo());
+//       default:
+//         return MaterialPageRoute(builder: (_) => LoginView());
+//     }
+//   }
+// }
+
 GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 class RoutesManager {
   AppPreferences _appPreferences = instance<AppPreferences>();
-
   static final GoRouter router = GoRouter(
       urlPathStrategy: UrlPathStrategy.path,
       navigatorKey: navKey,
       routes: <GoRoute>[
         GoRoute(
-          name: "splash",
-          path: '/',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: SplashView(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        ),
+            name: "splash",
+            path: '/',
+            pageBuilder: (context, state) {
+              initVideoUploadModule();
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: BusinessVideo(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
         GoRoute(
           name: "home",
           path: '/home',
@@ -93,17 +122,19 @@ class RoutesManager {
               );
             }),
         GoRoute(
-          name: "business-video",
-          path: '/business-video',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: BusinessVideo(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        ),
+            name: "business-video",
+            path: '/business-video',
+            pageBuilder: (context, state) {
+              initVideoUploadModule();
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: BusinessVideo(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
       ],
       errorPageBuilder: (context, state) {
         return MaterialPage(

@@ -3,6 +3,7 @@ import 'package:audima/data/mapper/mapper.dart';
 import 'package:audima/data/network/error_handler.dart';
 import 'package:audima/data/network/network_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:audima/domain/model/models.dart';
 
@@ -68,6 +69,160 @@ class RepositoryImpl implements Repository {
 
         //then i need to check if the response is success or failure
         if (response.missionStatement != null) {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Video>> uploadVideo(
+      UploadVideoRequest videoRequest) async {
+    // final connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.mobile) {
+    //   print("mobile");
+    //   // I am connected to a mobile network.
+    // } else if (connectivityResult == ConnectivityResult.wifi) {
+    //   print("wifi");
+    //   // I am connected to a wifi network.
+    // }
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response = await _remoteDataSource.uploadVideo(videoRequest);
+
+        //then i need to check if the response is success or failure
+        if (response.message == "uploaded") {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ConfirmEdit>> preEditVideo(
+      PreEditVideoRequest preEditVideoRequest) async {
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response =
+            await _remoteDataSource.preEditVideo(preEditVideoRequest);
+
+        //then i need to check if the response is success or failure
+        if (response.message == "Confirm your Edit Command") {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ConfirmEdit>> preEditInsertVideo(
+      PreEditInsertVideoRequest preEditInsertVideoRequest) async {
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response = await _remoteDataSource
+            .preEditInsertVideo(preEditInsertVideoRequest);
+
+        //then i need to check if the response is success or failure
+        if (response.message == "Confirm your Edit Command") {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Video>> editVideo(
+      EditVideoRequest editVideoRequest) async {
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response = await _remoteDataSource.editVideo(editVideoRequest);
+
+        //then i need to check if the response is success or failure
+        if (response.videoPath != null) {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Video>> revertVideoEdit() async {
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response = await _remoteDataSource.revertVideoEdit();
+        print(response.message);
+        //then i need to check if the response is success or failure
+        if (response.message != "No More Reverts are available ") {
           //it is success so i need to return a success
           //return the data
           return Right(response.toDomain());

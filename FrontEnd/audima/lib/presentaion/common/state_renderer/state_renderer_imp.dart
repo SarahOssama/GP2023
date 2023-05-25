@@ -3,18 +3,21 @@ import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:http/http.dart';
 
 //interact between view and state renderer
 abstract class FlowState {
   StateRendererType getStateRendererType();
   String getMessage();
+  //these next 2 functions are optional because they are only used in the confirmation edit  state
+  VoidCallback? getConfirmationActionFunction() => () {};
+  Widget? getListView() => const SizedBox.shrink();
 }
 
 //Loading State (Pop Up, Full Screen)
 class LoadingState extends FlowState {
   StateRendererType stateRendererType;
   String message;
-  static bool popUp = false;
   LoadingState({
     required this.stateRendererType,
     this.message = "Loading...",
@@ -30,7 +33,6 @@ class LoadingState extends FlowState {
 class ErrorState extends FlowState {
   StateRendererType stateRendererType;
   String message;
-  static bool popUp = false;
 
   ErrorState(this.stateRendererType, this.message);
 
@@ -39,6 +41,28 @@ class ErrorState extends FlowState {
 
   @override
   String getMessage() => message;
+}
+
+//confirmation message state
+class ConfirmationState extends FlowState {
+  StateRendererType stateRendererType;
+  String message;
+  VoidCallback confirmationActionFunction;
+  Widget? listView = const SizedBox.shrink();
+  ConfirmationState(
+      {required this.stateRendererType,
+      this.message = "Loading...",
+      required this.confirmationActionFunction,
+      this.listView});
+  @override
+  StateRendererType getStateRendererType() => stateRendererType;
+
+  @override
+  String getMessage() => message;
+  @override
+  VoidCallback getConfirmationActionFunction() => confirmationActionFunction;
+  @override
+  Widget? getListView() => listView;
 }
 
 //Content State
@@ -68,12 +92,28 @@ extension FlowStateExtension on FlowState {
       Function retryActionFunction) {
     switch (runtimeType) {
       case LoadingState:
+        dismissDialog(context);
         if (getStateRendererType() ==
             StateRendererType.popUpLoadingState) //pop up loading screen
         {
           //show pop up
           showPopUp(context, getStateRendererType(), getMessage());
-          LoadingState.popUp = true;
+          //show content screen
+          return contentScreenWidget;
+        } else {
+          //full screen loading state
+          return StateRenderer(
+              stateRendererType: getStateRendererType(),
+              message: getMessage(),
+              retryActionFunction: retryActionFunction);
+        }
+      case ConfirmationState:
+        dismissDialog(context);
+        if (getStateRendererType() ==
+            StateRendererType.popUpConfirmationState) //pop up loading screen
+        {
+          //show pop up
+          showPopUp(context, getStateRendererType(), getMessage());
           //show content screen
           return contentScreenWidget;
         } else {
@@ -84,11 +124,7 @@ extension FlowStateExtension on FlowState {
               retryActionFunction: retryActionFunction);
         }
       case ErrorState:
-        if (LoadingState.popUp) {
-          dismissDialog(context);
-          LoadingState.popUp = false;
-        }
-
+        dismissDialog(context);
         if (getStateRendererType() ==
             StateRendererType.popUpErrorState) //pop up error screen
         {
@@ -109,29 +145,44 @@ extension FlowStateExtension on FlowState {
             retryActionFunction: retryActionFunction,
             message: getMessage());
       case ContentState:
-        if (LoadingState.popUp) {
-          dismissDialog(context);
-          LoadingState.popUp = false;
-        }
+        dismissDialog(context);
         return contentScreenWidget;
       default:
         dismissDialog(context);
-
         return contentScreenWidget;
     }
   }
 
+  _isCurrentDialogShowing(BuildContext context) {
+    // print(ModalRoute.of(context)?.isCurrent != true);
+    return ModalRoute.of(context)?.isCurrent != true;
+  }
+
   dismissDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop(true);
+    if (_isCurrentDialogShowing(context)) {
+      print(getStateRendererType());
+      print(
+          "dismissing1--------------------------------------------------------------------------");
+      Navigator.of(context, rootNavigator: true).pop(true);
+      print(
+          "dismissing2--------------------------------------------------------------------------");
+    }
   }
 
   showPopUp(BuildContext context, StateRendererType stateRendererType,
       String message) {
+    if (_isCurrentDialogShowing(context)) {
+      return; // Pop-up is already showing, so don't show it again
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
-        context: context,
-        builder: (context) => StateRenderer(
-            stateRendererType: stateRendererType,
-            message: message,
-            retryActionFunction: () {})));
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => StateRenderer(
+              stateRendererType: stateRendererType,
+              message: message,
+              retryActionFunction: () {},
+              confirmationActionFunction: getConfirmationActionFunction(),
+              listView: getListView()),
+        ));
   }
 }

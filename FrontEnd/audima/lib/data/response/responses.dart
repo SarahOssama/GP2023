@@ -64,7 +64,6 @@ class AuthenticationResponse extends BaseResponse {
 }
 
 //businessInfo response
-
 @JsonSerializable()
 class MissionStatementResponse extends BaseResponse {
   @JsonKey(name: "prediction")
@@ -80,59 +79,42 @@ class MissionStatementResponse extends BaseResponse {
   Map<String, dynamic> toJson() => _$MissionStatementResponseToJson(this);
 }
 
-// @JsonSerializable()
-// class UsageResponse {
-//   @JsonKey(name: "prompt_tokens")
-//   int? promptTokens;
-//   @JsonKey(name: "completion_tokens")
-//   int? completionTokens;
-//   @JsonKey(name: "total_tokens")
-//   int? totalTokens;
-//   UsageResponse(this.promptTokens, this.completionTokens, this.totalTokens);
+//video response
+@JsonSerializable()
+class VideoResponse extends BaseResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "media_file")
+  String? videoPath;
 
-//   //from json
-//   factory UsageResponse.fromJson(Map<String, dynamic> json) =>
-//       _$UsageResponseFromJson(json);
+  VideoResponse(this.id, this.videoPath);
 
-//   //to   json
-//   Map<String, dynamic> toJson() => _$UsageResponseToJson(this);
-// }
+  //from json
+  factory VideoResponse.fromJson(Map<String, dynamic> json) =>
+      _$VideoResponseFromJson(json);
 
-// @JsonSerializable()
-// class DataResponse {
-//   @JsonKey(name: "id")
-//   String? id;
-//   @JsonKey(name: "object")
-//   String? object;
-//   @JsonKey(name: "created")
-//   int? created;
-//   @JsonKey(name: "model")
-//   String? model;
-//   @JsonKey(name: "choices")
-//   List<ChoicesResponse>? choices;
-//   @JsonKey(name: "usage")
-//   UsageResponse? usage;
-//   DataResponse(
-//       this.id, this.object, this.created, this.model, this.choices, this.usage);
+  //to   json
+  Map<String, dynamic> toJson() => _$VideoResponseToJson(this);
+}
 
-//   //from json
-//   factory DataResponse.fromJson(Map<String, dynamic> json) =>
-//       _$DataResponseFromJson(json);
+//ConfirmEdit response
+@JsonSerializable()
+class ConfirmEditResponse extends BaseResponse {
+  @JsonKey(name: "action")
+  String? action;
+  @JsonKey(name: "videoDuration")
+  double? videoDuration;
+  @JsonKey(name: "features")
+  Map<String, dynamic>? features;
+  @JsonKey(name: "messageUpdate")
+  String? messageUpdate;
+  ConfirmEditResponse(
+      this.action, this.videoDuration, this.features, this.messageUpdate);
 
-//   //to   json
-//   Map<String, dynamic> toJson() => _$DataResponseToJson(this);
-// }
+  //from json
+  factory ConfirmEditResponse.fromJson(Map<String, dynamic> json) =>
+      _$ConfirmEditResponseFromJson(json);
 
-// @JsonSerializable()
-// class BusinessInfoResponse extends BaseResponse {
-//   @JsonKey(name: "data")
-//   DataResponse? data;
-//   BusinessInfoResponse(this.data);
-
-//   //from json
-//   factory BusinessInfoResponse.fromJson(Map<String, dynamic> json) =>
-//       _$BusinessInfoResponseFromJson(json);
-
-//   //to   json
-//   Map<String, dynamic> toJson() => _$BusinessInfoResponseToJson(this);
-// }
+  //to   json
+  Map<String, dynamic> toJson() => _$ConfirmEditResponseToJson(this);
+}

@@ -106,9 +106,9 @@ class BusinessInfoViewModel extends BaseViewModel
 
   @override
   void callSendDataToMissionStatementView() {
-    inputState.add(ContentState());
     inputMissionStatementStreamController.sink
         .add(BusinessWholeData(_businessInfoObject, true));
+    // inputState.add(ContentState());
   }
 //-------------------------------------------------------------------------------company name view orders
 

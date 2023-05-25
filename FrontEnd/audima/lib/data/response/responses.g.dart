@@ -81,3 +81,40 @@ Map<String, dynamic> _$MissionStatementResponseToJson(
       'message': instance.message,
       'prediction': instance.missionStatement,
     };
+
+VideoResponse _$VideoResponseFromJson(Map<String, dynamic> json) =>
+    VideoResponse(
+      json['id'] as int?,
+      json['media_file'] as String?,
+    )
+      ..status = json['statuscode'] as int?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$VideoResponseToJson(VideoResponse instance) =>
+    <String, dynamic>{
+      'statuscode': instance.status,
+      'message': instance.message,
+      'id': instance.id,
+      'media_file': instance.videoPath,
+    };
+
+ConfirmEditResponse _$ConfirmEditResponseFromJson(Map<String, dynamic> json) =>
+    ConfirmEditResponse(
+      json['action'] as String?,
+      (json['videoDuration'] as num?)?.toDouble(),
+      json['features'] as Map<String, dynamic>?,
+      json['messageUpdate'] as String?,
+    )
+      ..status = json['statuscode'] as int?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$ConfirmEditResponseToJson(
+        ConfirmEditResponse instance) =>
+    <String, dynamic>{
+      'statuscode': instance.status,
+      'message': instance.message,
+      'action': instance.action,
+      'videoDuration': instance.videoDuration,
+      'features': instance.features,
+      'messageUpdate': instance.messageUpdate,
+    };

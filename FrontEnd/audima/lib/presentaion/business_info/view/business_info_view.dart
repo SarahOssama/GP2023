@@ -45,7 +45,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           _appPreferences.setBusinessInfoViewed();
           Constants.BusinessInfoScreenViewStatus = true;
-          context.go('/mission-statement',
+          context.replace('/mission-statement',
               extra: businessInfoWholeData.businessInfoObject);
         });
       }
@@ -97,8 +97,11 @@ class _BusinessInfoState extends State<BusinessInfo> {
         color: Colors.amber,
       );
     } else {
-      return ContainerWithinImage(
-          mainChild: CarouselSlider.builder(
+      return MainScaffold(
+        child: BlackedShadowContainer(
+          height: 400,
+          width: 350,
+          child: CarouselSlider.builder(
             carouselController: _carouselController,
             itemCount: _viewModel.getListSize(),
             options: CarouselOptions(
@@ -185,8 +188,8 @@ class _BusinessInfoState extends State<BusinessInfo> {
               );
             },
           ),
-          containerContentHeight: 400,
-          containerContentWidth: 350);
+        ),
+      );
     }
   }
   // Scaffold(
