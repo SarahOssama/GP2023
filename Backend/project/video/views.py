@@ -96,8 +96,8 @@ def editInsert(request):
 
         # 1- extract parameters and confirm edit
         reqCommand = request.data['command']
-        result = getParamsNER(reqCommand)
-        edit_features = preEditVideoNER(result, reqCommand, clip)
+        result = getParamsNER_NEW(reqCommand)
+        edit_features = preEditVideoNERNew(result, reqCommand, clip)
         print(reqCommand)
 
         # 2- Upload the new insert

@@ -17,7 +17,7 @@ def preEditVideoNERNew(entities, reqCommand, clip):
     clip = "media/"+str(clip)
     clip = createClip(clip)
     actions = ['TRIM', 'SPEED', 'TEXT', 'BLUR',
-               'BRIGHT', 'DARK', 'ANIMATE', 'MONOC', 'FADEIN', 'FADEOUT', 'SLIDEIN', 'SLIDEOUT']
+               'BRIGHT', 'DARK', 'ANIMATE', 'MONOC', 'FADE', 'FADEOUT', 'SLIDE', 'SLIDEOUT']
     colours = ['red', 'black', 'blue', 'yellow', 'green',
                'white', 'pink', 'orange', 'brown', 'brown']
     extractedLabels = [entityLabel for text, entityLabel in entities]
@@ -195,16 +195,18 @@ def preEditVideoNERNew(entities, reqCommand, clip):
             edit_features["videoDuration"] = defaultEndTime
             return edit_features
 
-        if 'FADEIN' in extractedLabels:
+        if 'FADE' in extractedLabels:
             extractedtime = [
                 text for text, entityLabel in entities if entityLabel == 'TIME']
-
-            startTime, endTime = getVideoStartAndEndTime(
-                extractedtime, defaultStartTime, defaultEndTime)
+            if len(extractedtime) == 0:
+                startTime = [str(defaultEndTime)]
+            else:
+                startTime, endTime = getVideoStartAndEndTime(
+                    extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": endTime}
-            return getEditFeatures("fadein", features)
+            features = {"startTime": startTime}
+            return getEditFeatures("fade", features)
 
         if 'FADEOUT' in extractedLabels:
             extractedtime = [
@@ -217,16 +219,18 @@ def preEditVideoNERNew(entities, reqCommand, clip):
             features = {"startTime": startTime, "endTime": endTime}
             return getEditFeatures("fadeout", features)
 
-        if 'SLIDEIN' in extractedLabels:
+        if 'SLIDE' in extractedLabels:
             extractedtime = [
                 text for text, entityLabel in entities if entityLabel == 'TIME']
-
-            startTime, endTime = getVideoStartAndEndTime(
-                extractedtime, defaultStartTime, defaultEndTime)
+            if len(extractedtime) == 0:
+                startTime = defaultEndTime
+            else:
+                startTime, endTime = getVideoStartAndEndTime(
+                    extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": startTime, "endTime": endTime}
-            return getEditFeatures("slidein", features)
+            features = {"startTime": startTime}
+            return getEditFeatures("slide", features)
 
         if 'SLIDEOUT' in extractedLabels:
             extractedtime = [
@@ -247,7 +251,7 @@ def preEditVideoNER(entities, reqCommand, clip):
     clip = "media/"+str(clip)
     clip = createClip(clip)
     actions = ['TRIM', 'SPEED', 'TEXT', 'BLUR',
-               'BRIGHT', 'DARK', 'ANIMATE', 'MONOC', 'FADEIN', 'FADEOUT', 'SLIDEIN', 'SLIDEOUT']
+               'BRIGHT', 'DARK', 'ANIMATE', 'MONOC', 'FADE', 'FADEOUT', 'SLIDEIN', 'SLIDEOUT']
     extractedLabels = [entity.label_ for entity in entities]
     allAction = [
         entity.label_ for entity in entities if entity.label_ in actions]
@@ -476,10 +480,16 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
             clip = addText(clip, features["text"], features["textPosition"], features["color"],
                            features["fontSize"], features["startTime"], features["endTime"], True)
             pass
+        if action == 'fade':
+            clip = fade(clip, new_clip, features["startTime"])
+            pass
         if action == 'fadein' or action == 'fadeout':
             clip = fade(clip, new_clip, features["startTime"])
             pass
         if action == 'slidein' or action == 'slideout':
+            clip = slide(clip, new_clip, features["startTime"])
+            pass
+        if action == 'slide' or action == 'slide':
             clip = slide(clip, new_clip, features["startTime"])
             pass
 
@@ -506,7 +516,7 @@ def createClip(path):
     if content_type in valid_extensions:
         return VideoFileClip(path)
     else:
-        return ImageClip(path, duration=1)
+        return ImageClip(path, duration=5)
 
 
 def finalFit(clip, id, edited_versions_count):
