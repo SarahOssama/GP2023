@@ -17,8 +17,8 @@ from .forms import Video_Form
 from .views_functions import *
 from .serializers import VideoSerializer
 from .parameters import getParams
-from .edits import editConfirmedVideo, preEditVideoNER
-from .NER import getParamsNER,getParamsNER_NEW
+from .edits import editConfirmedVideo, preEditVideoNER, preEditVideoNERNew
+from .NER import getParamsNER, getParamsNER_NEW
 
 # Create your views here.
 
@@ -72,7 +72,7 @@ def preEditConfirmation(request):
     result = getParamsNER_NEW(reqCommand)
     # now i have results of parameters NER model
     # now i have to check if the parameters are valid or not
-    edit_features = preEditVideoNER(result, reqCommand, clip)
+    edit_features = preEditVideoNERNew(result, reqCommand, clip)
     return Response(edit_features)
 
 
@@ -104,7 +104,7 @@ def editInsert(request):
         video.new_insert = added_file_field
         video.save()
         serializer = VideoSerializer(video)
-        edit_features['messageUpdate']=str(message)
+        edit_features['messageUpdate'] = str(message)
         return Response(edit_features, status=response)
     else:
         return Response({'message': str(message)}, status=response)

@@ -1,13 +1,16 @@
 
+import socket
 import json
 from model.ner_model import NERModel
 from model.config import Config
 import tensorflow as tf
 
 
+# Set the log level to suppress TensorFlow warnings
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def test_model (sentence):   
+def test_model(sentence):
     config = Config()
 
     # build model
@@ -16,15 +19,14 @@ def test_model (sentence):
     model.build()
     model.restore_session(config.dir_model)
 
-
     words_raw = sentence.strip().split(" ")
 
     preds = model.predict(words_raw)
-    out = [(txt, label)for txt , label in zip(words_raw, preds)]
+    out = [(txt, label)for txt, label in zip(words_raw, preds)]
 
     return out
 
-import socket
+
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Create a TCP/IP socket
 
@@ -35,7 +37,6 @@ server_socket.bind(server_address)
 # Listen for incoming connections
 server_socket.listen(1)
 while (True):
-    
 
     print("connected")
     # Accept a connection
@@ -46,8 +47,8 @@ while (True):
 
     # Process the received data
     print(data.decode())
-    output =  test_model(data.decode())
-    print("Client",output)
+    output = test_model(data.decode())
+    print("Client", output)
     # Send a response back to the client
     response_serializable = [(item[0], item[1]) for item in output]
 
@@ -59,7 +60,6 @@ while (True):
     # Close the connection
     # client_socket.close()
     # server_socket.close()
-
 
     # output =  test_model("make this video blurring")
     # print(output)
