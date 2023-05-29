@@ -14,6 +14,7 @@ def preEditVideoNERNew(entities, reqCommand, clip):
     # Create a Clip with video
     clip = "media/"+str(clip)
     clip = createClip(clip)
+    print("inPreEdit", clip.duration)
     actions = ['TRIM', 'SPEED', 'TEXT', 'BLUR',
                'BRIGHT', 'DARK', 'ANIMATE', 'MONOC', 'FADE', 'FADEOUT', 'SLIDE', 'SLIDEOUT']
     colours = ['red', 'black', 'blue', 'yellow', 'green',
@@ -91,6 +92,8 @@ def preEditVideoNERNew(entities, reqCommand, clip):
                 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'grey', 'lightgrey'], "listOfAvailableSizes": ['small', 'medium', 'large'], "listOfAvailablePositions": ['center', 'top', 'bottom'], "text": text}
             edit_features = getEditFeatures(action, features)
             edit_features["videoDuration"] = defaultEndTime
+            print("outPreEdit", clip.duration)
+
             return edit_features
 
         if 'BLUR' in extractedLabels:
@@ -442,6 +445,7 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
     clip = "media/"+str(clip)
     clip = createClip(clip)
     clip = restoreClipSize(clip)
+    print("in Edit Confirm 1", clip.duration)
     # Create new Clip
     if new_clip:
         new_clip = "media/"+str(new_clip)
@@ -479,6 +483,8 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
         if action == 'Add Watermark':
             clip = addText(clip, features["text"], features["textPosition"], features["color"],
                            features["fontSize"], features["startTime"], features["endTime"], True)
+            print("Out Edit Confirm before final", clip.duration)
+
             pass
         if action == 'fade':
             clip = fade(clip, new_clip, features["startTime"])
@@ -507,6 +513,7 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
             clip = slideout(clip, new_clip)
             pass
     if finalFit(clip, id, edited_versions_count):
+        print("Out Edit Confirm after final", clip.duration)
         return True
 
 
