@@ -15,11 +15,13 @@ def addText(clip, text, position, color, size, startTime, endTime, watermark=Fal
         'large': 100
     }
     size = size_map.get(size, None)
+    print("Hamada text test", text, position, color,
+          size, startTime, endTime, watermark)
     if watermark:
 
         txt_clip = TextClip(text, font='Aldhabi', fontsize=size,
                             color=color).set_position((position, 'bottom'))
-        txt_clip = txt_clip.set_start(int(startTime))
+        txt_clip = txt_clip.set_start(startTime)
         txt_clip = txt_clip.set_duration(endTime)
     else:
 
@@ -27,7 +29,7 @@ def addText(clip, text, position, color, size, startTime, endTime, watermark=Fal
         # print(position,color,size,int(starttime),duration)
         txt_clip = TextClip(text, fontsize=size,
                             color=color).set_position(position)
-        txt_clip = txt_clip.set_start(int(startTime))
+        txt_clip = txt_clip.set_start(startTime)
         txt_clip = txt_clip.set_duration(endTime)
     return CompositeVideoClip([clip, txt_clip])
 

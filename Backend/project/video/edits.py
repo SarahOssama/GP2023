@@ -1,15 +1,13 @@
 import re
-import cv2
-from moviepy.editor import *
-from skimage.filters import gaussian
-import asyncio
-from rest_framework.response import Response
 
-from datetime import datetime, timedelta
-from video.serializers import VideoSerializer
-from .models import Video
+from moviepy.editor import *
+import os
+from django.conf import settings
+
+
 from .edits_functions import *
 from .edits_applied import *
+from .edits_applied_new import *
 
 
 def preEditVideoNER(entities, reqCommand, clip):
@@ -166,7 +164,7 @@ def preEditVideoNER(entities, reqCommand, clip):
                 extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": endTime}            
+            features = {"startTime": endTime}
             return getEditFeatures("fadein", features)
 
         if 'FADEOUT' in extractedLabels:
@@ -177,7 +175,7 @@ def preEditVideoNER(entities, reqCommand, clip):
                 extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": startTime, "endTime": endTime}     
+            features = {"startTime": startTime, "endTime": endTime}
             return getEditFeatures("fadeout", features)
 
         if 'SLIDEIN' in extractedLabels:
@@ -188,7 +186,7 @@ def preEditVideoNER(entities, reqCommand, clip):
                 extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": startTime, "endTime": endTime}                 
+            features = {"startTime": startTime, "endTime": endTime}
             return getEditFeatures("slidein", features)
 
         if 'SLIDEOUT' in extractedLabels:
@@ -199,7 +197,7 @@ def preEditVideoNER(entities, reqCommand, clip):
                 extractedtime, defaultStartTime, defaultEndTime)
             # Call to get Edit features and send Parameters
             # PS Message has default value : "Confirm your Edit Command"
-            features = {"startTime": startTime, "endTime": endTime}                 
+            features = {"startTime": startTime, "endTime": endTime}
             return getEditFeatures("slideout", features)
 
     return edit_features
@@ -214,7 +212,8 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
     if new_clip:
         new_clip = "media/"+str(new_clip)
         new_clip = createClip(new_clip)
-        new_clip =new_clip if isinstance(new_clip, ImageClip) else restoreClipSize(new_clip)
+        new_clip = new_clip if isinstance(
+            new_clip, ImageClip) else restoreClipSize(new_clip)
     if features != {}:
         if action == 'trim':
             clip = trim(clip, features["startTime"], features["endTime"])
@@ -240,16 +239,18 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
         if action == 'Add Text':
             clip = addText(clip, features["text"], features["textPosition"], features["color"],
                            features["fontSize"], features["startTime"], features["endTime"])
+            # clip = addText(clip, features["text"], features["textPosition"], features["color"],
+            #                features["fontSize"], features["startTime"], features["endTime"])
             pass
         if action == 'Add Watermark':
             clip = addText(clip, features["text"], features["textPosition"], features["color"],
                            features["fontSize"], features["startTime"], features["endTime"], True)
             pass
         if action == 'fadein' or action == 'fadeout':
-            clip = fade(clip,new_clip,features["startTime"])
+            clip = fade(clip, new_clip, features["startTime"])
             pass
         if action == 'slidein' or action == 'slideout':
-            clip = slide(clip,new_clip,features["startTime"])
+            clip = slide(clip, new_clip, features["startTime"])
             pass
 
     else:
@@ -269,16 +270,93 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
         return True
 
 
+def editConfirmedVideoNew(clip, action, features, new_clip=None, id=0, edited_versions_count=0):
+    clip = "media/"+str(clip)
+    output_file = get_Output_Path(id, edited_versions_count)
+    print(output_file)
+    # Create new Clip
+    if new_clip:
+        new_clip = "media/"+str(new_clip)
+    if features != {}:
+        if action == 'trim':
+            clip = extract_subclip(
+                clip, features["startTime"], features["endTime"], output_file)
+            return True
+        if action == 'blur':
+            clip = blur_video(
+                clip, output_file)
+            return True
+        if action == 'brighten':
+            clip = brighten_video(
+                clip, output_file)
+            return True
+        if action == 'darken':
+            clip = darken_video(
+                clip, output_file)
+            return True
+        # if action == 'animate':
+        #     clip = animate(clip)
+        #     pass
+        if action == 'monoc':
+            clip = convert_to_black_and_white(clip, output_file)
+            return True
+        """ Not functioning Well"""
+        if action == 'Add Text':
+            clip = add_text_to_video(
+                clip, output_file, features["text"], features["startTime"], features["endTime"], features["color"], features["fontSize"])
+            return True
+        # if action == 'Add Watermark':
+        #     clip = addText(clip, features["text"], features["textPosition"], features["color"],
+        #                    features["fontSize"], features["startTime"], features["endTime"], True)
+        #     pass
+        # if action == 'fadein' or action == 'fadeout':
+        #     clip = fade(clip, new_clip, features["startTime"])
+        #     pass
+        # if action == 'slidein' or action == 'slideout':
+        #     clip = slide(clip, new_clip, features["startTime"])
+        #     pass
+
+    else:
+        # if action == 'fadein':
+        #     clip = fadein(clip, new_clip)
+        #     pass
+        # if action == 'fadeout':
+        #     clip = fadeout(clip, new_clip)
+        #     pass
+        # if action == 'slidein':
+        #     clip = slidein(clip, new_clip)
+        #     pass
+        # if action == 'slideout':
+        #     clip = slideout(clip, new_clip)
+        #     pass
+        pass
+
+
 def createClip(path):
     content_type = path.split('.')[-1]
-    valid_extensions =  ['mp4', 'mov', 'avi']  
+    valid_extensions = ['mp4', 'mov', 'avi']
     if content_type in valid_extensions:
         return VideoFileClip(path)
-    else :
-        return ImageClip(path,duration=1)
+    else:
+        return ImageClip(path, duration=1)
 
 
 def finalFit(clip, id, edited_versions_count):
-    clip.write_videofile(f'media/videos/Out_{id}_{edited_versions_count}.mp4',codec="libx264")
+    output_folder = os.path.join(settings.MEDIA_ROOT, f'videosOut/{id}')
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    clip.write_videofile(
+        f'media/videosOut/{id}/Out_{id}_{edited_versions_count}.mp4', codec="libx264")
     return True
 
+
+# def get_Output_Path(id, edited_versions_count):
+
+#     return f'media/videosOut/{id}/Out_{id}_{edited_versions_count}.mp4'
+
+
+def get_Output_Path(id, edited_versions_count):
+    output_folder = os.path.join(settings.MEDIA_ROOT, f'videosOut/{id}')
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    return f'media/videosOut/{id}/Out_{id}_{edited_versions_count}.mp4'
