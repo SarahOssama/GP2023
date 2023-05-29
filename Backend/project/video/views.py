@@ -17,8 +17,9 @@ from .forms import Video_Form
 from .views_functions import *
 from .serializers import VideoSerializer
 from .parameters import getParams
-from .edits import editConfirmedVideo, preEditVideoNER, preEditVideoNERNew
+from .edits import editConfirmedVideo, preEditVideoNER, editConfirmedVideoNew, preEditVideoNERNew
 from .NER import getParamsNER, getParamsNER_NEW
+from .voice_over import add_voice_over
 
 # Create your views here.
 
@@ -125,8 +126,10 @@ def edit(request):
     # Edit Video
     flag = editConfirmedVideo(clip, action, features, new_clip,
                               id, edited_versions_count)
+    # flag = editConfirmedVideoNew(clip, action, features, new_clip,
+    #                              id, edited_versions_count)
     if (flag):
-        video.media_file = f'videos/Out_{id}_{edited_versions_count}.mp4'
+        video.media_file = f'videosOut/{id}/Out_{id}_{edited_versions_count}.mp4'
         video.save()
         serializer = VideoSerializer(video)
         return Response(serializer.data)
@@ -146,3 +149,21 @@ def revert(request):
     video.save()
     serializer = VideoSerializer(video)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def addVoiceOver(request):
+    video = Video.objects.last()
+    id = Video.objects.last().id
+    clip = video.media_file
+    video.push_to_versions_stack(clip.name)
+
+    # Add Voice Over
+    finalized_video = add_voice_over(
+        clip, request.data['statement'], id)
+    video.media_file = finalized_video
+    video.save()
+    serializer = VideoSerializer(video)
+    return Response(serializer.data)
+
+    pass
