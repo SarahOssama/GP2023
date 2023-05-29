@@ -91,7 +91,7 @@ def fitSizePadding(clip, height_default=1920, width_default=1080):
     return clip
 
 
-def edit_video_duration(clip, start_time, end_time, effect_type):
+def edit_video_duration(clip, start_time, end_time, effect_type, factor=1):
     if start_time <= clip.duration and end_time <= clip.duration:
         if effect_type == "blur":
             edited_sub_clip = clip.subclip(start_time, end_time).fl_image(
@@ -104,6 +104,9 @@ def edit_video_duration(clip, start_time, end_time, effect_type):
         elif effect_type == "darken":
             edited_sub_clip = clip.subclip(
                 start_time, end_time).fx(vfx.gamma_corr, 1.5)
+        elif effect_type == "speed":
+            edited_sub_clip = clip.subclip(
+                start_time, end_time).speedx(factor)
         # Concatenate the modified subclip with the remaining part of the main video
         edited_video = concatenate_videoclips(
             [clip.subclip(0, start_time), edited_sub_clip, clip.subclip(end_time)])

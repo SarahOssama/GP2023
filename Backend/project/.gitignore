@@ -20,3 +20,18 @@ db.sqlite3
 venv/
 
 migrations/
+
+results/
+
+video/NER/ModelNERNew/data/chars.txt
+
+video/NER/ModelNERNew/data/tags.txt
+
+video/NER/ModelNERNew/data/words.txt
+
+
+*.npz
+video/NER/ModelNERNew/data/glove.6B/glove.6B.50d.txt
+video/NER/ModelNERNew/data/glove.6B/glove.6B.100d.txt
+video/NER/ModelNERNew/data/glove.6B/glove.6B.200d.txt
+video/NER/ModelNERNew/data/glove.6B/glove.6B.300d.txt
