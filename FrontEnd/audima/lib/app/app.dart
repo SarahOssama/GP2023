@@ -18,7 +18,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
+  Widget build(BuildContext context) => MaterialApp(
         builder: (context, widget) => ResponsiveWrapper.builder(
           BouncingScrollWrapper.builder(context, widget!),
           breakpoints: const [
@@ -40,8 +40,10 @@ class _AppState extends State<App> {
           ],
         ),
         debugShowCheckedModeBanner: false,
-        routeInformationProvider: RoutesManager.router.routeInformationProvider,
-        routeInformationParser: RoutesManager.router.routeInformationParser,
-        routerDelegate: RoutesManager.router.routerDelegate,
+        // routeInformationProvider: RoutesManager.router.routeInformationProvider,
+        // routeInformationParser: RoutesManager.router.routeInformationParser,
+        // routerDelegate: RoutesManager.router.routerDelegate,
+        onGenerateRoute: RoutesGenerator.getRoute,
+        initialRoute: Routes.splash,
       );
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const String baseUrl = "https://api.metatext.ai/hub-inference";
-  static const String videoManipulationUrl = "http://192.168.1.4:8000";
+  static const String videoManipulationUrl = "http://192.168.1.59:8000";
   static const String empty = "";
   static const int zero = 0;
   static const double zeroDouble = 0.0;

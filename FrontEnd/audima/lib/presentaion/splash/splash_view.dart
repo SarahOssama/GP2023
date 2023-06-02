@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:audima/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ AppPreferences _appPreferences = instance<AppPreferences>();
 
 class _SplashViewState extends State<SplashView> {
   _goNext() {
-    context.go("/home");
+    Navigator.pushReplacementNamed(context, Routes.home);
     // _appPreferences.isUserLoggedIn().then((isUserLoggedIn) {
     //   if (isUserLoggedIn) {
     //     //navigate to business info

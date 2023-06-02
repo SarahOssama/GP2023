@@ -4,8 +4,9 @@ import 'package:audima/responsive.dart';
 import 'package:flutter/material.dart';
 
 class MainScaffold extends StatelessWidget {
+  String previousRoute;
   Widget child;
-  MainScaffold({required this.child});
+  MainScaffold({required this.child, required this.previousRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,12 @@ class MainScaffold extends StatelessWidget {
             ),
             elevation: 0,
             backgroundColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
           child
         ],

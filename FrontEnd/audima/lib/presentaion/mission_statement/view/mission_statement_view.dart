@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'dart:math';
 
+import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/mission_statement/viewmodel/mission_statement_viewmodel.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:audima/responsive.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/scheduler.dart';
 
 class MissionStatementView extends StatefulWidget {
   BusinessInfoObject businessInfoObject;
@@ -17,33 +21,41 @@ class MissionStatementView extends StatefulWidget {
   State<MissionStatementView> createState() => _MissionStatementViewState();
 }
 
-final MissionStatementViewModel _viewModel =
-    instance<MissionStatementViewModel>();
-final TextEditingController _missionStatementTextController =
-    TextEditingController();
-final StreamController<FlowState> _missionStatementStreamController =
-    StreamController<FlowState>.broadcast();
+//view model and mission statement text controller
+late MissionStatementViewModel _viewModel;
+//app prefereneces for saving mission statement
+late AppPreferences _appPreferences;
+
+late TextEditingController _missionStatementTextController;
+//variable which only will generate mission statement once
+bool _isStarted = false;
+
+late ScrollController textScrollController;
 
 class _MissionStatementViewState extends State<MissionStatementView> {
   @override
   void initState() {
-    //make missionStatementStreamController listen to _viewmodel.outputState
-    Constants.BusinessInfoScreenViewStatus = false;
+    print("mission statement view init");
+    _appPreferences = instance<AppPreferences>();
+    _viewModel = instance<MissionStatementViewModel>();
+    _missionStatementTextController = TextEditingController();
+    textScrollController = ScrollController();
     _viewModel.outputMissionStatement.listen((missionStatement) {
       _missionStatementTextController.text = missionStatement;
     });
     _missionStatementTextController.addListener(() {
       _viewModel.editMissionStatement(_missionStatementTextController.text);
     });
-    _missionStatementStreamController.addStream(_viewModel.outputState);
     _viewModel.setMissionBasicStatement(widget.businessInfoObject);
-    _viewModel.start();
     super.initState();
   }
 
   @override
   void dispose() {
-    _missionStatementStreamController.close();
+    print("mission statement view disposed");
+
+    _missionStatementTextController.removeListener(() {});
+    _missionStatementTextController.clear();
     _missionStatementTextController.dispose();
     _viewModel.dispose();
     super.dispose();
@@ -56,31 +68,28 @@ class _MissionStatementViewState extends State<MissionStatementView> {
       body: StreamBuilder<FlowState>(
           stream: _viewModel.outputState,
           builder: (context, snapshot) {
-            print("mission");
-            return snapshot.data?.getScreenWidget(
-                    context,
-                    ReactiveElevatedButton(
-                        text: "Proceed with Video",
-                        onPressed: () {
-                          context.go("/business-video");
-                        },
-                        buttonColorCondition: false,
-                        buttonPressedCondition: false),
-                    () {}) ??
-                ReactiveElevatedButton(
-                    text: "Proceed with Video",
-                    onPressed: () {
-                      context.go("/business-video");
-                    },
-                    buttonColorCondition: false,
-                    buttonPressedCondition: false);
+            snapshot.data == null ? _viewModel.start() : null;
+            if (snapshot.connectionState == ConnectionState.active) {
+              return snapshot.data
+                      ?.getScreenWidget(context, _getContentWidget(), () {}) ??
+                  _getContentWidget();
+            } else {
+              return _getContentWidget();
+            }
           }),
     );
   }
 
   Widget _getContentWidget() {
-    return MainScaffold(
-        child: BlackedShadowContainer(
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: MainScaffold(
+        previousRoute: Routes.businessInfo,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: BlackedShadowContainer(
+            width: 300,
+            height: 500,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,16 +101,20 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: StreamBuilder<List<bool>>(
-                      stream: _viewModel.outputIsEditingEnabled,
-                      builder: (context, snapshot) {
-                        return TextField(
+                    stream: _viewModel.outputIsEditingEnabled,
+                    builder: (context, snapshot) {
+                      return Scrollbar(
+                        thumbVisibility: true,
+                        controller: textScrollController,
+                        child: TextField(
+                          scrollController: textScrollController,
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.multiline,
                           minLines: 1, //Normal textInputField will be displayed
                           maxLines: 6, // wh
 
                           controller: _missionStatementTextController,
-                          style: ResponsiveTextStyles.MissionStatementTextStyle(
+                          style: ResponsiveTextStyles.missionStatementTextStyle(
                               context),
                           decoration: InputDecoration(
                             enabledBorder: (snapshot.data?[0] ?? false)
@@ -127,28 +140,29 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                           showCursor:
                               (snapshot.data?[0] ?? false) ? true : false,
                           readOnly: (snapshot.data?[0] ?? false) ? false : true,
-                        );
-                      }),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     StreamBuilder<EditOrSaveButtonData>(
-                        stream: _viewModel.outputEditSaveButtonName,
-                        builder: (context, snapshot) {
-                          return ReactiveElevatedButton(
-                              text: _viewModel.editOrSave,
-                              onPressed: () =>
-                                  _viewModel.doEditOrSaveFunction(),
-                              buttonColorCondition:
-                                  (snapshot.data?.isMissionStatementEmpty ??
-                                      false),
-                              buttonPressedCondition:
-                                  (snapshot.data?.isMissionStatementEmpty ??
-                                          false) &&
-                                      (snapshot.data?.editOrSaveButtonName ==
-                                          "Save"));
-                        }),
+                      stream: _viewModel.outputEditSaveButtonName,
+                      builder: (context, snapshot) {
+                        return ReactiveElevatedButton(
+                          text: _viewModel.editOrSave,
+                          onPressed: () => _viewModel.doEditOrSaveFunction(),
+                          buttonColorCondition:
+                              (snapshot.data?.isMissionStatementEmpty ?? false),
+                          buttonPressedCondition: (snapshot
+                                      .data?.isMissionStatementEmpty ??
+                                  false) &&
+                              (snapshot.data?.editOrSaveButtonName == "Save"),
+                        );
+                      },
+                    ),
                     const SizedBox(
                       width: 20,
                     ),
@@ -166,7 +180,11 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                     ReactiveElevatedButton(
                         text: "Proceed with Video",
                         onPressed: () {
-                          context.push("/business-video");
+                          //before proceeding to video we need to save the mission statement to the app preferences so that we can use it in the ending screen
+                          _appPreferences.setMissionStatement(
+                              _missionStatementTextController.text);
+
+                          Navigator.of(context).pushNamed(Routes.businessVideo);
                         },
                         buttonColorCondition: false,
                         buttonPressedCondition: false),
@@ -174,7 +192,9 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                 ),
               ],
             ),
-            width: 300,
-            height: 500));
+          ),
+        ),
+      ),
+    );
   }
 }

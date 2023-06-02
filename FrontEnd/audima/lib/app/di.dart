@@ -13,8 +13,8 @@ import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
 import 'package:audima/domain/usecase/revert_video_edit_usecase.dart';
 import 'package:audima/domain/usecase/upload_video_usecase.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
-import 'package:audima/presentaion/business_video/view/business_video_view.dart';
 import 'package:audima/presentaion/business_video/viewmodel/business_video_viewmodel.dart';
+import 'package:audima/presentaion/final_presentation/viewmodel/final_presentation_viewmodel.dart';
 import 'package:audima/presentaion/login/viewmodel/login_viewmodel.dart';
 import 'package:audima/presentaion/mission_statement/viewmodel/mission_statement_viewmodel.dart';
 import 'package:dio/dio.dart';
@@ -56,13 +56,21 @@ Future<void> initAppModule() async {
       () => RepositoryImpl(instance(), instance()));
 }
 
-void initLoginModule() {
-  //check if login usecase is not registered
-  if (!GetIt.I.isRegistered<LoginUseCase>()) {
-    //register login usecase
-    instance.registerFactory<LoginUseCase>(() => LoginUseCase(instance()));
-    //register login viewmodel
-    instance.registerFactory<LoginViewModel>(() => LoginViewModel(instance()));
+// void initLoginModule() {
+//   //check if login usecase is not registered
+//   if (!GetIt.I.isRegistered<LoginUseCase>()) {
+//     //register login usecase
+//     instance.registerFactory<LoginUseCase>(() => LoginUseCase(instance()));
+//     //register login viewmodel
+//     instance.registerFactory<LoginViewModel>(() => LoginViewModel(instance()));
+//   }
+// }
+
+void initBusinessInfoModule() {
+  //register mission statement viewmodel
+  if (!GetIt.I.isRegistered<BusinessInfoViewModel>()) {
+    instance
+        .registerFactory<BusinessInfoViewModel>(() => BusinessInfoViewModel());
   }
 }
 
@@ -102,6 +110,16 @@ void initVideoUploadModule() {
     instance.registerFactory<BusinessVideoViewModel>(
       () => BusinessVideoViewModel(
           instance(), instance(), instance(), instance(), instance()),
+    );
+  }
+}
+
+//init final presentation module
+void initFinalPresentationModule() {
+  if (!GetIt.I.isRegistered<FinalPresentationViewModel>()) {
+    //register final presentation viewmodel
+    instance.registerFactory<FinalPresentationViewModel>(
+      () => FinalPresentationViewModel(),
     );
   }
 }

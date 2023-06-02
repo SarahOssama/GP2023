@@ -9,6 +9,7 @@ enum StateRendererType {
   popUpLoadingState,
   popUpConfirmationState,
   popUpErrorState,
+  popUpSuccessState,
   //FULL SCREEN STATES (FULL SCREEN)
   fullScreenLoadingState,
   fullScreenErrorState,
@@ -47,6 +48,14 @@ class StateRenderer extends StatelessWidget {
       case StateRendererType.popUpErrorState:
         return _getPopUpDialog(context, [
           _getAnimatedImage(JsonAssets.error),
+          SizedBox(height: 10),
+          _getMessage(message, context),
+          SizedBox(height: 10),
+          _getRetryButton("Ok", context)
+        ]);
+      case StateRendererType.popUpSuccessState:
+        return _getPopUpDialog(context, [
+          _getAnimatedImage(JsonAssets.success),
           SizedBox(height: 10),
           _getMessage(message, context),
           SizedBox(height: 10),
@@ -144,7 +153,8 @@ class StateRenderer extends StatelessWidget {
       child: Column(
         children: [
           Text(message,
-              style: ResponsiveTextStyles.LoadingMessageTextStyle(context)),
+              textAlign: TextAlign.center,
+              style: ResponsiveTextStyles.loadingMessageTextStyle(context)),
           SizedBox(
             height: 20,
           ),
@@ -160,6 +170,7 @@ class StateRenderer extends StatelessWidget {
       width: 100,
       child: ElevatedButton(
         style: ButtonStyle(
+          elevation: MaterialStateProperty.all(10),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
