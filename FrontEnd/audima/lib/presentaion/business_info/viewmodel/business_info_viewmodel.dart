@@ -54,6 +54,7 @@ class BusinessInfoViewModel extends BaseViewModel
     _companyServiceDescriptionStreamController.close();
     _isNextAvailableFromCompanyServiceDescriptionQuestionController.close();
     inputMissionStatementStreamController.close();
+    super.dispose();
   }
 
   @override

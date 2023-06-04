@@ -6,6 +6,7 @@ import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/base/baseview.dart';
 import 'package:audima/presentaion/business_info/viewmodel/business_info_viewmodel.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:audima/domain/model/models.dart';
@@ -21,15 +22,16 @@ class BusinessInfo extends StatefulWidget {
 }
 
 class _BusinessInfoState extends State<BusinessInfo> {
-  final CarouselController _carouselController = CarouselController();
-  final BusinessInfoViewModel _viewModel = BusinessInfoViewModel();
-  final TextEditingController _companyNameTextController =
-      TextEditingController();
-  final TextEditingController _providedServiceTextController =
-      TextEditingController();
-  AppPreferences _appPreferences = instance<AppPreferences>();
-
-  _bind() {
+  late CarouselController _carouselController;
+  late BusinessInfoViewModel _viewModel;
+  late TextEditingController _companyNameTextController;
+  late TextEditingController _providedServiceTextController;
+  @override
+  void initState() {
+    _carouselController = CarouselController();
+    _viewModel = instance<BusinessInfoViewModel>();
+    _companyNameTextController = TextEditingController();
+    _providedServiceTextController = TextEditingController();
     _viewModel.start();
     _companyNameTextController.addListener(() {
       _viewModel.setCompanyName(_companyNameTextController.text);
@@ -43,26 +45,19 @@ class _BusinessInfoState extends State<BusinessInfo> {
       //this means that the business info is completed and i should send it to the mission statement model
       if (businessInfoWholeData.isBusinessInfoCompleted) {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          _appPreferences.setBusinessInfoViewed();
           Constants.BusinessInfoScreenViewStatus = true;
-          context.replace('/mission-statement',
-              extra: businessInfoWholeData.businessInfoObject);
+          Navigator.of(context).pushNamed(Routes.missionStatement,
+              arguments: businessInfoWholeData.businessInfoObject);
         });
       }
     });
-  }
-
-  late Stream mystream;
-  @override
-  void initState() {
-    _bind();
-
     super.initState();
   }
 
   @override
   void dispose() {
     _companyNameTextController.dispose();
+    _providedServiceTextController.dispose();
     _viewModel.dispose();
     super.dispose();
   }
@@ -97,126 +92,108 @@ class _BusinessInfoState extends State<BusinessInfo> {
         color: Colors.amber,
       );
     } else {
-      return MainScaffold(
-        child: BlackedShadowContainer(
-          height: 400,
-          width: 350,
-          child: CarouselSlider.builder(
-            carouselController: _carouselController,
-            itemCount: _viewModel.getListSize(),
-            options: CarouselOptions(
-              onScrolled: (index) {
-                _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
-                    ? null
-                    : _carouselController
-                        .animateToPage(_viewModel.getCurrentIndex());
-              },
-              enableInfiniteScroll: false,
-              viewportFraction: 4,
-              enlargeCenterPage: false,
+      return GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: MainScaffold(
+          previousRoute: Routes.home,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: BlackedShadowContainer(
               height: 400,
-              initialPage: 0,
-              autoPlay: false,
-              onPageChanged: (index, reason) {
-                _viewModel.onPageChanged(index);
-              },
-            ),
-            itemBuilder: (context, index, realIndex) {
-              return Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [
-                        0.1,
-                        0.5,
-                        0.9,
-                      ],
-                      colors: [
-                        Colors.black,
-                        Colors.white,
-                        Colors.black,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
-                width: 350,
-                height: 400,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              width: 350,
+              child: CarouselSlider.builder(
+                carouselController: _carouselController,
+                itemCount: _viewModel.getListSize(),
+                options: CarouselOptions(
+                  onScrolled: (index) {
+                    _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
+                        ? null
+                        : _carouselController
+                            .animateToPage(_viewModel.getCurrentIndex());
+                  },
+                  enableInfiniteScroll: false,
+                  viewportFraction: 4,
+                  enlargeCenterPage: false,
+                  height: 400,
+                  initialPage: 0,
+                  autoPlay: false,
+                  onPageChanged: (index, reason) {
+                    _viewModel.onPageChanged(index);
+                  },
+                ),
+                itemBuilder: (context, index, realIndex) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [
+                            0.1,
+                            0.5,
+                            0.9,
+                          ],
+                          colors: [
+                            Colors.black,
+                            Colors.white,
+                            Colors.black,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(30))),
+                    width: 350,
+                    height: 400,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              questionObject.question,
-                              style:
-                                  ResponsiveTextStyles.businessDetailTextStyle(
-                                      context),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  questionObject.question,
+                                  style: ResponsiveTextStyles
+                                      .businessDetailTextStyle(context),
+                                ),
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Text(
+                                '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 40,
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        )
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: _getQuestionWidget(
+                              _viewModel.getCurrentIndex(), questionObject),
+                        ),
+                        Spacer(),
+                        _getNextButtonWidget(
+                          _viewModel.getCurrentIndex(),
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: _getQuestionWidget(
-                          _viewModel.getCurrentIndex(), questionObject),
-                    ),
-                    Spacer(),
-                    _getNextButtonWidget(
-                      _viewModel.getCurrentIndex(),
-                    ),
-                  ],
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
         ),
       );
     }
   }
-  // Scaffold(
-  //       extendBodyBehindAppBar: true,
-  //       appBar: AppBar(
-  //         title: Text(
-  //           'Audima',
-  //           style: ResponsiveTextStyles.audima(context),
-  //         ),
-  //         elevation: 0,
-  //         backgroundColor: Colors.transparent,
-  //       ),
-  //       body: Stack(
-  //         alignment: Alignment.center,
-  //         children: [
-  //           Container(
-  //             decoration: BoxDecoration(
-  //               image: DecorationImage(
-  //                 fit: BoxFit.cover,
-  //                 image: AssetImage('assets/images/businessinfo.jpg'),
-  //               ),
-  //             ),
-  //           ),
-
-  //         ],
-  //       ),
-  //     );
 
   // _getQuestionWidget for 4 questions main widgets
   Widget _getQuestionWidget(int index, dynamic questionObject) {

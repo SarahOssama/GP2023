@@ -16,11 +16,9 @@ class MissionStatementViewModel extends BaseViewModel
       StreamController<EditOrSaveButtonData>.broadcast();
   final StreamController _isEditingEnabledStreamController =
       StreamController<List<bool>>.broadcast();
-
   var missionStatementObject = MissionStatementObject("");
 
   // ---------------------------------------------------------------------------initialization phase
-
   late String missionStatementBasicStatement;
   String editOrSave = "Edit";
   String regenMissionStatement = "Re-Generate";
@@ -35,6 +33,8 @@ class MissionStatementViewModel extends BaseViewModel
   void dispose() {
     super.dispose();
     _missionStatementStreamController.close();
+    _editSaveButtonNameStreamController.close();
+    _isEditingEnabledStreamController.close();
   }
 
   @override
@@ -88,9 +88,8 @@ class MissionStatementViewModel extends BaseViewModel
   //------------------------------------------------------------------------------helper functions
   void _generateMissionStatement() async {
     inputState.add(LoadingState(
-      stateRendererType: StateRendererType.popUpLoadingState,
-      message: 'Generating Mission Statement',
-    ));
+        stateRendererType: StateRendererType.popUpLoadingState,
+        message: "Generating Mission Statement"));
 
     (await _missionStatementUseCase.execute(
             MissionStatementUseCaseInput(missionStatementBasicStatement)))
@@ -101,10 +100,10 @@ class MissionStatementViewModel extends BaseViewModel
       //left means failure
     }, (data) {
       //right means success
-      inputState.add(ContentState());
       inputMissionStatement.add(data.missionStatement);
       missionStatementObject = missionStatementObject.copyWith(
           missionStatement: data.missionStatement);
+      inputState.add(ContentState());
     });
   }
 

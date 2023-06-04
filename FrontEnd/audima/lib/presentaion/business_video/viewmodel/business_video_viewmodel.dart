@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
+import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
+import 'package:audima/app/di.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_insert_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
@@ -46,7 +48,6 @@ class BusinessVideoViewModel extends BaseViewModel
       StreamController<bool>.broadcast();
   final StreamController<bool> _isFeatureChangedStreamController =
       StreamController<bool>.broadcast();
-
   final StreamController<bool> _isAnotherVideoAddedStreamController =
       StreamController<bool>.broadcast();
   final StreamController<bool> _isAnotherImageAddedStreamController =
@@ -67,6 +68,8 @@ class BusinessVideoViewModel extends BaseViewModel
   late File secondryFile;
   bool isSecondVideoAdded = false;
   bool isSecondImageAdded = false;
+  //------------------------------------------------------------------------------app preferenecs
+  AppPreferences _appPreferences = instance<AppPreferences>();
   //------------------------------------------------------------------------------scroll controllers
   final preEditInnerMenuScrollController =
       ScrollController(initialScrollOffset: 0.0);
@@ -94,11 +97,9 @@ class BusinessVideoViewModel extends BaseViewModel
     _isFeatureChangedStreamController.close();
     _isAnotherVideoAddedStreamController.close();
     _canAddAnotherVideoOrImageStreamController.close();
-    mainVideoController.dispose();
-    mainChewieController.dispose();
-    secondryVideoController.dispose();
-    secondryChewieController.dispose();
     editUserTextController.dispose();
+    _audioRecognitionStateStreamController.close();
+    _isAnotherImageAddedStreamController.close();
 
     super.dispose();
   }
@@ -344,36 +345,34 @@ class BusinessVideoViewModel extends BaseViewModel
       //left means failure
     }, (data) async {
       //right means success
-      print(
-          "trial1-----------------------------------------------------------------");
+
       mainVideoController.removeListener(() {});
       mainVideoController.dispose();
       mainChewieController.dispose();
       textEditingController.clear();
       mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
-      print(
-          "trial2-----------------------------------------------------------------");
+
       await Future.wait([mainVideoController.initialize()]);
-      print(
-          "trial3-----------------------------------------------------------------");
+
       mainChewieController = ChewieController(
         autoInitialize: true,
         videoPlayerController: mainVideoController,
         autoPlay: true,
         aspectRatio: mainVideoController.value.aspectRatio,
       );
-      print(
-          "trial4-----------------------------------------------------------------");
+
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
-      inputIsVideoEdited.add(true);
       //remove second video added if any or second image added if any
       (isSecondVideoAdded || isSecondImageAdded)
           ? removeSecondVideoOrImage()
           : null;
-      print(
-          "trial5-----------------------------------------------------------------");
+      //now the video is edited so we can do multiple things, first is proceeding with next screen and second is reverting the video edit, also i save the video url to app preferences
+      _appPreferences
+          .setVideoUrl("${Constants.videoManipulationUrl}${data.videoUrl}");
+      inputIsVideoEdited.add(true);
+
       inputState.add(ContentState());
     });
   }
@@ -401,31 +400,24 @@ class BusinessVideoViewModel extends BaseViewModel
 
       //left means failure
     }, (data) async {
-      print(
-          "trial1-----------------------------------------------------------------");
       mainVideoController.removeListener(() {});
       mainVideoController.dispose();
       mainChewieController.dispose();
-      print(
-          "trial2-----------------------------------------------------------------");
       mainVideoController = VideoPlayerController.network(
           "${Constants.videoManipulationUrl}${data.videoUrl}");
-      print(
-          "trial3-----------------------------------------------------------------");
       await Future.wait([mainVideoController.initialize()]);
-      print(
-          "trial4-----------------------------------------------------------------");
       mainChewieController = ChewieController(
         autoInitialize: true,
         videoPlayerController: mainVideoController,
         autoPlay: true,
         aspectRatio: mainVideoController.value.aspectRatio,
       );
+      //save the reverted video url to app preferences
+      _appPreferences
+          .setVideoUrl("${Constants.videoManipulationUrl}${data.videoUrl}");
       inputIsVideoPlayerControllerInitialized.add(true);
       inputIsAnyVideoUploaded.add(true);
       inputIsVideoEdited.add(true);
-      print(
-          "trial5-----------------------------------------------------------------");
       //right means success
       inputState.add(ContentState());
     });
@@ -451,6 +443,7 @@ class BusinessVideoViewModel extends BaseViewModel
               true,
               isListeningToSpeech,
             ]);
+
             _speech.stop();
           }
         },

@@ -43,6 +43,20 @@ class ErrorState extends FlowState {
   String getMessage() => message;
 }
 
+//success state
+class SuccessState extends FlowState {
+  StateRendererType stateRendererType;
+  String message;
+
+  SuccessState(this.stateRendererType, this.message);
+
+  @override
+  StateRendererType getStateRendererType() => stateRendererType;
+
+  @override
+  String getMessage() => message;
+}
+
 //confirmation message state
 class ConfirmationState extends FlowState {
   StateRendererType stateRendererType;
@@ -139,6 +153,23 @@ extension FlowStateExtension on FlowState {
               message: getMessage(),
               retryActionFunction: retryActionFunction);
         }
+      case SuccessState:
+        dismissDialog(context);
+        if (getStateRendererType() ==
+            StateRendererType.popUpSuccessState) //pop up error screen
+        {
+          //show pop up
+          showPopUp(context, getStateRendererType(), getMessage());
+          //show content screen
+          return contentScreenWidget;
+        } else {
+          //full screen loading state
+          return StateRenderer(
+              stateRendererType: getStateRendererType(),
+              message: getMessage(),
+              retryActionFunction: retryActionFunction);
+        }
+
       case EmptyState:
         return StateRenderer(
             stateRendererType: getStateRendererType(),

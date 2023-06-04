@@ -2,6 +2,7 @@
 
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -74,7 +75,8 @@ class _HomeViewState extends State<HomeView> {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.white)),
                       onPressed: () {
-                        context.go("/business-info");
+                        Navigator.pushReplacementNamed(
+                            context, Routes.businessInfo);
                       },
                       child: CustomizedText(
                           text: "Start Your Business Journey",

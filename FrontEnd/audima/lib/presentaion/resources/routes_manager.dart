@@ -3,6 +3,7 @@ import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/business_video/view/business_video_view.dart';
 import 'package:audima/presentaion/common/freezed_data_classes.dart';
+import 'package:audima/presentaion/final_presentation/view/final_presentation_view.dart';
 import 'package:audima/presentaion/login/view/login_view.dart';
 import 'package:audima/presentaion/mission_statement/view/mission_statement_view.dart';
 import 'package:audima/presentaion/splash/splash_view.dart';
@@ -11,33 +12,48 @@ import 'package:go_router/go_router.dart';
 import '../business_info/view/business_info_view.dart';
 import '../home/home_view.dart';
 
-// class Routes {
-//   static const String splash = "/";
-//   static const String home = "/home";
-//   static const String businessInfo = "/business-info";
-//   static const String missionStatement = "/mission-statement";
-//   static const String businessVideo = "/business-video";
-// }
+class Routes {
+  static const String splash = "/";
+  static const String home = "/home";
+  static const String businessInfo = "/business-info";
+  static const String missionStatement = "/mission-statement";
+  static const String businessVideo = "/business-video";
+  static const String finalPresentation = "/final-presentation";
+}
 
-// class RoutesGenerator {
-//   static Route<dynamic> getRoute(RouteSettings settings) {
-//     switch (settings.name) {
-//       case Routes.splash:
-//         return MaterialPageRoute(builder: (_) => SplashView());
-//       case Routes.home:
-//         return MaterialPageRoute(builder: (_) => HomeView());
-//       case Routes.businessInfo:
-//         return MaterialPageRoute(builder: (_) => BusinessInfo());
-//       case Routes.missionStatement:
-//         return MaterialPageRoute(builder: (_) => MissionStatementView());
-//       case Routes.businessVideo:
-
-//         return MaterialPageRoute(builder: (_) => BusinessVideo());
-//       default:
-//         return MaterialPageRoute(builder: (_) => LoginView());
-//     }
-//   }
-// }
+class RoutesGenerator {
+  static Route<dynamic> getRoute(RouteSettings settings) {
+    final Object? arguments = settings.arguments;
+    switch (settings.name) {
+      case Routes.splash:
+        return MaterialPageRoute(builder: (_) => SplashView());
+      case Routes.home:
+        return MaterialPageRoute(builder: (_) => HomeView());
+      case Routes.businessInfo:
+        initBusinessInfoModule();
+        return MaterialPageRoute(builder: (_) => BusinessInfo());
+      case Routes.missionStatement:
+        if (arguments is BusinessInfoObject) {
+          initMissionStatementModule();
+          return MaterialPageRoute(
+              builder: (_) =>
+                  MissionStatementView(businessInfoObject: arguments));
+        } else {
+          // Handle the case when arguments are null or of the wrong type
+          // For example, navigate back to a fallback screen
+          return MaterialPageRoute(builder: (_) => HomeView());
+        }
+      case Routes.businessVideo:
+        initVideoUploadModule();
+        return MaterialPageRoute(builder: (_) => BusinessVideo());
+      case Routes.finalPresentation:
+        initFinalPresentationModule();
+        return MaterialPageRoute(builder: (_) => FinalPresentationView());
+      default:
+        return MaterialPageRoute(builder: (_) => HomeView());
+    }
+  }
+}
 
 GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
@@ -51,10 +67,10 @@ class RoutesManager {
             name: "splash",
             path: '/',
             pageBuilder: (context, state) {
-              initVideoUploadModule();
+              // initVideoUploadModule();
               return CustomTransitionPage<void>(
                 key: state.pageKey,
-                child: BusinessVideo(),
+                child: SplashView(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) =>
                         FadeTransition(opacity: animation, child: child),
@@ -88,17 +104,19 @@ class RoutesManager {
         //       );
         //     }),
         GoRoute(
-          name: "business-info",
-          path: '/business-info',
-          pageBuilder: (context, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            child: BusinessInfo(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        ),
+            name: "business-info",
+            path: '/business-info',
+            pageBuilder: (context, state) {
+              initBusinessInfoModule();
+              return CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: BusinessInfo(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 500),
+              );
+            }),
         GoRoute(
             name: "mission-statement",
             path: '/mission-statement',

@@ -12,6 +12,9 @@ class JsonAssets {
   static const String edit = "$jsonPath/edit.json";
   static const String addAnotherVideo = "$jsonPath/addAnotherVideo.json";
   static const String discard = "$jsonPath/discard.json";
+  static const String download = "$jsonPath/download.json";
+  static const String copy = "$jsonPath/copy.json";
+  static const String success = "$jsonPath/success.json";
 }
 
 //images pathes used allover the application
