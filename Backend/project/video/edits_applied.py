@@ -1,4 +1,6 @@
 from moviepy.editor import *
+from moviepy.editor import VideoFileClip, concatenate
+
 from skimage.filters import gaussian
 from .edits_functions import *
 
@@ -15,20 +17,25 @@ def addText(clip, text, position, color, size, startTime, endTime, watermark=Fal
         'large': 100
     }
     size = size_map.get(size, None)
+    print("Hamada text test", text, position, color,
+          size, startTime, endTime, watermark)
+    print("in Add Text", clip.duration)
     if watermark:
 
         txt_clip = TextClip(text, font='Aldhabi', fontsize=size,
                             color=color).set_position((position, 'bottom'))
-        txt_clip = txt_clip.set_start(int(startTime))
-        txt_clip = txt_clip.set_duration(endTime)
+        txt_clip = txt_clip.set_start(startTime)
+        txt_clip = txt_clip.set_end(endTime)
     else:
 
         # duration=int(duration) if int(duration) < clip.duration else clip.duration
         # print(position,color,size,int(starttime),duration)
         txt_clip = TextClip(text, fontsize=size,
                             color=color).set_position(position)
-        txt_clip = txt_clip.set_start(int(startTime))
+        txt_clip = txt_clip.set_start(startTime)
         txt_clip = txt_clip.set_duration(endTime)
+    print("Out Add Text before composite", clip.duration)
+
     return CompositeVideoClip([clip, txt_clip])
 
 
@@ -76,7 +83,7 @@ def fadein(main_clip, new_clip, padding=-1, duration=2):
     clips = [main_clip, new_clip]
 
     faded_clips = [CompositeVideoClip(
-        [clip.fx(transfx.crossfadein, duration=duration)])for clip in clips]
+        [clip.fx(transfx.crossfadein, duration=duration)]) for clip in clips]
     final_clip = concatenate_videoclips(faded_clips, padding=padding)
 
     return final_clip
@@ -141,7 +148,7 @@ def slideout(main_clip, new_clip, padding=-1, duration=2, side="left"):
     return final_clip
 
 
-def fade(main_clip, new_clip, startTime):
+def fade(main_clip, new_clip, startTime, padding=-2, duration=2):
     if main_clip.h < new_clip.h:
         default_width = main_clip.w
         default_height = main_clip.h
@@ -154,28 +161,67 @@ def fade(main_clip, new_clip, startTime):
         new_clip, height_default=default_height, width_default=default_width)
 
     # Specify the fade duration in seconds
-    fade_duration = 1
+    fade_duration = duration
 
     # Split the main video into two parts at the desired point where you want to insert the new video
     start_time = startTime  # Specify the start time in seconds
-    end_time = new_clip.duration    # Specify the end time in seconds
+    if start_time >= main_clip.duration:
+        clips = [main_clip, new_clip]
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [main_clip.fx(transfx.crossfadeout, duration=fade_duration)]),
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.crossfadein, duration=fade_duration)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
+        return final_video
+    elif start_time == 0:
+        clips = [new_clip, main_clip]
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.crossfadeout, duration=fade_duration)]),
+                CompositeVideoClip(
+                    [main_clip.fx(transfx.crossfadein, duration=fade_duration)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
+        return final_video
+    else:
+        end_time = new_clip.duration    # Specify the end time in seconds
+        part1 = main_clip.subclip(0, start_time)
+        part2 = main_clip.subclip(start_time, main_clip.duration)
 
-    part1 = main_clip.subclip(0, start_time)
-    part2 = main_clip.subclip(end_time, main_clip.duration)
+        # # Apply fade-in effect to the new video
+        # new_clip_fadein = new_clip.fx(transfx.crossfadein, fade_duration)
 
-    # Apply fade-in effect to the new video
-    new_clip_fadein = new_clip.fx(transfx.crossfadein, fade_duration)
+        # # Apply fade-out effect to the second part of the main video
+        # part2_fadeout = part1.fx(transfx.crossfadeout, fade_duration)
 
-    # Apply fade-out effect to the second part of the main video
-    part2_fadeout = part2.fx(transfx.crossfadeout, fade_duration)
-
-    # Concatenate the clips with fade effects
-    final_video = concatenate_videoclips(
-        [part1, new_clip_fadein, part2_fadeout])
+        # # Concatenate the clips with fade effects
+        # final_video = concatenate_videoclips(
+        #     [part1, new_clip_fadein, part2_fadeout])
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [part1.fx(transfx.crossfadeout, duration=fade_duration)]),
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.crossfadein, duration=fade_duration)]),
+                CompositeVideoClip(
+                    [part2.fx(transfx.crossfadein, duration=fade_duration)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
     return final_video
 
 
-def slide(main_clip, new_clip, startTime, side="left"):
+def slide(main_clip, new_clip, startTime, padding=-2, side="left"):
+    slide_duration = 2
     if main_clip.h < new_clip.h:
         default_width = main_clip.w
         default_height = main_clip.h
@@ -187,17 +233,64 @@ def slide(main_clip, new_clip, startTime, side="left"):
     new_clip = fitSizePadding(
         new_clip, height_default=default_height, width_default=default_width)
 
-    # Specify the slide duration in seconds
-    slide_duration = 3
+    # Specify the fade duration in seconds
 
     # Split the main video into two parts at the desired point where you want to insert the new video
     start_time = startTime  # Specify the start time in seconds
-    end_time = new_clip.duration    # Specify the end time in seconds
+    if start_time >= main_clip.duration:
+        clips = [main_clip, new_clip]
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [main_clip.fx(transfx.slide_out, slide_duration, side)]),
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.slide_in, slide_duration, side)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
+        return final_video
+    elif start_time == 0:
+        clips = [new_clip, main_clip]
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.slide_out, slide_duration, side)]),
+                CompositeVideoClip(
+                    [main_clip.fx(transfx.slide_in, slide_duration, side)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
+        return final_video
+    else:
+        end_time = new_clip.duration    # Specify the end time in seconds
+        part1 = main_clip.subclip(0, start_time)
+        part2 = main_clip.subclip(start_time, main_clip.duration)
 
-    part1 = main_clip.subclip(0, start_time)
-    part2 = main_clip.subclip(end_time, main_clip.duration)
+        # # Apply fade-in effect to the new video
+        # new_clip_fadein = new_clip.fx(transfx.crossfadein, fade_duration)
 
-    # Apply slide-in effect to the new video
+        # # Apply fade-out effect to the second part of the main video
+        # part2_fadeout = part1.fx(transfx.crossfadeout, fade_duration)
+
+        # # Concatenate the clips with fade effects
+        # final_video = concatenate_videoclips(
+        #     [part1, new_clip_fadein, part2_fadeout])
+        final_video = concatenate(
+            [
+                CompositeVideoClip(
+                    [part1.fx(transfx.slide_out, slide_duration, side)]),
+                CompositeVideoClip(
+                    [new_clip.fx(transfx.slide_in, slide_duration, side)]),
+                CompositeVideoClip(
+                    [part2.fx(transfx.slide_in, slide_duration, side)]),
+            ],
+            padding=padding,
+            method="chain"
+        )
+    return final_video
+# Apply slide-in effect to the new video
     new_clip_slidein = new_clip.fx(transfx.slide_in, slide_duration, side)
 
     # Apply slide-out effect to the second part of the main video
