@@ -153,9 +153,10 @@ def preEditVideoNERNew(entities, reqCommand, clip):
                 x_index = [extractedtime.index(t)
                            for t in extractedtime if 'x' in t]
                 x_index = x_index[0] if len(x_index) > 0 else False
-                print(x_index)
-                if x_index:
+                # print("in x5", x_index)
+                if x_index is not None:
                     factor = float(extractedtime[x_index][1:])
+                    # print(factor)
                     del extractedtime[x_index]
                 else:
                     factor = 1.5
