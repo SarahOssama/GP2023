@@ -200,7 +200,7 @@ def preEditVideoNERNew(entities, reqCommand, clip):
             extractedtime = [
                 text for text, entityLabel in entities if entityLabel == 'TIME']
             if len(extractedtime) == 0:
-                startTime = [str(defaultEndTime)]
+                startTime = defaultEndTime
             else:
                 startTime, endTime = getVideoStartAndEndTime(
                     extractedtime, defaultStartTime, defaultEndTime)
