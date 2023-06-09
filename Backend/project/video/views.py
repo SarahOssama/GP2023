@@ -160,7 +160,7 @@ def addVoiceOver(request):
 
     # Add Voice Over
     finalized_video = add_voice_over(
-        clip, request.data['statement'], id)
+        clip, request.data['choice'], id)
     video.media_file = finalized_video
     video.save()
     serializer = VideoSerializer(video)

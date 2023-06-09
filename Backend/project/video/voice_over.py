@@ -127,26 +127,41 @@ Execte the whole process
 """
 
 
-def add_voice_over(input_video, statement, id):
+def add_voice_over(input_video, choice, id):
     input_video = "media/"+str(input_video)
     # Make sure that Output folder exists
     output_folder = os.path.join(settings.MEDIA_ROOT, f'voiceOver/{id}')
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # 1 get Paragraph
-    paragraph = rewrite_paragraph(statement)
-
-    # 2 Generate voice over
-    voice_over = generate_voiceover(
-        paragraph, id, f'media/voiceOver/{id}/voice_{id}.mp3')
-
-    # 3 Merge with background
-    merged_with_background = merge_audio_files(
-        voice_over, 'media/voiceOver/Background.mp3', output_file=f'media/voiceOver/{id}/voice_background_{id}.mp3', voiceover_volume=1, background_volume=0.1)
-
-    # 3 Replace Existing video audi with voiceovers
+    background = f'media/voiceOver/Background{choice}.mp3'
+    # Replace Existing video audio with background
     final = replace_audio(
-        input_video, merged_with_background, output_file=f'media/videosOut/{id}/final_video_{id}.mp4')
+        input_video, background, output_file=f'media/videosOut/{id}/final_video_{id}.mp4')
 
     return f'videosOut/{id}/final_video_{id}.mp4'
+
+
+# def add_voice_over(input_video, statement, id):
+#     input_video = "media/"+str(input_video)
+#     # Make sure that Output folder exists
+#     output_folder = os.path.join(settings.MEDIA_ROOT, f'voiceOver/{id}')
+#     if not os.path.exists(output_folder):
+#         os.makedirs(output_folder)
+
+#     # 1 get Paragraph
+#     paragraph = rewrite_paragraph(statement)
+
+#     # 2 Generate voice over
+#     voice_over = generate_voiceover(
+#         paragraph, id, f'media/voiceOver/{id}/voice_{id}.mp3')
+
+#     # 3 Merge with background
+#     merged_with_background = merge_audio_files(
+#         voice_over, 'media/voiceOver/Background.mp3', output_file=f'media/voiceOver/{id}/voice_background_{id}.mp3', voiceover_volume=1, background_volume=0.1)
+
+#     # 3 Replace Existing video audi with voiceovers
+#     final = replace_audio(
+#         input_video, merged_with_background, output_file=f'media/videosOut/{id}/final_video_{id}.mp4')
+
+#     return f'videosOut/{id}/final_video_{id}.mp4'
