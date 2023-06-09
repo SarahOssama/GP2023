@@ -468,6 +468,10 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
             clip = edit_video_duration(
                 clip, features["startTime"], features["endTime"], "darken")
             pass
+        if action == 'speed':
+            clip = edit_video_duration(
+                clip, features["startTime"], features["endTime"], "speed", features["factor"])
+            pass
         if action == 'animate':
             clip = animate(clip)
             pass
