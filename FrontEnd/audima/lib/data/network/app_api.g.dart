@@ -94,7 +94,7 @@ class _VideoServiceClient implements VideoServiceClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.59:8000';
+    baseUrl ??= 'http://192.168.1.55:8000';
   }
 
   final Dio _dio;
@@ -232,7 +232,7 @@ class _VideoServiceClient implements VideoServiceClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
       method: 'GET',

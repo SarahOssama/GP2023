@@ -88,15 +88,15 @@ class _MissionStatementViewState extends State<MissionStatementView> {
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: BlackedShadowContainer(
-            width: 300,
-            height: 500,
+            height: MediaQuery.of(context).size.height * 0.7,
+            width: MediaQuery.of(context).size.width * 0.89,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Mission Statement',
-                  style: ResponsiveTextStyles.audima(context),
+                  'Business Statement',
+                  style: ResponsiveTextStyles.audimaHome(context),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -111,7 +111,7 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.multiline,
                           minLines: 1, //Normal textInputField will be displayed
-                          maxLines: 6, // wh
+                          maxLines: 8, // wh
 
                           controller: _missionStatementTextController,
                           style: ResponsiveTextStyles.missionStatementTextStyle(
@@ -132,7 +132,7 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                               ),
                             ),
                             errorText: (snapshot.data?[1] ?? false)
-                                ? "please re_generate or edit your mission statement"
+                                ? "please re_generate or edit your Business statement"
                                 : null,
                           ),
                           cursorColor: Colors.white,

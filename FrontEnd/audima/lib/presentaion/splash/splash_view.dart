@@ -46,14 +46,27 @@ class _SplashViewState extends State<SplashView> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
-      body: Center(
-        child: AnimatedTextKit(animatedTexts: [
-          //create the other animated texts here
-          RotateAnimatedText(
-            'Audima',
-            textStyle: ResponsiveTextStyles.audimaSplash(context),
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage('assets/images/audima_bg.jpg'),
+              ),
+            ),
           ),
-        ]),
+          Center(
+            child: AnimatedTextKit(animatedTexts: [
+              //create the other animated texts here
+              RotateAnimatedText(
+                'Audima',
+                textStyle: ResponsiveTextStyles.audimaSplash(context),
+              ),
+            ]),
+          ),
+        ],
       ),
     );
   }

@@ -449,6 +449,9 @@ class BusinessVideoViewModel extends BaseViewModel
         },
         onError: (val) => print('onError: $val'),
       );
+
+      await Future.delayed(Duration(milliseconds: 100)); // Add a delay here
+
       if (available) {
         isListeningToSpeech = true;
         inputAudioRecognitionState.add([

@@ -19,19 +19,20 @@ class MainScaffold extends StatelessWidget {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage('assets/images/mission-statement.jpg'),
+                image: AssetImage('assets/images/mainthemevertical.jpg'),
               ),
             ),
           ),
           AppBar(
             title: Text(
               'Audima',
-              style: ResponsiveTextStyles.audima(context),
+              style: ResponsiveTextStyles.audimaMain(context),
             ),
             elevation: 0,
             backgroundColor: Colors.transparent,
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
+              color: Constants.darkBlueColorTheme,
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -80,33 +81,36 @@ class ReactiveElevatedButton extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(
-          style: ButtonStyle(
-              elevation: buttonColorCondition == false
-                  ? MaterialStatePropertyAll(16)
-                  : MaterialStatePropertyAll(
-                      0), // increase the elevation of the button
-              shadowColor: buttonColorCondition == false
-                  ? MaterialStatePropertyAll(Colors.white)
-                  : MaterialStatePropertyAll(
-                      Colors.grey), // set the color of the button's shadow
+        Container(
+          child: ElevatedButton(
+            style: ButtonStyle(
+                elevation: buttonColorCondition == false
+                    ? MaterialStatePropertyAll(16)
+                    : MaterialStatePropertyAll(
+                        0), // increase the elevation of the button
 
-              shape: MaterialStateProperty.resolveWith<OutlinedBorder?>(
-                (states) {
-                  return RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                  );
-                },
+                shadowColor: buttonColorCondition == false
+                    ? MaterialStatePropertyAll(Colors.white)
+                    : MaterialStatePropertyAll(
+                        Colors.grey), // set the color of the button's shadow
+
+                shape: MaterialStateProperty.resolveWith<OutlinedBorder?>(
+                  (states) {
+                    return RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    );
+                  },
+                ),
+                backgroundColor: buttonColorCondition
+                    ? MaterialStatePropertyAll(Colors.grey)
+                    : MaterialStatePropertyAll(Constants.yellowColorTheme)),
+            onPressed: (buttonPressedCondition) ? null : onPressed,
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                text,
+                style: ResponsiveTextStyles.startYourBusinessJourney(context),
               ),
-              backgroundColor: buttonColorCondition
-                  ? MaterialStatePropertyAll(Colors.grey)
-                  : MaterialStatePropertyAll(Colors.white)),
-          onPressed: (buttonPressedCondition) ? null : onPressed,
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              style: ResponsiveTextStyles.startYourBusinessJourney(context),
             ),
           ),
         ),
