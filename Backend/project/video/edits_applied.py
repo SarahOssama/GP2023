@@ -129,7 +129,7 @@ def slidein(main_clip, new_clip, padding=-1, duration=2, side="left"):
     return final_clip
 
 
-def slideout(main_clip, new_clip, padding=-1, duration=2, side="left"):
+def slideout(main_clip, new_clip, padding=-1, duration=1, side="left"):
     if main_clip.h < new_clip.h:
         default_width = main_clip.w
         default_height = main_clip.h
@@ -148,7 +148,7 @@ def slideout(main_clip, new_clip, padding=-1, duration=2, side="left"):
     return final_clip
 
 
-def fade(main_clip, new_clip, startTime, padding=-2, duration=2):
+def fade(main_clip, new_clip, startTime, padding=-1, duration=1):
     if main_clip.h < new_clip.h:
         default_width = main_clip.w
         default_height = main_clip.h
@@ -220,8 +220,8 @@ def fade(main_clip, new_clip, startTime, padding=-2, duration=2):
     return final_video
 
 
-def slide(main_clip, new_clip, startTime, padding=-2, side="left"):
-    slide_duration = 2
+def slide(main_clip, new_clip, startTime, padding=-1, side="left"):
+    slide_duration = 1
     if main_clip.h < new_clip.h:
         default_width = main_clip.w
         default_height = main_clip.h
