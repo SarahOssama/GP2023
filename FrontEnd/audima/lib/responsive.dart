@@ -1,3 +1,4 @@
+import 'package:audima/app/constants.dart';
 import 'package:audima/domain/model/models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,7 +21,7 @@ class ResponsiveValues {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ResponsiveTextStyles {
   //app view text styles////////////////////////////////////////////////////////////////////////////////////////////////////////
-  static TextStyle audima(context) {
+  static TextStyle audimaHome(context) {
     return GoogleFonts.lobster(
       fontSize: ResponsiveValue(
         context,
@@ -32,6 +33,19 @@ class ResponsiveTextStyles {
       ).value,
       color: Colors.white,
     );
+  }
+
+  static TextStyle audimaMain(context) {
+    return GoogleFonts.lobster(
+        fontSize: ResponsiveValue(
+          context,
+          defaultValue: 45.0,
+          valueWhen: [
+            const Condition.smallerThan(name: DESKTOP, value: 40.0),
+            const Condition.smallerThan(name: TABLET, value: 30.0),
+          ],
+        ).value,
+        color: Constants.darkBlueColorTheme);
   }
 
   //state renderer  text styles////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +89,20 @@ class ResponsiveTextStyles {
           const Condition.smallerThan(name: DESKTOP, value: 18.0),
         ],
       ).value,
-      color: Colors.black,
+      color: Constants.darkBlueColorTheme,
+    );
+  }
+
+  static TextStyle nextButtonStyle(context) {
+    return GoogleFonts.lobster(
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 13.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 18.0),
+        ],
+      ).value,
+      color: Constants.yellowColorTheme,
     );
   }
 
@@ -91,7 +118,7 @@ class ResponsiveTextStyles {
             const Condition.smallerThan(name: TABLET, value: 20.0),
           ],
         ).value,
-        color: Colors.black,
+        color: Colors.white,
         fontWeight: FontWeight.bold);
   }
 
@@ -162,24 +189,24 @@ class ResponsiveTextStyles {
             const Condition.smallerThan(name: TABLET, value: 20.0),
           ],
         ).value,
-        color: Colors.black,
+        color: Constants.darkBlueColorTheme,
         fontWeight: FontWeight.bold);
   }
 
   //mission statement view text styles////////////////////////////////////////////////////////////////////////////////////////
   static TextStyle missionStatementTextStyle(context) {
     return GoogleFonts.sora(
-        fontSize: ResponsiveValue(
-          context,
-          defaultValue: 20.0,
-          valueWhen: [
-            const Condition.smallerThan(name: DESKTOP, value: 27.0),
-            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
-            const Condition.smallerThan(name: TABLET, value: 20.0),
-          ],
-        ).value,
-        color: Colors.white,
-        fontWeight: FontWeight.bold);
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 15.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 27.0),
+          const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+          const Condition.smallerThan(name: TABLET, value: 15.0),
+        ],
+      ).value,
+      color: Colors.white,
+    );
   }
   //business video view text styles////////////////////////////////////////////////////////////////////////////////////////
 

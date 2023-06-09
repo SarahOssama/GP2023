@@ -97,10 +97,11 @@ class _BusinessInfoState extends State<BusinessInfo> {
         child: MainScaffold(
           previousRoute: Routes.home,
           child: SingleChildScrollView(
+            padding: EdgeInsets.only(top: 50),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: BlackedShadowContainer(
-              height: 400,
-              width: 350,
+              height: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.85,
               child: CarouselSlider.builder(
                 carouselController: _carouselController,
                 itemCount: _viewModel.getListSize(),
@@ -114,7 +115,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
                   enableInfiniteScroll: false,
                   viewportFraction: 4,
                   enlargeCenterPage: false,
-                  height: 400,
+                  height: MediaQuery.of(context).size.height * 0.7,
                   initialPage: 0,
                   autoPlay: false,
                   onPageChanged: (index, reason) {
@@ -123,26 +124,16 @@ class _BusinessInfoState extends State<BusinessInfo> {
                 ),
                 itemBuilder: (context, index, realIndex) {
                   return Container(
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [
-                            0.1,
-                            0.5,
-                            0.9,
-                          ],
-                          colors: [
-                            Colors.black,
-                            Colors.white,
-                            Colors.black,
-                          ],
-                        ),
+                        image: DecorationImage(
+                            image: AssetImage("assets/images/audima_bg.jpg"),
+                            fit: BoxFit.cover),
                         borderRadius: BorderRadius.all(Radius.circular(30))),
-                    width: 350,
-                    height: 400,
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.85,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
@@ -264,9 +255,14 @@ class _BusinessInfoState extends State<BusinessInfo> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintStyle:
                       ResponsiveTextStyles.businessInfoHintStyle(context),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                    ),
+                  ),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.black,
+                      color: Constants.yellowColorTheme,
                     ),
                   ),
                   hintText: hint,
@@ -381,19 +377,27 @@ class _BusinessInfoState extends State<BusinessInfo> {
         builder: (context, snapshot) {
           return DropdownButtonHideUnderline(
             child: DropdownButton2<String>(
-              hint: Text("Please select an item"),
+              hint: Text(
+                "Please select an item",
+                style:
+                    ResponsiveTextStyles.companyIndustryTypesTextStyle(context),
+              ),
               isExpanded: true,
               value: snapshot.data ??
                   ((_viewModel.getCompanyIndustryType() != "")
                       ? _viewModel.getCompanyIndustryType()
                       : snapshot.data),
               menuItemStyleData: MenuItemStyleData(
-                  overlayColor: MaterialStatePropertyAll(Colors.grey)),
+                  overlayColor:
+                      MaterialStatePropertyAll(Constants.darkBlueColorTheme)),
               iconStyleData: IconStyleData(iconSize: 36),
               buttonStyleData: ButtonStyleData(
                 padding: EdgeInsets.all(10),
                 elevation: 40,
                 decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/images/mainthemevertical.jpg"),
+                      fit: BoxFit.cover),
                   boxShadow: //make fancy box shadow
                       [BoxShadow(color: Colors.white, blurRadius: 3)],
                   color: Colors.transparent,
@@ -406,7 +410,8 @@ class _BusinessInfoState extends State<BusinessInfo> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(color: Colors.grey, width: 1),
+                    border: Border.all(
+                        color: Constants.darkBlueColorTheme, width: 1),
                   ),
                   maxHeight: 300,
                   scrollbarTheme: ScrollbarThemeData(
@@ -441,10 +446,10 @@ class _BusinessInfoState extends State<BusinessInfo> {
     return StreamBuilder(
         stream: _stream,
         builder: (context, snapshot) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 100),
-            child: Align(
-              alignment: Alignment.bottomRight,
+          return Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
               child: Container(
                 width: 100,
                 height: 40,
@@ -456,7 +461,8 @@ class _BusinessInfoState extends State<BusinessInfo> {
                         ),
                       ),
                       backgroundColor: (snapshot.data ?? nextButtonStatus)
-                          ? MaterialStateProperty.all(Colors.white)
+                          ? MaterialStateProperty.all(
+                              Constants.yellowColorTheme)
                           : MaterialStateProperty.all(Colors.grey)),
                   onPressed: (snapshot.data ?? nextButtonStatus)
                       ? () {

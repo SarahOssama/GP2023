@@ -59,12 +59,10 @@ class _BusinessVideoState extends State<BusinessVideo> {
       stream: _viewModel.outputState,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          print("a7a");
           return snapshot.data
                   ?.getScreenWidget(context, _getContentWidget(), () {}) ??
               _getContentWidget();
         } else {
-          print("a7aten");
           return _getContentWidget();
         }
       },
@@ -84,7 +82,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height / 2.5,
+                height: MediaQuery.of(context).size.height * 0.5,
                 child: ListView(
                   shrinkWrap: true,
                   padding: EdgeInsets.symmetric(vertical: 30, horizontal: 4),
@@ -92,8 +90,8 @@ class _BusinessVideoState extends State<BusinessVideo> {
                   children: [
                     //the main video which will be uploaded first by the user
                     BlackedShadowContainer(
-                      width: MediaQuery.of(context).size.width / 1.2,
-                      height: MediaQuery.of(context).size.height / 2.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.7,
                       child: StreamBuilder<bool>(
                           stream: _viewModel
                               .outputIsVideoPlayerControllerInitialized,
@@ -249,86 +247,90 @@ class _BusinessVideoState extends State<BusinessVideo> {
                 stream: _viewModel.outputIsAnyVideoUploaded,
                 builder: (context, snapshot) {
                   return snapshot.data == true
-                      ? Container(
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: TextField(
-                                  autofocus: false,
-                                  controller: _videoEditsTextController,
-                                  keyboardType: TextInputType.multiline,
-                                  minLines: 1,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: 'Type in your video edits',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
+                      ? Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Material(
+                                elevation: 50,
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: TextField(
+                                    autofocus: false,
+                                    controller: _videoEditsTextController,
+                                    keyboardType: TextInputType.multiline,
+                                    minLines: 1,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      hintText: 'Type in your video edits',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    StreamBuilder<bool>(
-                                        stream:
-                                            _viewModel.outputVideoEditsState,
-                                        builder: (context, snapshot) {
-                                          return ReactiveElevatedButton(
-                                            text: 'Edit',
-                                            onPressed: () {
-                                              _viewModel.preEditVideo(
-                                                  _videoEditsTextController);
-                                            },
-                                            buttonColorCondition:
-                                                (snapshot.data ?? false)
-                                                    ? false
-                                                    : true,
-                                            buttonPressedCondition:
-                                                (snapshot.data ?? false)
-                                                    ? false
-                                                    : true,
-                                          );
-                                        }),
-                                    StreamBuilder<bool>(
-                                      stream: _viewModel.outputIsVideoEdited,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  StreamBuilder<bool>(
+                                      stream: _viewModel.outputVideoEditsState,
                                       builder: (context, snapshot) {
-                                        return snapshot.data == true
-                                            ? ReactiveElevatedButton(
-                                                text: 'Revert',
-                                                onPressed: () {
-                                                  _viewModel.revertVideoEdit();
-                                                },
-                                                buttonColorCondition:
-                                                    (snapshot.data ?? false)
-                                                        ? false
-                                                        : true,
-                                                buttonPressedCondition:
-                                                    (snapshot.data ?? false)
-                                                        ? false
-                                                        : true,
-                                              )
-                                            : SizedBox.shrink();
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                        return ReactiveElevatedButton(
+                                          text: 'Edit',
+                                          onPressed: () {
+                                            _viewModel.preEditVideo(
+                                                _videoEditsTextController);
+                                          },
+                                          buttonColorCondition:
+                                              (snapshot.data ?? false)
+                                                  ? false
+                                                  : true,
+                                          buttonPressedCondition:
+                                              (snapshot.data ?? false)
+                                                  ? false
+                                                  : true,
+                                        );
+                                      }),
+                                  StreamBuilder<bool>(
+                                    stream: _viewModel.outputIsVideoEdited,
+                                    builder: (context, snapshot) {
+                                      return snapshot.data == true
+                                          ? ReactiveElevatedButton(
+                                              text: 'Revert',
+                                              onPressed: () {
+                                                _viewModel.revertVideoEdit();
+                                              },
+                                              buttonColorCondition:
+                                                  (snapshot.data ?? false)
+                                                      ? false
+                                                      : true,
+                                              buttonPressedCondition:
+                                                  (snapshot.data ?? false)
+                                                      ? false
+                                                      : true,
+                                            )
+                                          : SizedBox.shrink();
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         )
                       : SizedBox.shrink();
                 },

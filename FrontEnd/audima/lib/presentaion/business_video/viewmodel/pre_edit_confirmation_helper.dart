@@ -36,7 +36,15 @@ class ActiobEditMenuItems extends StatelessWidget {
               child: Text(i.toStringAsFixed(1)),
             ),
         if (features.entries.elementAt(index).key == "endTime")
-          for (double i = 0.0;
+          for (double i = features["startTime"] + 0.1;
+              i < videoDuration;
+              i += 0.1) // Replace with the actual number of items
+            PopupMenuItem(
+              value: i,
+              child: Text(i.toStringAsFixed(1)),
+            ),
+        if (features.entries.elementAt(index).key == "factor")
+          for (double i = 1;
               i < videoDuration;
               i += 0.1) // Replace with the actual number of items
             PopupMenuItem(

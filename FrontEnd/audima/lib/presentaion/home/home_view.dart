@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:audima/app/app_prefrences.dart';
+import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
 import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,6 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: Text(
-            'Audima',
-            style: ResponsiveTextStyles.audima(context),
-          ),
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
@@ -43,46 +40,45 @@ class _HomeViewState extends State<HomeView> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage('assets/images/home.jpg'),
+                  image: AssetImage('assets/images/audimavertical.jpg'),
                 ),
               ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 120,
-                  backgroundImage: AssetImage('assets/images/audimalogo.png'),
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                Shimmer(
-                  duration: const Duration(milliseconds: 1500),
-                  color: Color.fromARGB(255, 63, 4, 0),
-                  colorOpacity: 1,
-                  child: SizedBox(
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.4),
+                  child: Container(
                     height: 40,
                     width: 250,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(18))),
+                    child: Shimmer(
+                      duration: const Duration(milliseconds: 1500),
+                      color: Constants.darkBlueColorTheme,
+                      colorOpacity: 1,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
                             ),
-                          ),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.white)),
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                            context, Routes.businessInfo);
-                      },
-                      child: CustomizedText(
-                          text: "Start Your Business Journey",
-                          textStyle:
-                              ResponsiveTextStyles.startYourBusinessJourney(
-                                  context)),
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.white)),
+                        onPressed: () {
+                          Navigator.pushNamed(context, Routes.businessInfo);
+                        },
+                        child: CustomizedText(
+                            text: "Start Your Business Journey",
+                            textStyle:
+                                ResponsiveTextStyles.startYourBusinessJourney(
+                                    context)),
+                      ),
                     ),
                   ),
                 ),
