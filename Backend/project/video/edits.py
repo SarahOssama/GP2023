@@ -475,10 +475,14 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
                 clip, features["startTime"], features["endTime"], "speed", features["factor"])
             pass
         if action == 'animate':
-            clip = animate(clip)
+            # clip = animate(clip)
+            clip = edit_video_duration(
+                clip, features["startTime"], features["endTime"], "animate")
             pass
         if action == 'monoc':
-            clip = monochrome(clip)
+            # clip = monochrome(clip)
+            clip = edit_video_duration(
+                clip, features["startTime"], features["endTime"], "monoc")
             pass
         if action == 'Add Text':
             clip = addText(clip, features["text"], features["textPosition"], features["color"],

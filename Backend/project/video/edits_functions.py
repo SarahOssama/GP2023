@@ -107,6 +107,12 @@ def edit_video_duration(clip, start_time, end_time, effect_type, factor=1):
         elif effect_type == "speed":
             edited_sub_clip = clip.subclip(
                 start_time, end_time).speedx(factor)
+        elif effect_type == "monoc":
+            edited_sub_clip = clip.subclip(
+                start_time, end_time).fx(vfx.blackwhite)
+        elif effect_type == "animate":
+            edited_sub_clip = clip.subclip(
+                start_time, end_time).fx(vfx.painting, saturation=1.6, black=0.006)
         # Concatenate the modified subclip with the remaining part of the main video
         edited_video = concatenate_videoclips(
             [clip.subclip(0, start_time), edited_sub_clip, clip.subclip(end_time)])
