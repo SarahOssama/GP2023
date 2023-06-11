@@ -32,3 +32,8 @@ class PreEditInsertVideoRequest {
   File file;
   PreEditInsertVideoRequest(this.command, this.file);
 }
+
+class AddVoiceOverRequest {
+  int choice;
+  AddVoiceOverRequest(this.choice);
+}

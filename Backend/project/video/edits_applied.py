@@ -12,9 +12,10 @@ def trim(clip, start, end):
 def addText(clip, text, position, color, size, startTime, endTime, watermark=False):
     # first map font size string to values
     size_map = {
-        'small': 50,
-        'medium': 75,
-        'large': 100
+        'xsmall': 20,
+        'small': 30,
+        'medium': 50,
+        'large': 75,
     }
     size = size_map.get(size, None)
     print("Hamada text test", text, position, color,
@@ -33,7 +34,7 @@ def addText(clip, text, position, color, size, startTime, endTime, watermark=Fal
         txt_clip = TextClip(text, fontsize=size,
                             color=color).set_position(position)
         txt_clip = txt_clip.set_start(startTime)
-        txt_clip = txt_clip.set_duration(endTime)
+        txt_clip = txt_clip.set_end(endTime)
     print("Out Add Text before composite", clip.duration)
 
     return CompositeVideoClip([clip, txt_clip])

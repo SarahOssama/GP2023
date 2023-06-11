@@ -6,6 +6,7 @@ import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/final_presentation/view/final_presentation_view.dart';
 import 'package:audima/presentaion/login/view/login_view.dart';
 import 'package:audima/presentaion/mission_statement/view/mission_statement_view.dart';
+import 'package:audima/presentaion/onboarding/onboarding.dart';
 import 'package:audima/presentaion/splash/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,7 @@ import '../home/home_view.dart';
 
 class Routes {
   static const String splash = "/";
+  static const String onBoarding = "/on-boarding";
   static const String home = "/home";
   static const String businessInfo = "/business-info";
   static const String missionStatement = "/mission-statement";
@@ -27,6 +29,8 @@ class RoutesGenerator {
     switch (settings.name) {
       case Routes.splash:
         return MaterialPageRoute(builder: (_) => SplashView());
+      case Routes.onBoarding:
+        return MaterialPageRoute(builder: (_) => OnBoardingView());
       case Routes.home:
         return MaterialPageRoute(builder: (_) => HomeView());
       case Routes.businessInfo:

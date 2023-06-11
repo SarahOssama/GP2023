@@ -22,6 +22,8 @@ class FinalPresentationViewModel extends BaseViewModel
       StreamController<String>.broadcast();
   final StreamController _videoStreamController =
       StreamController<ChewieController>.broadcast();
+  final StreamController _businessStatementVisablityController =
+      StreamController<List<dynamic>>.broadcast();
   // ---------------------------------------------------------------------------initialization phase
   //we will have a chewie player controller to be used in the view, and a mission statement String
   String _missionStatement = "";
@@ -41,10 +43,13 @@ class FinalPresentationViewModel extends BaseViewModel
     //get the mission statement from the app prefrences
     _appPreferences.getMissionStatement().then(
       (missionStatement) {
+        print(missionStatement);
+
         _missionStatement = missionStatement;
         //get the video from the app prefrences
         _appPreferences.getVideoUrl().then(
           (videoUrl) async {
+            print(videoUrl);
             videoPlayerController = VideoPlayerController.network(videoUrl);
             await Future.wait([videoPlayerController.initialize()]);
             chewieController = ChewieController(
@@ -54,8 +59,16 @@ class FinalPresentationViewModel extends BaseViewModel
               looping: false,
               aspectRatio: videoPlayerController.value.aspectRatio,
             );
-            //now we have the mission statement and the video, give these info to the view
-            inputBusinessStatement.add(_missionStatement);
+            if (missionStatement == "") {
+              print(
+                  "-------------------------------------------------------------nooooooooooooooooooo---------------");
+            } else {
+              print("-------------------------------");
+              print(missionStatement);
+
+              // inputBusinessStatement.add(missionStatement);
+              inputIsBusinessStatementVisable.add([true, missionStatement]);
+            }
             inputVideo.add(chewieController);
             //now add content state to the stream to render the view
             inputState.add(ContentState());
@@ -66,22 +79,28 @@ class FinalPresentationViewModel extends BaseViewModel
   }
 
   @override
-  Future<void> saveVideoToGallery() async {
+  Future<void> saveVideoToGallery(BuildContext context) async {
     inputState.add(
       ConfirmationState(
-          stateRendererType: StateRendererType.popUpConfirmationState,
-          message: "Please confirm saving the video to your gallery",
-          listView: SizedBox.shrink(),
-          confirmationActionFunction: () async {
-            bool permissionGranted = await _requestStoragePermission();
-            if (permissionGranted) {
-              _appPreferences.getVideoUrl().then((videoUrl) async {
-                await _downloadVideo(videoUrl);
-              });
-            } else {
-              // Handle permission denied
-            }
-          }),
+        stateRendererType: StateRendererType.popUpConfirmationState,
+        message: "Please confirm saving the video to your gallery",
+        confirmText: "Confirm",
+        cancelText: "Cancel",
+        listView: SizedBox.shrink(),
+        cancelActionFunction: () {
+          Navigator.of(context).pop();
+        },
+        confirmationActionFunction: () async {
+          bool permissionGranted = await _requestStoragePermission();
+          if (permissionGranted) {
+            _appPreferences.getVideoUrl().then((videoUrl) async {
+              await _downloadVideo(videoUrl);
+            });
+          } else {
+            // Handle permission denied
+          }
+        },
+      ),
     );
   }
 
@@ -111,6 +130,15 @@ class FinalPresentationViewModel extends BaseViewModel
   Stream<ChewieController> get outputVideo =>
       _videoStreamController.stream.map((chewieController) => chewieController);
 
+  @override
+  Sink get inputIsBusinessStatementVisable =>
+      _businessStatementVisablityController.sink;
+
+  @override
+  Stream<List<dynamic>> get outputIsBusinessStatementVisable =>
+      _businessStatementVisablityController.stream
+          .map((visability) => visability);
+
 //helper functions
   Future<bool> _requestStoragePermission() async {
     PermissionStatus status = await Permission.storage.request();
@@ -138,11 +166,12 @@ class FinalPresentationViewModel extends BaseViewModel
 //------------------------------------------------------------------------------inputs and orders
 abstract class FinalPresentationViewModelInputs {
   //orders
-  Future<void> saveVideoToGallery();
+  Future<void> saveVideoToGallery(BuildContext context);
   Future<void> copyBusinessStatmentToClipboard();
   //stream inputs
   Sink get inputBusinessStatement;
   Sink get inputVideo;
+  Sink get inputIsBusinessStatementVisable;
 }
 
 //------------------------------------------------------------------------------outputs
@@ -150,4 +179,5 @@ abstract class FinalPresentationViewModelOutputs {
   //stream outputs
   Stream<String> get outputBusinessStatement;
   Stream<ChewieController> get outputVideo;
+  Stream<List<dynamic>> get outputIsBusinessStatementVisable;
 }

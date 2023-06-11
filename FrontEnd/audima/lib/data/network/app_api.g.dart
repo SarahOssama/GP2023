@@ -94,7 +94,7 @@ class _VideoServiceClient implements VideoServiceClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.55:8000';
+    baseUrl ??= 'http://172.20.10.3:8000';
   }
 
   final Dio _dio;
@@ -242,6 +242,29 @@ class _VideoServiceClient implements VideoServiceClient {
             .compose(
               _dio.options,
               '/video/revert/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = VideoResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<VideoResponse> addVoiceOver(choice) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'choice': choice};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<VideoResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/video/addVoiceOver/',
               queryParameters: queryParameters,
               data: _data,
             )

@@ -489,6 +489,8 @@ def editConfirmedVideo(clip, action, features, new_clip=None, id=0, edited_versi
                            features["fontSize"], features["startTime"], features["endTime"])
             # clip = addText(clip, features["text"], features["textPosition"], features["color"],
             #                features["fontSize"], features["startTime"], features["endTime"])
+            print("Out Edit Confirm before final", clip.duration)
+
             pass
         if action == 'Add Watermark':
             clip = addText(clip, features["text"], features["textPosition"], features["color"],

@@ -8,8 +8,12 @@ const String prefsKeyIsUserLoggedIn = "PREFS_KEY_IS_USER_LOGGED_IN";
 const String prefsKeyBusinessInfoViewed = "PREFS_KEY_BUSINESS_INFO_VIEWED";
 //mission statement key
 const String prefsKeyMissionStatement = "PREFS_KEY_MISSION_STATEMENT";
+//voice over statement key
+const String prefsKeyVoiceOverStatement = "PREFS_KEY_VOICEOVER_STATEMENT";
 //video key
 const String prefsKeyVideoUrl = "PREFS_KEY_VIDEO_URL";
+//final video key
+const String prefsKeyFinalVideoUrl = "PREFS_KEY_FINAL_VIDEO_URL";
 
 class AppPreferences {
   final SharedPreferences _sharedPreferences;
@@ -56,10 +60,16 @@ class AppPreferences {
   }
 
   //----------------------------------------------------------------------------mission statement
-  //set mission statement
+  //set Business statement
   Future<void> setMissionStatement(String missionStatement) async {
     await _sharedPreferences.setString(
         prefsKeyMissionStatement, missionStatement);
+  }
+
+  //set voice over statement
+  Future<void> setVoiceOverStatement(String voiceOverStatement) async {
+    await _sharedPreferences.setString(
+        prefsKeyVoiceOverStatement, voiceOverStatement);
   }
 
   //get mission statement
@@ -69,7 +79,18 @@ class AppPreferences {
     if (missionStatement != null && missionStatement.isNotEmpty) {
       return missionStatement;
     } else {
-      return "No Mission Statement";
+      return "";
+    }
+  }
+
+//get voice over statement
+  Future<String> getVoiceOverStatement() async {
+    String? voiceOverStatement =
+        _sharedPreferences.getString(prefsKeyVoiceOverStatement);
+    if (voiceOverStatement != null && voiceOverStatement.isNotEmpty) {
+      return voiceOverStatement;
+    } else {
+      return "";
     }
   }
 
@@ -84,6 +105,22 @@ class AppPreferences {
     String? videoUrl = _sharedPreferences.getString(prefsKeyVideoUrl);
     if (videoUrl != null && videoUrl.isNotEmpty) {
       return videoUrl;
+    } else {
+      return "";
+    }
+  }
+
+  //----------------------------------------------------------------------------video
+  //set video url
+  Future<void> setFInalVideoUrl(String finalVideoUrl) async {
+    await _sharedPreferences.setString(prefsKeyFinalVideoUrl, finalVideoUrl);
+  }
+
+  //get video url
+  Future<String> getFinalVideoUrl() async {
+    String? finalVideoUrl = _sharedPreferences.getString(prefsKeyFinalVideoUrl);
+    if (finalVideoUrl != null && finalVideoUrl.isNotEmpty) {
+      return finalVideoUrl;
     } else {
       return "";
     }

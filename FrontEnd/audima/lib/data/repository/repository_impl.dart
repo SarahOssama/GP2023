@@ -240,4 +240,34 @@ class RepositoryImpl implements Repository {
       return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
     }
   }
+
+  //add voiceover to the video
+  @override
+  Future<Either<Failure, Video>> addVoiceOver(
+      AddVoiceOverRequest addVoiceOverRequest) async {
+    if (await _networkInfo.isConnected) {
+      //it is connected to interent so it is safe to call the api
+      //so i need to call the login function from the remote data source
+      try {
+        final response =
+            await _remoteDataSource.addVoiceOver(addVoiceOverRequest);
+        //then i need to check if the response is success or failure
+        if (response.videoPath != null) {
+          //it is success so i need to return a success
+          //return the data
+          return Right(response.toDomain());
+        } else {
+          //it is unknown so i need to return a failure
+          return Left(Failure(APIInternalStatus.FAIULRE,
+              response.message ?? ResponseMessage.DEFAULT));
+        }
+      } catch (error) {
+        return Left(ErrorHandler.handle(error).failure);
+      }
+    } else {
+      //it is not connected to internet so it is not safe to call the api
+      //so i need to return a failure
+      return Left(DataSource.NO_INTERENT_CONNECTION.getFailure());
+    }
+  }
 }

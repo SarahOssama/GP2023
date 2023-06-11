@@ -27,6 +27,8 @@ abstract class RemoteDataSource {
   Future<VideoResponse> editVideo(EditVideoRequest editVideoRequest);
   //revert video edit
   Future<VideoResponse> revertVideoEdit();
+  //add voiceover
+  Future<VideoResponse> addVoiceOver(AddVoiceOverRequest addVoiceOverRequest);
 }
 
 //create the class which implements the remote data source abstract class
@@ -89,5 +91,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<VideoResponse> revertVideoEdit() {
     return _videoServiceClient.revertVideoEdit();
+  }
+
+  @override
+  Future<VideoResponse> addVoiceOver(AddVoiceOverRequest addVoiceOverRequest) {
+    return _videoServiceClient.addVoiceOver(addVoiceOverRequest.choice);
   }
 }

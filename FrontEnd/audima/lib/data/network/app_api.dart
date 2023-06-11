@@ -57,4 +57,10 @@ abstract class VideoServiceClient {
   //revert video edit api
   @GET("/video/revert/")
   Future<VideoResponse> revertVideoEdit();
+
+  //add voiceover to the vido
+  @GET("/video/addVoiceOver/")
+  Future<VideoResponse> addVoiceOver(
+    @Field("choice") int choice,
+  );
 }

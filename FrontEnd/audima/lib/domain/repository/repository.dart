@@ -35,4 +35,7 @@ abstract class Repository {
   Future<Either<Failure, Video>> editVideo(EditVideoRequest editVideoRequest);
   //revert video edit
   Future<Either<Failure, Video>> revertVideoEdit();
+  //add voiceover to the video
+  Future<Either<Failure, Video>> addVoiceOver(
+      AddVoiceOverRequest addVoiceOverRequest);
 }

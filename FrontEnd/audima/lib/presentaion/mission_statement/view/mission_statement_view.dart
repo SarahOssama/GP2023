@@ -35,7 +35,6 @@ late ScrollController textScrollController;
 class _MissionStatementViewState extends State<MissionStatementView> {
   @override
   void initState() {
-    print("mission statement view init");
     _appPreferences = instance<AppPreferences>();
     _viewModel = instance<MissionStatementViewModel>();
     _missionStatementTextController = TextEditingController();
@@ -47,6 +46,10 @@ class _MissionStatementViewState extends State<MissionStatementView> {
       _viewModel.editMissionStatement(_missionStatementTextController.text);
     });
     _viewModel.setMissionBasicStatement(widget.businessInfoObject);
+    //initalize the business statement in app preferences
+
+    _appPreferences
+        .setVoiceOverStatement(_viewModel.missionStatementBasicStatement);
     super.initState();
   }
 
@@ -181,8 +184,8 @@ class _MissionStatementViewState extends State<MissionStatementView> {
                         text: "Proceed with Video",
                         onPressed: () {
                           //before proceeding to video we need to save the mission statement to the app preferences so that we can use it in the ending screen
-                          _appPreferences.setMissionStatement(
-                              _missionStatementTextController.text);
+                          _appPreferences.setMissionStatement(_viewModel
+                              .missionStatementObject.missionStatement);
 
                           Navigator.of(context).pushNamed(Routes.businessVideo);
                         },

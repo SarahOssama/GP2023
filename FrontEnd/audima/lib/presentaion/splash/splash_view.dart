@@ -17,7 +17,7 @@ AppPreferences _appPreferences = instance<AppPreferences>();
 
 class _SplashViewState extends State<SplashView> {
   _goNext() {
-    Navigator.pushReplacementNamed(context, Routes.home);
+    Navigator.pushReplacementNamed(context, Routes.onBoarding);
     // _appPreferences.isUserLoggedIn().then((isUserLoggedIn) {
     //   if (isUserLoggedIn) {
     //     //navigate to business info

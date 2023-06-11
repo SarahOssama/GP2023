@@ -89,7 +89,7 @@ class MissionStatementViewModel extends BaseViewModel
   void _generateMissionStatement() async {
     inputState.add(LoadingState(
         stateRendererType: StateRendererType.popUpLoadingState,
-        message: "Generating Mission Statement"));
+        message: "Generating Business Statement"));
 
     (await _missionStatementUseCase.execute(
             MissionStatementUseCaseInput(missionStatementBasicStatement)))

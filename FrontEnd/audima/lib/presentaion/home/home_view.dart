@@ -22,6 +22,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     _appPreferences.setHomeScreenViewed();
+    _appPreferences.setVideoUrl("");
+    _appPreferences.setMissionStatement("");
     super.initState();
   }
 
@@ -45,11 +47,11 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.4),
+                      bottom: MediaQuery.of(context).size.height * 0.15),
                   child: Container(
                     height: 40,
                     width: 250,
@@ -79,6 +81,20 @@ class _HomeViewState extends State<HomeView> {
                                 ResponsiveTextStyles.startYourBusinessJourney(
                                     context)),
                       ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: 30,
+                      left: MediaQuery.of(context).size.width * 0.7),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.businessVideo);
+                    },
+                    child: Text(
+                      "Skip for Video",
+                      style: ResponsiveTextStyles.skiForVideo(context),
                     ),
                   ),
                 ),

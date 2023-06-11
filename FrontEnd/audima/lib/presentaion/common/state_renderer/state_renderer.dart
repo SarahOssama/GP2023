@@ -22,16 +22,22 @@ enum StateRendererType {
 class StateRenderer extends StatelessWidget {
   StateRendererType stateRendererType;
   String message;
-  Function retryActionFunction;
   //these next 2 variables are optional because they are only used in the confirmation edit  state
   VoidCallback? confirmationActionFunction;
+  VoidCallback? cancelActionFuntion;
+  //now the 2 texts for confirmation also
+  String? confirmText = "Confirm";
+  String? cancelText = "Cancel";
   Widget? listView = const SizedBox.shrink();
+
   StateRenderer({
     required this.stateRendererType,
-    this.message = "Loading...",
-    required this.retryActionFunction,
+    required this.message,
     this.confirmationActionFunction,
     this.listView,
+    this.confirmText,
+    this.cancelText,
+    this.cancelActionFuntion,
   });
   @override
   Widget build(BuildContext context) {
@@ -72,9 +78,9 @@ class StateRenderer extends StatelessWidget {
           Row(
             children: [
               _getConfirmCancelButton(
-                  "Confirm", context, confirmationActionFunction!),
+                  confirmText!, context, confirmationActionFunction!),
               _getConfirmCancelButton(
-                  "Cancel", context, Navigator.of(context).pop)
+                  cancelText!, context, cancelActionFuntion!)
             ],
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
           ),
@@ -180,7 +186,6 @@ class StateRenderer extends StatelessWidget {
         ),
         onPressed: () {
           if (stateRendererType == StateRendererType.fullScreenErrorState) {
-            retryActionFunction.call();
           } else //means it is popup error state
           {
             Navigator.of(context, rootNavigator: true).pop(true);
@@ -211,9 +216,9 @@ class StateRenderer extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),
           onPressed: () {
-            buttonTitle == "Confirm"
+            buttonTitle == "Confirm" || buttonTitle == "Yes"
                 ? confirmationActionFunction!.call()
-                : Navigator.of(context, rootNavigator: true).pop(true);
+                : cancelActionFuntion!.call();
           },
           child: Text(
             buttonTitle,

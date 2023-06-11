@@ -5,6 +5,7 @@ import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:audima/app/app_prefrences.dart';
 import 'package:audima/app/constants.dart';
 import 'package:audima/app/di.dart';
+import 'package:audima/domain/usecase/add_voiceover_usecase.dart';
 import 'package:audima/domain/usecase/edit_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_insert_video_usecase.dart';
 import 'package:audima/domain/usecase/pre_edit_video_usecase.dart';
@@ -16,10 +17,14 @@ import 'package:audima/presentaion/common/freezed_data_classes.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer.dart';
 import 'package:audima/presentaion/common/state_renderer/state_renderer_imp.dart';
 import 'package:audima/presentaion/resources/assets_manager.dart';
+import 'package:audima/presentaion/resources/routes_manager.dart';
 import 'package:chewie/chewie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:lottie/lottie.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:video_player/video_player.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -31,12 +36,15 @@ class BusinessVideoViewModel extends BaseViewModel
   final PreEditVideoUseCase _preEditVideoUseCase;
   final PreEditInsertVideoUseCase _preEditInsertVideoUseCase;
   final RevertVideoEditUseCase _revertVideoEditUseCase;
+  final AddVoiceOverUseCase _addVoiceOverUseCase;
   BusinessVideoViewModel(
-      this._uploadVideoUseCase,
-      this._editVideoUseCase,
-      this._preEditVideoUseCase,
-      this._preEditInsertVideoUseCase,
-      this._revertVideoEditUseCase);
+    this._uploadVideoUseCase,
+    this._editVideoUseCase,
+    this._preEditVideoUseCase,
+    this._preEditInsertVideoUseCase,
+    this._revertVideoEditUseCase,
+    this._addVoiceOverUseCase,
+  );
   //------------------------------------------------------------------------------stream controllers
   final StreamController _videoPlayerControllerStreamController =
       StreamController<bool>.broadcast();
@@ -78,6 +86,9 @@ class BusinessVideoViewModel extends BaseViewModel
 
   //------------------------------------------------------------------------------add Text Edit Controller
   final editUserTextController = TextEditingController();
+  final AudioPlayer audioPlayer = AudioPlayer();
+  bool audioPLayerStatus = false;
+  int audioPlayerValue = 0;
   //------------------------------------------------------------------------------audio recognition variables
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool isListeningToSpeech = false;
@@ -154,7 +165,7 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   @override
-  Future<void> pickAnotherVideoImage() async {
+  Future<void> pickAnotherVideoImage(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['mp4', 'jpg', 'png', 'jpeg'],
@@ -162,9 +173,12 @@ class BusinessVideoViewModel extends BaseViewModel
     if (result != null) {
       inputState.add(
         ConfirmationState(
+          cancelActionFunction: Navigator.of(context).pop,
           message: result.files.single.extension == 'mp4'
               ? "Adding video for further Merges"
               : "Adding Image for further Merges",
+          confirmText: "Confirm",
+          cancelText: "Cancel",
           listView: const SizedBox.shrink(),
           stateRendererType: StateRendererType.popUpConfirmationState,
           confirmationActionFunction: () async {
@@ -187,10 +201,13 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   @override
-  void discardSecondVideo() {
+  void discardSecondVideo(BuildContext context) {
     inputState.add(ConfirmationState(
+        cancelActionFunction: Navigator.of(context).pop,
         listView: const SizedBox.shrink(),
         message: "Discard Second Added Video",
+        confirmText: "Confirm",
+        cancelText: "Cancel",
         stateRendererType: StateRendererType.popUpConfirmationState,
         confirmationActionFunction: () {
           removeSecondVideoOrImage();
@@ -199,7 +216,8 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   @override
-  Future<void> preEditVideo(TextEditingController textEditingController) async {
+  Future<void> preEditVideo(
+      TextEditingController textEditingController, BuildContext context) async {
     //pause the main video
     mainVideoController.pause();
     //if there is another video pause it too
@@ -233,8 +251,11 @@ class BusinessVideoViewModel extends BaseViewModel
       }
       inputState.add(
         ConfirmationState(
+            cancelActionFunction: Navigator.of(context).pop,
             stateRendererType: StateRendererType.popUpConfirmationState,
             message: data.message,
+            confirmText: "Confirm",
+            cancelText: "Cancel",
             confirmationActionFunction: () async {
               data.action == "Add Text"
                   ? data.features["text"] = editUserTextController.text
@@ -424,6 +445,155 @@ class BusinessVideoViewModel extends BaseViewModel
   }
 
   @override
+  Future<void> addVoiceOver(BuildContext context) async {
+    //pause the main video
+    mainVideoController.pause();
+    //add confirmation state
+    inputState.add(
+      ConfirmationState(
+        stateRendererType: StateRendererType.popUpConfirmationState,
+        listView: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text("background music 1 "),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          audioPlayer
+                              .play(AssetSource("audios/Background1.mp3"));
+                          audioPLayerStatus = true;
+                          audioPlayerValue = 1;
+                        },
+                        icon: Icon(Icons.play_arrow_outlined)),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text("background music 2 "),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          audioPlayer
+                              .play(AssetSource("audios/Background2.mp3"));
+                          audioPLayerStatus = true;
+                          audioPlayerValue = 2;
+                        },
+                        icon: Icon(Icons.play_arrow_outlined)),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text("background music 3 "),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          audioPlayer
+                              .play(AssetSource("audios/Background3.mp3"));
+                          audioPLayerStatus = true;
+                          audioPlayerValue = 3;
+                        },
+                        icon: Icon(Icons.play_arrow_outlined)),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text("background music 4 "),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          audioPlayer
+                              .play(AssetSource("audios/Background4.mp3"));
+                          audioPLayerStatus = true;
+                          audioPlayerValue = 4;
+                        },
+                        icon: Icon(Icons.play_arrow_outlined)),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text("background music 5 "),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          audioPlayer
+                              .play(AssetSource("audios/Background5.mp3"));
+                          audioPLayerStatus = true;
+                          audioPlayerValue = 5;
+                        },
+                        icon: Icon(Icons.play_arrow_outlined)),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+        message:
+            "Wohoo!! We are done editing you video, so do you want to add background music for your video",
+        cancelText: "No",
+        confirmText: "Yes",
+        cancelActionFunction: () {
+          audioPlayer.pause();
+          inputState.add(ContentState());
+          SchedulerBinding.instance!.addPostFrameCallback((_) {
+            Navigator.of(context).pushNamed(Routes.finalPresentation);
+          });
+        },
+        confirmationActionFunction: () async {
+          audioPlayer.pause();
+          inputState.add(
+            LoadingState(
+                stateRendererType: StateRendererType.popUpLoadingState,
+                message: "Adding voice over"),
+          );
+          (await _addVoiceOverUseCase
+                  .execute(AddVoiceOverUseCaseInput(audioPlayerValue)))
+              .fold((failure) {
+            inputState.add(
+                ErrorState(StateRendererType.popUpErrorState, failure.message));
+            //left means failure
+          }, (data) {
+            _appPreferences
+                .setVideoUrl(
+                    "${Constants.videoManipulationUrl}${data.videoUrl}")
+                .then(
+                  (value) => {
+                    audioPlayer.pause(),
+                    mainChewieController.pause(),
+                    inputState.add(ContentState()),
+                    SchedulerBinding.instance!.addPostFrameCallback((_) {
+                      Navigator.of(context).pushNamed(Routes.finalPresentation);
+                    }),
+                  },
+                );
+          });
+        },
+      ),
+    );
+  }
+
+  @override
   void updateVideoEdits(String videoEdits) {
     videoEditsObject = videoEditsObject.copyWith(videoEdits: videoEdits);
     videoEditsObject.videoEdits == ""
@@ -573,12 +743,14 @@ class BusinessVideoViewModel extends BaseViewModel
 abstract class BusinessVideoViewModelInputs {
   //orders
   Future<void> pickVideo();
-  Future<void> pickAnotherVideoImage();
-  void discardSecondVideo();
+  Future<void> pickAnotherVideoImage(BuildContext context);
+  void discardSecondVideo(BuildContext context);
   Future<void> editVideo(TextEditingController textEditingController,
       String action, Map<String, dynamic> features);
-  Future<void> preEditVideo(TextEditingController textEditingController);
+  Future<void> preEditVideo(
+      TextEditingController textEditingController, BuildContext context);
   Future<void> revertVideoEdit();
+  Future<void> addVoiceOver(BuildContext context);
   updateVideoEdits(String videoEdits);
   //audio listner
   void listenToSpeech(TextEditingController textEditingController);

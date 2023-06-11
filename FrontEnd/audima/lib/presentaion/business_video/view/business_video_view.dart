@@ -31,7 +31,13 @@ class _BusinessVideoState extends State<BusinessVideo> {
   void initState() {
     print("business video view init");
     _viewModel = BusinessVideoViewModel(
-        instance(), instance(), instance(), instance(), instance());
+      instance(),
+      instance(),
+      instance(),
+      instance(),
+      instance(),
+      instance(),
+    );
     _scrollController = ScrollController();
     _videoEditsTextController = TextEditingController();
     _speech = stt.SpeechToText();
@@ -82,6 +88,8 @@ class _BusinessVideoState extends State<BusinessVideo> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(59)),
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: ListView(
                   shrinkWrap: true,
@@ -98,9 +106,12 @@ class _BusinessVideoState extends State<BusinessVideo> {
                           builder: (context, snapshot) {
                             return Center(
                                 child: snapshot.data == true
-                                    ? Chewie(
-                                        controller:
-                                            _viewModel.mainChewieController,
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Chewie(
+                                          controller:
+                                              _viewModel.mainChewieController,
+                                        ),
                                       )
                                     : SizedBox.shrink());
                           }),
@@ -114,7 +125,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                             return snapshot.data == true
                                 ? GestureDetector(
                                     onTap: () {
-                                      _viewModel.pickAnotherVideoImage();
+                                      _viewModel.pickAnotherVideoImage(context);
                                     },
                                     child: Container(
                                       width: 60,
@@ -140,13 +151,16 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                     width: 20,
                                   ),
                                   BlackedShadowContainer(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
                                     width:
-                                        MediaQuery.of(context).size.width / 1.2,
-                                    height: MediaQuery.of(context).size.height /
-                                        2.5,
-                                    child: Chewie(
-                                      controller:
-                                          _viewModel.secondryChewieController,
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: Chewie(
+                                        controller:
+                                            _viewModel.secondryChewieController,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
@@ -156,7 +170,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                   //the discard button feature which will allow the user to discard the second video he added
                                   GestureDetector(
                                     onTap: () {
-                                      _viewModel.discardSecondVideo();
+                                      _viewModel.discardSecondVideo(context);
                                     },
                                     child: Container(
                                       width: 100,
@@ -181,13 +195,22 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                     width: 20,
                                   ),
                                   BlackedShadowContainer(
-                                      width: MediaQuery.of(context).size.width /
-                                          1.2,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              2.5,
-                                      child:
-                                          Image.file(_viewModel.secondryFile)),
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        child: Image.file(
+                                          _viewModel.secondryFile,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   SizedBox(
                                     width: 10,
                                   ),
@@ -195,7 +218,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                   //the discard button feature which will allow the user to discard the second video he added
                                   GestureDetector(
                                     onTap: () {
-                                      _viewModel.discardSecondVideo();
+                                      _viewModel.discardSecondVideo(context);
                                     },
                                     child: Container(
                                       width: 100,
@@ -251,30 +274,36 @@ class _BusinessVideoState extends State<BusinessVideo> {
                           children: [
                             Expanded(
                               flex: 3,
-                              child: Material(
-                                elevation: 50,
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: TextField(
-                                    autofocus: false,
-                                    controller: _videoEditsTextController,
-                                    keyboardType: TextInputType.multiline,
-                                    minLines: 1,
-                                    maxLines: null,
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      hintText: 'Type in your video edits',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Material(
+                                  elevation: 50,
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: TextField(
+                                      autofocus: false,
+                                      controller: _videoEditsTextController,
+                                      keyboardType: TextInputType.multiline,
+                                      minLines: 1,
+                                      maxLines: null,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        hintText: 'Type in your video edits',
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -294,7 +323,8 @@ class _BusinessVideoState extends State<BusinessVideo> {
                                           text: 'Edit',
                                           onPressed: () {
                                             _viewModel.preEditVideo(
-                                                _videoEditsTextController);
+                                                _videoEditsTextController,
+                                                context);
                                           },
                                           buttonColorCondition:
                                               (snapshot.data ?? false)
@@ -379,9 +409,7 @@ class _BusinessVideoState extends State<BusinessVideo> {
                               text: 'Proceed',
                               onPressed: () {
                                 //go to the final screen
-
-                                Navigator.of(context)
-                                    .pushNamed(Routes.finalPresentation);
+                                _viewModel.addVoiceOver(context);
                               },
                               buttonColorCondition: false,
                               buttonPressedCondition: false,

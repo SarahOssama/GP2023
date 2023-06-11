@@ -337,7 +337,7 @@ class BusinessInfoViewModel extends BaseViewModel
             _industryTypesList, "What industry is your company in?"),
         CompanyServiceDescriptionQuestionViewObject(
             CompanyServiceDescriptionQuestionObject("description"),
-            "In few words, what's the main\ngood or service you provide?"),
+            "In few words, what's the main good or service you provide?"),
       ];
 
   //-----------------------------------------------------------------------------brand personality list of items

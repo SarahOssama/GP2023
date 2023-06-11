@@ -53,15 +53,17 @@ class _FinalPresentationViewState extends State<FinalPresentationView> {
   Widget _getContentWidget() {
     return MainScaffold(
       previousRoute: Routes.businessVideo,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 50),
-        child: SingleChildScrollView(
-          controller: _mainViewScrollController,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //-------------------------------------------------------------------------------------------
               //business video
+              SizedBox(
+                height: 15,
+              ),
               Text(
                 "Business Video",
                 style:
@@ -69,32 +71,42 @@ class _FinalPresentationViewState extends State<FinalPresentationView> {
                         context),
               ),
               SizedBox(
-                height: 10,
+                height: 40,
               ),
               //video player
               BlackedShadowContainer(
                 width: MediaQuery.of(context).size.width / 1.3,
-                height: MediaQuery.of(context).size.height / 4,
-                child: StreamBuilder<ChewieController>(
-                  stream: _viewModel.outputVideo,
-                  builder: (context, snapshot) {
-                    return snapshot.data != null
-                        ? Chewie(controller: snapshot.data!)
-                        : SizedBox.shrink();
-                  },
+                height: MediaQuery.of(context).size.height / 2.8,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/audima_bg.jpg"),
+                          fit: BoxFit.cover),
+                      borderRadius: BorderRadius.all(Radius.circular(30))),
+                  child: StreamBuilder<ChewieController>(
+                    stream: _viewModel.outputVideo,
+                    builder: (context, snapshot) {
+                      return snapshot.data != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: Chewie(controller: snapshot.data!),
+                            )
+                          : SizedBox.shrink();
+                    },
+                  ),
                 ),
               ),
               //download button
               SizedBox(
-                height: 15,
+                height: 10,
               ),
               GestureDetector(
                 onTap: () {
-                  _viewModel.saveVideoToGallery();
+                  _viewModel.saveVideoToGallery(context);
                 },
                 child: Container(
-                  width: 50,
-                  height: 50,
+                  width: 40,
+                  height: 40,
                   child: Lottie.asset(
                     JsonAssets.download,
                   ),
@@ -107,60 +119,78 @@ class _FinalPresentationViewState extends State<FinalPresentationView> {
 
               //----------------------------------------------------------------------------------------------------------------
               //mission statement
-              Text(
-                "Mission Statement",
-                style:
-                    ResponsiveTextStyles.videoAndBusinessDescriptionTextStyle(
-                        context),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              //mission statement
-              BlackedShadowContainer(
-                width: MediaQuery.of(context).size.width / 1.3,
-                height: MediaQuery.of(context).size.height / 4,
-                child: StreamBuilder<String>(
-                  stream: _viewModel.outputBusinessStatement,
+              StreamBuilder<List<dynamic>>(
+                  stream: _viewModel.outputIsBusinessStatementVisable,
                   builder: (context, snapshot) {
-                    return snapshot.data != null
-                        ? Scrollbar(
-                            thumbVisibility: true,
-                            controller: _missionStatementScrollController,
-                            child: SingleChildScrollView(
-                              controller: _missionStatementScrollController,
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Text(
-                                  snapshot.data!,
-                                  textAlign: TextAlign.center,
-                                  style: ResponsiveTextStyles
-                                      .finalBusinessStatementTextStyle(context),
+                    return snapshot.hasData
+                        ? Column(
+                            children: [
+                              Text(
+                                "Mission Statement",
+                                style: ResponsiveTextStyles
+                                    .videoAndBusinessDescriptionTextStyle(
+                                        context),
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              //mission statement
+                              BlackedShadowContainer(
+                                width: MediaQuery.of(context).size.width / 1.3,
+                                height: MediaQuery.of(context).size.height / 6,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              "assets/images/audima_bg.jpg"),
+                                          fit: BoxFit.cover),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30))),
+                                  child: snapshot.data![0] == true
+                                      ? Scrollbar(
+                                          thumbVisibility: true,
+                                          controller:
+                                              _missionStatementScrollController,
+                                          child: SingleChildScrollView(
+                                            controller:
+                                                _missionStatementScrollController,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Text(
+                                                snapshot.data![1],
+                                                textAlign: TextAlign.center,
+                                                style: ResponsiveTextStyles
+                                                    .finalBusinessStatementTextStyle(
+                                                        context),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox.shrink(),
                                 ),
                               ),
-                            ),
+
+                              SizedBox(
+                                height: 10,
+                              ),
+                              //copy button
+                              GestureDetector(
+                                onTap: () {
+                                  _viewModel.copyBusinessStatmentToClipboard();
+                                },
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  child: Lottie.asset(
+                                    JsonAssets.copy,
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         : SizedBox.shrink();
-                  },
-                ),
-              ),
-
-              SizedBox(
-                height: 15,
-              ),
-              //copy button
-              GestureDetector(
-                onTap: () {
-                  _viewModel.copyBusinessStatmentToClipboard();
-                },
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  child: Lottie.asset(
-                    JsonAssets.copy,
-                  ),
-                ),
-              ),
+                  }),
             ],
           ),
         ),

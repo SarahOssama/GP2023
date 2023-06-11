@@ -12,6 +12,11 @@ abstract class FlowState {
   //these next 2 functions are optional because they are only used in the confirmation edit  state
   VoidCallback? getConfirmationActionFunction() => () {};
   Widget? getListView() => const SizedBox.shrink();
+  //also these for confirmation action
+  VoidCallback? getCancelActionFuntion() => () {};
+  String? getConfirmText() => "Confirm";
+  String? getCancelText() => "Cancel";
+  //functions for success
 }
 
 //Loading State (Pop Up, Full Screen)
@@ -62,12 +67,18 @@ class ConfirmationState extends FlowState {
   StateRendererType stateRendererType;
   String message;
   VoidCallback confirmationActionFunction;
+  String? confirmText = "Confirm";
+  String? cancelText = "Cancel";
+  VoidCallback cancelActionFunction;
   Widget? listView = const SizedBox.shrink();
   ConfirmationState(
       {required this.stateRendererType,
-      this.message = "Loading...",
+      this.confirmText,
+      this.cancelText,
+      required this.cancelActionFunction,
+      required this.message,
       required this.confirmationActionFunction,
-      this.listView});
+      required this.listView});
   @override
   StateRendererType getStateRendererType() => stateRendererType;
 
@@ -77,6 +88,12 @@ class ConfirmationState extends FlowState {
   VoidCallback getConfirmationActionFunction() => confirmationActionFunction;
   @override
   Widget? getListView() => listView;
+  @override
+  String? getConfirmText() => confirmText;
+  @override
+  String? getCancelText() => cancelText;
+  @override
+  VoidCallback getCancelActionFuntion() => cancelActionFunction;
 }
 
 //Content State
@@ -117,9 +134,9 @@ extension FlowStateExtension on FlowState {
         } else {
           //full screen loading state
           return StateRenderer(
-              stateRendererType: getStateRendererType(),
-              message: getMessage(),
-              retryActionFunction: retryActionFunction);
+            stateRendererType: getStateRendererType(),
+            message: getMessage(),
+          );
         }
       case ConfirmationState:
         dismissDialog(context);
@@ -133,9 +150,9 @@ extension FlowStateExtension on FlowState {
         } else {
           //full screen loading state
           return StateRenderer(
-              stateRendererType: getStateRendererType(),
-              message: getMessage(),
-              retryActionFunction: retryActionFunction);
+            stateRendererType: getStateRendererType(),
+            message: getMessage(),
+          );
         }
       case ErrorState:
         dismissDialog(context);
@@ -149,9 +166,9 @@ extension FlowStateExtension on FlowState {
         } else {
           //full screen loading state
           return StateRenderer(
-              stateRendererType: getStateRendererType(),
-              message: getMessage(),
-              retryActionFunction: retryActionFunction);
+            stateRendererType: getStateRendererType(),
+            message: getMessage(),
+          );
         }
       case SuccessState:
         dismissDialog(context);
@@ -165,16 +182,14 @@ extension FlowStateExtension on FlowState {
         } else {
           //full screen loading state
           return StateRenderer(
-              stateRendererType: getStateRendererType(),
-              message: getMessage(),
-              retryActionFunction: retryActionFunction);
+            stateRendererType: getStateRendererType(),
+            message: getMessage(),
+          );
         }
 
       case EmptyState:
         return StateRenderer(
-            stateRendererType: getStateRendererType(),
-            retryActionFunction: retryActionFunction,
-            message: getMessage());
+            stateRendererType: getStateRendererType(), message: getMessage());
       case ContentState:
         dismissDialog(context);
         return contentScreenWidget;
@@ -209,11 +224,14 @@ extension FlowStateExtension on FlowState {
           barrierDismissible: false,
           context: context,
           builder: (context) => StateRenderer(
-              stateRendererType: stateRendererType,
-              message: message,
-              retryActionFunction: () {},
-              confirmationActionFunction: getConfirmationActionFunction(),
-              listView: getListView()),
+            stateRendererType: stateRendererType,
+            message: message,
+            confirmationActionFunction: getConfirmationActionFunction(),
+            listView: getListView(),
+            cancelActionFuntion: getCancelActionFuntion(),
+            confirmText: getConfirmText(),
+            cancelText: getCancelText(),
+          ),
         ));
   }
 }

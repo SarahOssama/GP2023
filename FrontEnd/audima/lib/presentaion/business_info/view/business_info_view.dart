@@ -96,89 +96,85 @@ class _BusinessInfoState extends State<BusinessInfo> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: MainScaffold(
           previousRoute: Routes.home,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(top: 50),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: BlackedShadowContainer(
-              height: MediaQuery.of(context).size.height * 0.7,
-              width: MediaQuery.of(context).size.width * 0.85,
-              child: CarouselSlider.builder(
-                carouselController: _carouselController,
-                itemCount: _viewModel.getListSize(),
-                options: CarouselOptions(
-                  onScrolled: (index) {
-                    _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
-                        ? null
-                        : _carouselController
-                            .animateToPage(_viewModel.getCurrentIndex());
-                  },
-                  enableInfiniteScroll: false,
-                  viewportFraction: 4,
-                  enlargeCenterPage: false,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  initialPage: 0,
-                  autoPlay: false,
-                  onPageChanged: (index, reason) {
-                    _viewModel.onPageChanged(index);
-                  },
-                ),
-                itemBuilder: (context, index, realIndex) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/audima_bg.jpg"),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 40,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  questionObject.question,
-                                  style: ResponsiveTextStyles
-                                      .businessDetailTextStyle(context),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Text(
-                                '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 40,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: _getQuestionWidget(
-                              _viewModel.getCurrentIndex(), questionObject),
-                        ),
-                        Spacer(),
-                        _getNextButtonWidget(
-                          _viewModel.getCurrentIndex(),
-                        ),
-                      ],
-                    ),
-                  );
+          child: BlackedShadowContainer(
+            height: MediaQuery.of(context).size.height * 0.7,
+            width: MediaQuery.of(context).size.width * 0.85,
+            child: CarouselSlider.builder(
+              carouselController: _carouselController,
+              itemCount: _viewModel.getListSize(),
+              options: CarouselOptions(
+                onScrolled: (index) {
+                  _viewModel.getNextStatusList()[_viewModel.getCurrentIndex()]
+                      ? null
+                      : _carouselController
+                          .animateToPage(_viewModel.getCurrentIndex());
+                },
+                enableInfiniteScroll: false,
+                viewportFraction: 4,
+                enlargeCenterPage: false,
+                height: MediaQuery.of(context).size.height * 0.7,
+                initialPage: 0,
+                autoPlay: false,
+                onPageChanged: (index, reason) {
+                  _viewModel.onPageChanged(index);
                 },
               ),
+              itemBuilder: (context, index, realIndex) {
+                return Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/audima_bg.jpg"),
+                          fit: BoxFit.cover),
+                      borderRadius: BorderRadius.all(Radius.circular(30))),
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  width: MediaQuery.of(context).size.width * 0.85,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                questionObject.question,
+                                style: ResponsiveTextStyles
+                                    .businessDetailTextStyle(context),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Text(
+                              '${_viewModel.getCurrentIndex() + 1}/${_viewModel.getListSize()}',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: _getQuestionWidget(
+                            _viewModel.getCurrentIndex(), questionObject),
+                      ),
+                      Spacer(),
+                      _getNextButtonWidget(
+                        _viewModel.getCurrentIndex(),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -294,8 +290,21 @@ class _BusinessInfoState extends State<BusinessInfo> {
             _viewBrandPersonality(
               brandPersonalityViewObject.brandPersonalityList[2],
             ),
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
             _viewBrandPersonality(
               brandPersonalityViewObject.brandPersonalityList[3],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[4],
+            ),
+            _viewBrandPersonality(
+              brandPersonalityViewObject.brandPersonalityList[5],
             ),
           ],
         ),
@@ -305,12 +314,6 @@ class _BusinessInfoState extends State<BusinessInfo> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _viewBrandPersonality(
-              brandPersonalityViewObject.brandPersonalityList[4],
-            ),
-            _viewBrandPersonality(
-              brandPersonalityViewObject.brandPersonalityList[5],
-            ),
             _viewBrandPersonality(
               brandPersonalityViewObject.brandPersonalityList[6],
             ),
@@ -375,67 +378,72 @@ class _BusinessInfoState extends State<BusinessInfo> {
     return StreamBuilder<String>(
         stream: _viewModel.outputIndustryType,
         builder: (context, snapshot) {
-          return DropdownButtonHideUnderline(
-            child: DropdownButton2<String>(
-              hint: Text(
-                "Please select an item",
+          return Padding(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton2<String>(
+                hint: Text(
+                  "Please select an item",
+                  style: ResponsiveTextStyles.companyIndustryTypesTextStyle(
+                      context),
+                ),
+                isExpanded: true,
+                value: snapshot.data ??
+                    ((_viewModel.getCompanyIndustryType() != "")
+                        ? _viewModel.getCompanyIndustryType()
+                        : snapshot.data),
+                menuItemStyleData: MenuItemStyleData(
+                    overlayColor:
+                        MaterialStatePropertyAll(Constants.darkBlueColorTheme)),
+                iconStyleData: IconStyleData(iconSize: 36),
+                buttonStyleData: ButtonStyleData(
+                  padding: EdgeInsets.all(10),
+                  elevation: 40,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image:
+                            AssetImage("assets/images/mainthemevertical.jpg"),
+                        fit: BoxFit.cover),
+                    boxShadow: //make fancy box shadow
+                        [BoxShadow(color: Colors.white, blurRadius: 3)],
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    border: Border.all(color: Colors.grey, width: 1),
+                  ),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                    elevation: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(
+                          color: Constants.darkBlueColorTheme, width: 1),
+                    ),
+                    maxHeight: 300,
+                    scrollbarTheme: ScrollbarThemeData(
+                        thumbVisibility: MaterialStatePropertyAll(true),
+                        thumbColor: MaterialStatePropertyAll(Colors.grey))),
                 style:
                     ResponsiveTextStyles.companyIndustryTypesTextStyle(context),
+                barrierColor: Colors.white.withOpacity(0.2),
+                onChanged: (String? newValue) {
+                  _viewModel.setIndustryType(newValue);
+                },
+                items: companyIndustryTypeQuestionViewObject
+                    .companyIndustryTypeQuestionObject
+                    .map<DropdownMenuItem<String>>(
+                        (CompanyIndustryTypeQuestionObject value) {
+                  return DropdownMenuItem<String>(
+                    value: value.industrytype,
+                    child: Text(
+                      value.industrytype!,
+                      style: ResponsiveTextStyles.companyIndustryTypesTextStyle(
+                          context),
+                    ),
+                  );
+                }).toList(),
               ),
-              isExpanded: true,
-              value: snapshot.data ??
-                  ((_viewModel.getCompanyIndustryType() != "")
-                      ? _viewModel.getCompanyIndustryType()
-                      : snapshot.data),
-              menuItemStyleData: MenuItemStyleData(
-                  overlayColor:
-                      MaterialStatePropertyAll(Constants.darkBlueColorTheme)),
-              iconStyleData: IconStyleData(iconSize: 36),
-              buttonStyleData: ButtonStyleData(
-                padding: EdgeInsets.all(10),
-                elevation: 40,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/mainthemevertical.jpg"),
-                      fit: BoxFit.cover),
-                  boxShadow: //make fancy box shadow
-                      [BoxShadow(color: Colors.white, blurRadius: 3)],
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(color: Colors.grey, width: 1),
-                ),
-              ),
-              dropdownStyleData: DropdownStyleData(
-                  elevation: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(
-                        color: Constants.darkBlueColorTheme, width: 1),
-                  ),
-                  maxHeight: 300,
-                  scrollbarTheme: ScrollbarThemeData(
-                      thumbVisibility: MaterialStatePropertyAll(true),
-                      thumbColor: MaterialStatePropertyAll(Colors.grey))),
-              style:
-                  ResponsiveTextStyles.companyIndustryTypesTextStyle(context),
-              barrierColor: Colors.white.withOpacity(0.2),
-              onChanged: (String? newValue) {
-                _viewModel.setIndustryType(newValue);
-              },
-              items: companyIndustryTypeQuestionViewObject
-                  .companyIndustryTypeQuestionObject
-                  .map<DropdownMenuItem<String>>(
-                      (CompanyIndustryTypeQuestionObject value) {
-                return DropdownMenuItem<String>(
-                  value: value.industrytype,
-                  child: Text(
-                    value.industrytype!,
-                    style: ResponsiveTextStyles.companyIndustryTypesTextStyle(
-                        context),
-                  ),
-                );
-              }).toList(),
             ),
           );
         });

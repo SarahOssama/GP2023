@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const String baseUrl = "https://api.metatext.ai/hub-inference";
-  static const String videoManipulationUrl = "http://192.168.1.55:8000";
+  static const String videoManipulationUrl = "http://172.20.10.3:8000";
   static const String empty = "";
   static const int zero = 0;
   static const double zeroDouble = 0.0;
@@ -21,12 +21,12 @@ class Constants {
     boxShadow: [
       BoxShadow(
           color: Colors.black, //New
-          blurRadius: 25.0,
-          offset: Offset(0, -15)),
+          blurRadius: 20.0,
+          offset: Offset(0, -5)),
       BoxShadow(
           color: Colors.black, //New
-          blurRadius: 25.0,
-          offset: Offset(0, 15))
+          blurRadius: 20.0,
+          offset: Offset(0, 5))
     ],
     borderRadius: BorderRadius.all(Radius.circular(30)),
   );

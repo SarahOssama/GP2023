@@ -79,6 +79,33 @@ class ResponsiveTextStyles {
     );
   }
 
+//onboarding view text styles////////////////////////////////////////////////////////////////////////////////////////////////////////
+  static TextStyle onBoardingFirstTitle(context) {
+    return GoogleFonts.lobster(
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 30.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 30.0),
+        ],
+      ).value,
+      color: Color.fromARGB(255, 19, 17, 83),
+    );
+  }
+
+  static TextStyle skipTextStyle(context) {
+    return GoogleFonts.lobster(
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 20.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 20.0),
+        ],
+      ).value,
+      color: Constants.yellowColorTheme,
+    );
+  }
+
   //home view text styles////////////////////////////////////////////////////////////////////////////////////////////////////////
   static TextStyle startYourBusinessJourney(context) {
     return GoogleFonts.lobster(
@@ -90,6 +117,19 @@ class ResponsiveTextStyles {
         ],
       ).value,
       color: Constants.darkBlueColorTheme,
+    );
+  }
+
+  static TextStyle skiForVideo(context) {
+    return GoogleFonts.lobster(
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 13.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 18.0),
+        ],
+      ).value,
+      color: Constants.whiteColorTheme,
     );
   }
 
@@ -227,22 +267,22 @@ class ResponsiveTextStyles {
           const Condition.smallerThan(name: TABLET, value: 25.0),
         ],
       ).value,
-      color: Colors.white,
+      color: Constants.darkBlueColorTheme,
     );
   }
 
   static TextStyle finalBusinessStatementTextStyle(context) {
     return GoogleFonts.sora(
-        fontSize: ResponsiveValue(
-          context,
-          defaultValue: 16.0,
-          valueWhen: [
-            const Condition.smallerThan(name: DESKTOP, value: 27.0),
-            const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
-            const Condition.smallerThan(name: TABLET, value: 16.0),
-          ],
-        ).value,
-        color: Colors.white,
-        fontWeight: FontWeight.bold);
+      fontSize: ResponsiveValue(
+        context,
+        defaultValue: 10.0,
+        valueWhen: [
+          const Condition.smallerThan(name: DESKTOP, value: 27.0),
+          const Condition.smallerThan(name: "SMALLERDESKTOP", value: 25.0),
+          const Condition.smallerThan(name: TABLET, value: 10.0),
+        ],
+      ).value,
+      color: Colors.white,
+    );
   }
 }
