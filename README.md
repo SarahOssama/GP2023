@@ -1,6 +1,9 @@
 # Audima 
 
-https://github.com/SarahOssama/GP2023/assets/62894826/7ac5cd00-dbd7-4f09-ac6f-de224f0baa3a
+
+
+https://github.com/SarahOssama/GP2023/assets/62894826/dd94bff0-2371-48c8-b8bf-2f95344e93ad
+
 
 ## Description 
 In today's fast-paced digital landscape, start-ups and influencers face a common challenge – effectively marketing their businesses through social media platforms.  However, the process of video editing can be time-consuming and costly, hindering their growth potential. To address this problem, we present an innovative mobile application that revolutionizes video editing, making it fast, accessible, and hassle-free.
@@ -32,4 +35,4 @@ Edits can be applied at any desired duration, giving users full control over the
 
 Users have the option to revert any edit if they are not satisfied with the outcome, providing flexibility and control in the editing process.
 
-![Team19_Poster](https://github.com/SarahOssama/GP2023/assets/62894826/88a53645-391a-4cd1-9bf4-31bcdb721af8)
+![Team19_Poster](https://github.com/SarahOssama/GP2023/assets/62894826/6db1d8af-2789-471d-94c6-f572ea1ffeb9)
